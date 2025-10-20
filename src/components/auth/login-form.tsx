@@ -122,7 +122,7 @@ export function LoginForm() {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Don't have a Pinboard account?{' '}
+              Don&apos;t have a Pinboard account?{' '}
               <a 
                 href="https://pinboard.in/signup/" 
                 target="_blank" 

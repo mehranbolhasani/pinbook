@@ -1,7 +1,7 @@
 'use client';
 
 import { Bookmark } from '@/types/pinboard';
-import { BookmarkCard } from './bookmark-card';
+// import { BookmarkCard } from './bookmark-card';
 import { format } from 'date-fns';
 import { ExternalLink, Eye, EyeOff, Share, Share2, Trash2, Edit, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';

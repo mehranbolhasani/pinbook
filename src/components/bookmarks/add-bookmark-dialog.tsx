@@ -27,7 +27,7 @@ interface AddBookmarkDialogProps {
 
 export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
   const { apiToken } = useAuthStore();
-  const { addBookmark, setLoading, setError } = useBookmarkStore();
+  const { addBookmark, setError } = useBookmarkStore();
   
   const [formData, setFormData] = useState({
     url: '',

@@ -17,7 +17,7 @@ interface BookmarkStore extends AppState {
   clearFilters: () => void;
 }
 
-export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
+export const useBookmarkStore = create<BookmarkStore>((set) => ({
   bookmarks: [],
   tags: [],
   isLoading: false,

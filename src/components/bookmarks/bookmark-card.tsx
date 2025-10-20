@@ -21,7 +21,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Bookmark } from '@/types/pinboard';
@@ -38,7 +37,7 @@ interface BookmarkCardProps {
 export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
   const { updateBookmark } = useBookmarkStore();
   const { apiToken } = useAuthStore();
-  const [isHovered, setIsHovered] = useState(false);
+  // const [isHovered, setIsHovered] = useState(false);
 
   const handleToggleRead = async () => {
     const newReadStatus = !bookmark.isRead;

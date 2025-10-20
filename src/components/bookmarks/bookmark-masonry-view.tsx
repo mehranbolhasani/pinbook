@@ -1,9 +1,9 @@
 'use client';
 
 import { Bookmark } from '@/types/pinboard';
-import { BookmarkCard } from './bookmark-card';
+// import { BookmarkCard } from './bookmark-card';
 import { format } from 'date-fns';
-import { ExternalLink, Eye, EyeOff, Share, Share2, Trash2, Edit, Copy } from 'lucide-react';
+import { ExternalLink, Eye, EyeOff, Share, Trash2, Edit, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -43,26 +43,26 @@ export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMas
     }
   };
 
-  const handleToggleShared = async (bookmark: Bookmark) => {
-    const newSharedStatus = !bookmark.isShared;
-    
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isShared: newSharedStatus });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkShareStatus(bookmark.hash, newSharedStatus);
-        }
-      } catch (error) {
-        console.error('Failed to update share status:', error);
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isShared: bookmark.isShared });
-      }
-    }
-  };
+  // const handleToggleShared = async (bookmark: Bookmark) => {
+  //   const newSharedStatus = !bookmark.isShared;
+  //   
+  //   // Update local state immediately for responsive UI
+  //   updateBookmark(bookmark.id, { isShared: newSharedStatus });
+  //   
+  //   // Sync with Pinboard API
+  //   if (apiToken) {
+  //     try {
+  //       const api = getPinboardAPI(apiToken);
+  //       if (api) {
+  //         await api.updateBookmarkShareStatus(bookmark.hash, newSharedStatus);
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to update share status:', error);
+  //       // Revert local state on error
+  //       updateBookmark(bookmark.id, { isShared: bookmark.isShared });
+  //     }
+  //   }
+  // };
 
   const handleOpenUrl = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');

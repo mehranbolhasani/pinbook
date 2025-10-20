@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { BookmarkCard } from './bookmark-card';
+// import { BookmarkCard } from './bookmark-card';
 import { BookmarkListView } from './bookmark-list-view';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
 import { BookmarkMasonryView } from './bookmark-masonry-view';

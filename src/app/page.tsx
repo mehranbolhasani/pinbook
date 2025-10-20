@@ -34,7 +34,7 @@ export default function Home() {
     if (isAuthenticated && apiToken && !isInitialized) {
       loadBookmarks();
     }
-  }, [isAuthenticated, apiToken, isInitialized]);
+  }, [isAuthenticated, apiToken, isInitialized, loadBookmarks]);
 
   const loadBookmarks = async () => {
     if (!apiToken) return;
@@ -91,7 +91,7 @@ export default function Home() {
     setIsEditDialogOpen(false);
   };
 
-  const handleDeleteBookmark = (bookmark: any) => {
+  const handleDeleteBookmark = (bookmark: Bookmark) => {
     // TODO: Implement delete bookmark
     console.log('Delete bookmark:', bookmark);
   };

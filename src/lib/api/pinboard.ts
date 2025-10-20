@@ -109,7 +109,7 @@ export class PinboardAPI {
     let domain = '';
     try {
       domain = new URL(pb.href).hostname;
-    } catch (error) {
+    } catch {
       console.warn('Invalid URL:', pb.href);
       domain = pb.href;
     }
@@ -218,7 +218,7 @@ export class PinboardAPI {
   async validateToken(): Promise<boolean> {
     try {
       // Use a simple endpoint that requires authentication
-      const response = await this.makeRequest<{ user?: string; posts?: any[] }>('/posts/recent', { count: 1 });
+      const response = await this.makeRequest<{ user?: string; posts?: unknown[] }>('/posts/recent', { count: 1 });
       // If we get a response with user field, the token is valid
       return !!response.user;
     } catch (error) {

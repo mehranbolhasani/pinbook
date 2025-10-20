@@ -37,7 +37,6 @@ interface BookmarkCardProps {
 export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
   const { updateBookmark } = useBookmarkStore();
   const { apiToken } = useAuthStore();
-  // const [isHovered, setIsHovered] = useState(false);
 
   const handleToggleRead = async () => {
     const newReadStatus = !bookmark.isRead;
@@ -107,8 +106,6 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
       className={`transition-all duration-200 hover:shadow-md ${
         !bookmark.isRead ? 'border-l-4 border-l-blue-500' : ''
       }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">

@@ -29,13 +29,6 @@ export default function Home() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  // Load bookmarks when authenticated
-  useEffect(() => {
-    if (isAuthenticated && apiToken && !isInitialized) {
-      loadBookmarks();
-    }
-  }, [isAuthenticated, apiToken, isInitialized, loadBookmarks]);
-
   const loadBookmarks = async () => {
     if (!apiToken) return;
     
@@ -66,6 +59,13 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  // Load bookmarks when authenticated
+  useEffect(() => {
+    if (isAuthenticated && apiToken && !isInitialized) {
+      loadBookmarks();
+    }
+  }, [isAuthenticated, apiToken, isInitialized, loadBookmarks]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

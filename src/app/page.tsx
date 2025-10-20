@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
 import { BookmarkList } from '@/components/bookmarks/bookmark-list';
@@ -29,7 +29,7 @@ export default function Home() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  const loadBookmarks = async () => {
+  const loadBookmarks = useCallback(async () => {
     if (!apiToken) return;
     
     setLoading(true);
@@ -58,7 +58,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized]);
 
   // Load bookmarks when authenticated
   useEffect(() => {

@@ -74,11 +74,6 @@ export class PinboardAPI {
     return response.posts.map(this.transformBookmark);
   }
 
-  // Add a new bookmark
-  async addBookmark(params: AddBookmarkParams): Promise<boolean> {
-    const response = await this.makeRequest<{ status: string }>('/posts/add', params);
-    return response.status === 'ok';
-  }
 
   // Delete a bookmark
   async deleteBookmark(url: string): Promise<boolean> {

@@ -43,6 +43,7 @@ export interface SearchParams {
   fromdt?: string;
   todt?: string;
   meta?: 'yes' | 'no';
+  [key: string]: string | number | boolean | undefined;
 }
 
 // App-specific types

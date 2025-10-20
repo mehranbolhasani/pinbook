@@ -53,7 +53,12 @@ export class PinboardAPI {
 
   // Get all bookmarks
   async getAllBookmarks(params: SearchParams = {}): Promise<Bookmark[]> {
-    const response = await this.makeRequest<PinboardBookmark[]>('/posts/all', params);
+    // Filter out undefined values
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== undefined)
+    ) as Record<string, string | number | boolean>;
+    
+    const response = await this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams);
     
     if (!Array.isArray(response)) {
       console.error('Expected array but got:', response);
@@ -90,7 +95,12 @@ export class PinboardAPI {
   // Search bookmarks
   async searchBookmarks(query: string, params: SearchParams = {}): Promise<Bookmark[]> {
     const searchParams = { ...params, q: query };
-    const response = await this.makeRequest<PinboardBookmarksResponse>('/posts/search', searchParams);
+    // Filter out undefined values
+    const filteredParams = Object.fromEntries(
+      Object.entries(searchParams).filter(([, value]) => value !== undefined)
+    ) as Record<string, string | number | boolean>;
+    
+    const response = await this.makeRequest<PinboardBookmarksResponse>('/posts/search', filteredParams);
     
     if (!response.posts) {
       return [];
@@ -121,20 +131,30 @@ export class PinboardAPI {
       isShared: pb.shared === 'yes',
       domain,
       hash: pb.hash,
-      meta: pb.meta
+      meta: pb.meta,
+      href: pb.href,
+      shared: pb.shared,
+      toread: pb.toread
     };
   }
 
   // Add a new bookmark
   async addBookmark(params: AddBookmarkParams): Promise<Bookmark> {
-    const response = await this.makeRequest<{ result_code: string }>('/posts/add', {
-      url: params.url,
-      description: params.description,
-      extended: params.extended,
-      tags: params.tags,
-      toread: params.toread,
-      shared: params.shared
-    });
+    // Filter out undefined values
+    const requestParams = Object.fromEntries(
+      Object.entries({
+        url: params.url,
+        description: params.description,
+        extended: params.extended,
+        tags: params.tags,
+        toread: params.toread,
+        shared: params.shared,
+        dt: params.dt,
+        replace: params.replace
+      }).filter(([, value]) => value !== undefined)
+    ) as Record<string, string | number | boolean>;
+    
+    const response = await this.makeRequest<{ result_code: string }>('/posts/add', requestParams);
 
     if (response.result_code !== 'done') {
       throw new Error('Failed to add bookmark');
@@ -146,14 +166,17 @@ export class PinboardAPI {
       title: params.description,
       url: params.url,
       description: params.description,
-      extended: params.extended,
+      extended: params.extended || '',
       tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
       createdAt: new Date(),
       isRead: params.toread === 'no',
       isShared: params.shared === 'yes',
       domain: new URL(params.url).hostname,
       hash: `temp-${Date.now()}`,
-      meta: ''
+      meta: '',
+      href: params.url,
+      shared: params.shared || 'no',
+      toread: params.toread || 'no'
     };
   }
 

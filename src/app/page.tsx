@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
+import { MobileNav } from '@/components/layout/mobile-nav';
 import { BookmarkList } from '@/components/bookmarks/bookmark-list';
 import { EditBookmarkDialog } from '@/components/bookmarks/edit-bookmark-dialog';
 import { AddBookmarkDialog } from '@/components/bookmarks/add-bookmark-dialog';
@@ -163,12 +164,24 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onSearch={handleSearch} searchQuery={searchQuery} searchRef={searchInputRef} />
+      {/* Desktop Header */}
+      <div className="hidden lg:block">
+        <Header onSearch={handleSearch} searchQuery={searchQuery} searchRef={searchInputRef} />
+      </div>
+      
+      {/* Mobile Navigation */}
+      <MobileNav 
+        onAddBookmark={handleAddBookmark}
+      />
       
       <div className="flex">
-        <Sidebar onAddBookmark={handleAddBookmark} />
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block">
+          <Sidebar onAddBookmark={handleAddBookmark} />
+        </div>
         
-        <main className="flex-1 p-6">
+        {/* Main Content */}
+        <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
           <div className="max-w-4xl mx-auto">
             <BookmarkList 
               onEditBookmark={handleEditBookmark}

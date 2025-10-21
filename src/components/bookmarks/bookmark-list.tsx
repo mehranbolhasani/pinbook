@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { BookmarkListView } from './bookmark-list-view';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
 import { BookmarkMasonryView } from './bookmark-masonry-view';
+import { MobileBookmarkCard } from './mobile-bookmark-card';
 import { BookmarkToolbar } from './bookmark-toolbar';
 import { SelectionModeToggle } from './selection-mode-toggle';
 import { BulkActionsToolbar } from './bulk-actions-toolbar';
@@ -140,6 +141,25 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
   const renderBookmarks = () => {
     if (isLoading) {
       return <BookmarkListSkeleton count={6} layout={layout} />;
+    }
+
+    // Mobile-optimized layout
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    
+    if (isMobile) {
+      return (
+        <AnimatedList className="space-y-3">
+          {filteredAndSortedBookmarks.map((bookmark) => (
+            <AnimatedListItem key={bookmark.id}>
+              <MobileBookmarkCard
+                bookmark={bookmark}
+                onEdit={onEditBookmark}
+                onDelete={onDeleteBookmark}
+              />
+            </AnimatedListItem>
+          ))}
+        </AnimatedList>
+      );
     }
 
     switch (layout) {

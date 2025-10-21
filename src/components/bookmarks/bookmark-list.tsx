@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 // import { BookmarkCard } from './bookmark-card';
 import { BookmarkListView } from './bookmark-list-view';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
-import { BookmarkMasonryView } from './bookmark-masonry-view';
+import { BookmarkCard } from './bookmark-card';
 import { MobileBookmarkCard } from './mobile-bookmark-card';
 import { BookmarkToolbar } from './bookmark-toolbar';
 import { SelectionModeToggle } from './selection-mode-toggle';
@@ -206,8 +206,8 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
                 transition={{ duration: 0.2 }}
                 className="break-inside-avoid mb-4"
               >
-                <BookmarkMasonryView
-                  bookmarks={[bookmark]}
+                <BookmarkCard
+                  bookmark={bookmark}
                   onEdit={onEditBookmark}
                   onDelete={onDeleteBookmark}
                 />

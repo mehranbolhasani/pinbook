@@ -55,7 +55,7 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         className="group"
       >
         <Card 
-          className={`transition-all duration-200 hover:shadow-md ${
+          className={`transition-all duration-200 hover:shadow-md h-fit ${
             !bookmark.isRead ? 'border-l-4 border-l-blue-500' : ''
           }`}
         >
@@ -71,10 +71,10 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2">
+            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1">
               {bookmark.title}
             </h3>
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+            <p className="text-sm text-muted-foreground line-clamp-1">
               {bookmark.domain}
             </p>
           </div>

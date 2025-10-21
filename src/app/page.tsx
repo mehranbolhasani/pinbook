@@ -67,8 +67,8 @@ export default function Home() {
       setBookmarks(bookmarks);
       setTags(Object.keys(tags));
       setIsInitialized(true);
-      // Only show success toast if this is the first load
-      if (bookmarks.length > 0) {
+      // Only show success toast on initial load, not on refreshes
+      if (bookmarks.length > 0 && !isInitialized) {
         toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
       }
     } catch (error) {
@@ -79,7 +79,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized]);
+  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, isInitialized]);
 
   // Load bookmarks when authenticated
   useEffect(() => {

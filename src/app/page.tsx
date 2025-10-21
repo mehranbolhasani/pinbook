@@ -9,11 +9,13 @@ import { EditBookmarkDialog } from '@/components/bookmarks/edit-bookmark-dialog'
 import { AddBookmarkDialog } from '@/components/bookmarks/add-bookmark-dialog';
 import { LoginForm } from '@/components/auth/login-form';
 import { KeyboardShortcutsModal } from '@/components/ui/keyboard-shortcuts-modal';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { Bookmark } from '@/types/pinboard';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useToast } from '@/hooks/useToast';
 
 export default function Home() {
   const { isAuthenticated, apiToken } = useAuthStore();
@@ -24,7 +26,8 @@ export default function Home() {
     setError,
     searchQuery,
     setSearchQuery,
-    updateBookmark
+    updateBookmark,
+    removeBookmark
   } = useBookmarkStore();
   
   const [isInitialized, setIsInitialized] = useState(false);
@@ -33,8 +36,13 @@ export default function Home() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [selectedBookmarkId] = useState<string | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    bookmark: Bookmark | null;
+  }>({ isOpen: false, bookmark: null });
   
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
 
   const loadBookmarks = useCallback(async () => {
     if (!apiToken) return;
@@ -59,13 +67,16 @@ export default function Home() {
       setBookmarks(bookmarks);
       setTags(Object.keys(tags));
       setIsInitialized(true);
+      toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
     } catch (error) {
       console.error('Failed to load bookmarks:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load bookmarks');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load bookmarks';
+      setError(errorMessage);
+      toast.showError('Failed to load bookmarks', errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized]);
+  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, toast]);
 
   // Load bookmarks when authenticated
   useEffect(() => {
@@ -99,8 +110,31 @@ export default function Home() {
   };
 
   const handleDeleteBookmark = (bookmark: Bookmark) => {
-    // TODO: Implement delete bookmark
-    console.log('Delete bookmark:', bookmark);
+    setDeleteConfirmation({ isOpen: true, bookmark });
+  };
+
+  const handleConfirmDelete = async () => {
+    const bookmark = deleteConfirmation.bookmark;
+    if (!bookmark || !apiToken) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const api = getPinboardAPI(apiToken);
+      if (!api) throw new Error('Failed to initialize API');
+
+      await api.deleteBookmark(bookmark.url);
+      removeBookmark(bookmark.id);
+      toast.showSuccess('Bookmark deleted', `"${bookmark.title}" has been deleted`);
+    } catch (error) {
+      console.error('Failed to delete bookmark:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete bookmark';
+      setError(errorMessage);
+      toast.showError('Failed to delete bookmark', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Keyboard shortcuts handlers
@@ -209,6 +243,18 @@ export default function Home() {
       <KeyboardShortcutsModal
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() => setDeleteConfirmation({ isOpen: false, bookmark: null })}
+        onConfirm={handleConfirmDelete}
+        title="Delete Bookmark"
+        description={`Are you sure you want to delete "${deleteConfirmation.bookmark?.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
       />
     </div>
   );

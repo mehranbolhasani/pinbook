@@ -21,6 +21,7 @@ import { getPinboardAPI } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
 import { motion } from 'framer-motion';
 import { scaleIn } from '@/lib/animations';
+import { useToast } from '@/hooks/useToast';
 
 interface AddBookmarkDialogProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ interface AddBookmarkDialogProps {
 export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
   const { apiToken } = useAuthStore();
   const { addBookmark, setError } = useBookmarkStore();
+  const toast = useToast();
   
   const [formData, setFormData] = useState({
     url: '',
@@ -74,6 +76,9 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
       // Add to local store
       addBookmark(newBookmark);
       
+      // Show success toast
+      toast.showSuccess('Bookmark added successfully', `"${newBookmark.title}" has been saved`);
+      
       // Reset form
       setFormData({
         url: '',
@@ -89,7 +94,9 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
       onClose();
     } catch (error) {
       console.error('Failed to add bookmark:', error);
-      setError(error instanceof Error ? error.message : 'Failed to add bookmark');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add bookmark';
+      setError(errorMessage);
+      toast.showError('Failed to add bookmark', errorMessage);
     } finally {
       setIsSubmitting(false);
     }

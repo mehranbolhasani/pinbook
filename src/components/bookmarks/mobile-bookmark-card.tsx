@@ -20,6 +20,7 @@ import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { Checkbox } from '@/components/ui/checkbox';
 import { BookmarkContextMenu } from './bookmark-context-menu';
 import { BookmarkQuickActions } from './bookmark-quick-actions';
+import { RightClickContextMenu } from './right-click-context-menu';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
 
@@ -101,11 +102,16 @@ export function MobileBookmarkCard({ bookmark, onEdit, onDelete }: MobileBookmar
   };
 
   return (
-    <motion.div
-      {...(bind() as Record<string, unknown>)}
-      style={{ x, opacity }}
-      className="relative"
+    <RightClickContextMenu
+      bookmark={bookmark}
+      onEdit={onEdit}
+      onDelete={onDelete}
     >
+      <motion.div
+        {...(bind() as Record<string, unknown>)}
+        style={{ x, opacity }}
+        className="relative"
+      >
       {/* Swipe Actions Background */}
       <div className="absolute inset-0 flex items-center justify-between px-4">
         <div className="flex items-center space-x-2 text-green-600">
@@ -249,5 +255,6 @@ export function MobileBookmarkCard({ bookmark, onEdit, onDelete }: MobileBookmar
         </CardContent>
       </Card>
     </motion.div>
+    </RightClickContextMenu>
   );
 }

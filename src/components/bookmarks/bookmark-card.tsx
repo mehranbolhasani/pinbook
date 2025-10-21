@@ -15,6 +15,7 @@ import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { Checkbox } from '@/components/ui/checkbox';
 import { BookmarkContextMenu } from './bookmark-context-menu';
 import { BookmarkQuickActions } from './bookmark-quick-actions';
+import { RightClickContextMenu } from './right-click-context-menu';
 import { motion } from 'framer-motion';
 
 interface BookmarkCardProps {
@@ -39,20 +40,25 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
   };
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-      whileHover={{ y: -2 }}
-      className="group"
+    <RightClickContextMenu
+      bookmark={bookmark}
+      onEdit={onEdit}
+      onDelete={onDelete}
     >
-      <Card 
-        className={`transition-all duration-200 hover:shadow-md ${
-          !bookmark.isRead ? 'border-l-4 border-l-blue-500' : ''
-        }`}
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.2 }}
+        whileHover={{ y: -2 }}
+        className="group"
       >
+        <Card 
+          className={`transition-all duration-200 hover:shadow-md ${
+            !bookmark.isRead ? 'border-l-4 border-l-blue-500' : ''
+          }`}
+        >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           {isSelectionMode && (
@@ -149,5 +155,6 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
       </CardContent>
     </Card>
     </motion.div>
+    </RightClickContextMenu>
   );
 }

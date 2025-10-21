@@ -67,7 +67,10 @@ export default function Home() {
       setBookmarks(bookmarks);
       setTags(Object.keys(tags));
       setIsInitialized(true);
-      toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
+      // Only show success toast if this is the first load
+      if (bookmarks.length > 0) {
+        toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
+      }
     } catch (error) {
       console.error('Failed to load bookmarks:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to load bookmarks';
@@ -76,7 +79,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, toast]);
+  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized]);
 
   // Load bookmarks when authenticated
   useEffect(() => {

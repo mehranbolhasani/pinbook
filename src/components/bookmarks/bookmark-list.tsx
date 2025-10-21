@@ -14,6 +14,7 @@ import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-contain
 import { Bookmark } from '@/types/pinboard';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 interface BookmarkListProps {
   onEditBookmark?: (bookmark: Bookmark) => void;
@@ -194,17 +195,25 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
       case 'card':
       default:
         return (
-          <AnimatedList className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
             {filteredAndSortedBookmarks.map((bookmark) => (
-              <AnimatedListItem key={bookmark.id}>
+              <motion.div
+                key={bookmark.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="break-inside-avoid mb-4"
+              >
                 <BookmarkMasonryView
                   bookmarks={[bookmark]}
                   onEdit={onEditBookmark}
                   onDelete={onDeleteBookmark}
                 />
-              </AnimatedListItem>
+              </motion.div>
             ))}
-          </AnimatedList>
+          </div>
         );
     }
   };

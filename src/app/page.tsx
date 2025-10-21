@@ -1,16 +1,18 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
 import { BookmarkList } from '@/components/bookmarks/bookmark-list';
 import { EditBookmarkDialog } from '@/components/bookmarks/edit-bookmark-dialog';
 import { AddBookmarkDialog } from '@/components/bookmarks/add-bookmark-dialog';
 import { LoginForm } from '@/components/auth/login-form';
+import { KeyboardShortcutsModal } from '@/components/ui/keyboard-shortcuts-modal';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { Bookmark } from '@/types/pinboard';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 export default function Home() {
   const { isAuthenticated, apiToken } = useAuthStore();
@@ -28,6 +30,10 @@ export default function Home() {
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [selectedBookmarkId] = useState<string | null>(null);
+  
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const loadBookmarks = useCallback(async () => {
     if (!apiToken) return;
@@ -96,13 +102,68 @@ export default function Home() {
     console.log('Delete bookmark:', bookmark);
   };
 
+  // Keyboard shortcuts handlers
+  const handleFocusSearch = useCallback(() => {
+    searchInputRef.current?.focus();
+  }, []);
+
+  const handleCloseDialogs = useCallback(() => {
+    setIsEditDialogOpen(false);
+    setIsAddDialogOpen(false);
+    setIsShortcutsModalOpen(false);
+    setEditingBookmark(null);
+  }, []);
+
+  const handleShowShortcuts = useCallback(() => {
+    setIsShortcutsModalOpen(true);
+  }, []);
+
+  const handleNavigate = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+    // TODO: Implement bookmark navigation
+    console.log('Navigate:', direction);
+  }, []);
+
+  const handleOpenSelected = useCallback(() => {
+    if (selectedBookmarkId) {
+      // TODO: Open selected bookmark
+      console.log('Open bookmark:', selectedBookmarkId);
+    }
+  }, [selectedBookmarkId]);
+
+  const handleEditSelected = useCallback(() => {
+    if (selectedBookmarkId) {
+      // TODO: Edit selected bookmark
+      console.log('Edit bookmark:', selectedBookmarkId);
+    }
+  }, [selectedBookmarkId]);
+
+  const handleToggleSelectedRead = useCallback(() => {
+    if (selectedBookmarkId) {
+      // TODO: Toggle read status of selected bookmark
+      console.log('Toggle read status:', selectedBookmarkId);
+    }
+  }, [selectedBookmarkId]);
+
+  // Set up keyboard shortcuts
+  useKeyboardShortcuts({
+    onSearch: handleFocusSearch,
+    onAddBookmark: handleAddBookmark,
+    onCloseDialog: handleCloseDialogs,
+    onNavigate: handleNavigate,
+    onOpenSelected: handleOpenSelected,
+    onEditSelected: handleEditSelected,
+    onToggleRead: handleToggleSelectedRead,
+    onShowHelp: handleShowShortcuts,
+    isDialogOpen: isEditDialogOpen || isAddDialogOpen || isShortcutsModalOpen
+  });
+
   if (!isAuthenticated) {
     return <LoginForm />;
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onSearch={handleSearch} searchQuery={searchQuery} />
+      <Header onSearch={handleSearch} searchQuery={searchQuery} searchRef={searchInputRef} />
       
       <div className="flex">
         <Sidebar onAddBookmark={handleAddBookmark} />
@@ -129,6 +190,12 @@ export default function Home() {
       <AddBookmarkDialog
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
+      />
+      
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsModalOpen}
+        onClose={() => setIsShortcutsModalOpen(false)}
       />
     </div>
   );

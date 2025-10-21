@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import Link from 'next/link';
 import { Search, Settings, LogOut, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,9 +12,10 @@ import { useBookmarkStore } from '@/lib/stores/bookmarks';
 interface HeaderProps {
   onSearch: (query: string) => void;
   searchQuery: string;
+  searchRef?: React.RefObject<HTMLInputElement | null>;
 }
 
-export function Header({ onSearch, searchQuery }: HeaderProps) {
+export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, searchQuery, searchRef }, ref) => {
   const { isAuthenticated, username, logout } = useAuthStore();
   const { bookmarks } = useBookmarkStore();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -45,6 +46,7 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
+                ref={searchRef || ref}
                 placeholder="Search bookmarks..."
                 value={searchQuery}
                 onChange={(e) => onSearch(e.target.value)}
@@ -83,4 +85,6 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
       </div>
     </header>
   );
-}
+});
+
+Header.displayName = 'Header';

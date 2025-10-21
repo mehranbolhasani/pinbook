@@ -46,50 +46,49 @@ export default function Home() {
   const toast = useToast();
   const isInitializedRef = useRef(false);
 
-  const loadBookmarks = useCallback(async () => {
-    if (!apiToken) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
-      
-      console.log('Loading bookmarks and tags...');
-      const [bookmarks, tags] = await Promise.all([
-        api.getAllBookmarks(),
-        api.getTags()
-      ]);
-      
-      console.log('Loaded bookmarks:', bookmarks.length);
-      console.log('Loaded tags:', Object.keys(tags).length);
-      console.log('Sample bookmark:', bookmarks[0]);
-      
-      setBookmarks(bookmarks);
-      setTags(Object.keys(tags));
-      setIsInitialized(true);
-      // Only show success toast on initial load, not on refreshes
-      if (bookmarks.length > 0 && !isInitializedRef.current) {
-        toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
-        isInitializedRef.current = true;
-      }
-    } catch (error) {
-      console.error('Failed to load bookmarks:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load bookmarks';
-      setError(errorMessage);
-      toast.showError('Failed to load bookmarks', errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, toast]);
-
   // Load bookmarks when authenticated
   useEffect(() => {
-    if (isAuthenticated && apiToken && !isInitialized) {
-      loadBookmarks();
-    }
-  }, [isAuthenticated, apiToken, isInitialized, loadBookmarks]);
+    if (!isAuthenticated || !apiToken || isInitialized || isInitializedRef.current) return;
+    
+    const loadBookmarks = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const api = getPinboardAPI(apiToken);
+        if (!api) throw new Error('Failed to initialize API');
+        
+        console.log('Loading bookmarks and tags...');
+        const [bookmarks, tags] = await Promise.all([
+          api.getAllBookmarks(),
+          api.getTags()
+        ]);
+        
+        console.log('Loaded bookmarks:', bookmarks.length);
+        console.log('Loaded tags:', Object.keys(tags).length);
+        console.log('Sample bookmark:', bookmarks[0]);
+        
+        setBookmarks(bookmarks);
+        setTags(Object.keys(tags));
+        setIsInitialized(true);
+        isInitializedRef.current = true;
+        
+        // Only show success toast on initial load
+        if (bookmarks.length > 0) {
+          toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
+        }
+      } catch (error) {
+        console.error('Failed to load bookmarks:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load bookmarks';
+        setError(errorMessage);
+        toast.showError('Failed to load bookmarks', errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadBookmarks();
+  }, [isAuthenticated, apiToken, isInitialized, setLoading, setError, setBookmarks, setTags, setIsInitialized, toast]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

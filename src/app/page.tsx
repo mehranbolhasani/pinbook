@@ -31,7 +31,7 @@ export default function Home() {
     removeBookmark
   } = useBookmarkStore();
   
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [, setIsInitialized] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -46,9 +46,9 @@ export default function Home() {
   const toast = useToast();
   const isInitializedRef = useRef(false);
 
-  // Load bookmarks when authenticated
+  // Load bookmarks when authenticated - only run once
   useEffect(() => {
-    if (!isAuthenticated || !apiToken || isInitialized || isInitializedRef.current) return;
+    if (!isAuthenticated || !apiToken || isInitializedRef.current) return;
     
     const loadBookmarks = async () => {
       setLoading(true);
@@ -88,7 +88,7 @@ export default function Home() {
     };
     
     loadBookmarks();
-  }, [isAuthenticated, apiToken, isInitialized, setLoading, setError, setBookmarks, setTags, setIsInitialized, toast]);
+  }, [isAuthenticated, apiToken]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

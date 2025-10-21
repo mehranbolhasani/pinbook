@@ -2,6 +2,7 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+// Enhanced skeleton with shimmer effect
 
 interface BookmarkSkeletonProps {
   layout?: 'card' | 'list' | 'minimal' | 'masonry';

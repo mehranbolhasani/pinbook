@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useDrag } from '@use-gesture/react';
 import { motion, useSpring, useTransform } from 'framer-motion';
+// Enhanced mobile card with better touch interactions
 import { format } from 'date-fns';
 import {
   MoreHorizontal,

@@ -18,6 +18,7 @@ import {
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { useAuthStore } from '@/lib/stores/auth';
 import { MobileSidebar } from './mobile-sidebar';
+// Enhanced mobile navigation with better touch interactions
 
 interface MobileNavProps {
   onAddBookmark: () => void;

@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { BookmarkContextMenu } from './bookmark-context-menu';
 import { RightClickContextMenu } from './right-click-context-menu';
 import { motion } from 'framer-motion';
+import { fadeInUpStagger } from '@/lib/animations';
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -46,11 +47,12 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
     >
       <motion.div
         layout
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.2 }}
-        whileHover={{ y: -2 }}
+        variants={fadeInUpStagger}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        whileHover="hover"
+        whileTap="tap"
         className="group"
       >
         <Card 

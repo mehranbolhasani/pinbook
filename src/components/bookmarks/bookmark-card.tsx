@@ -54,7 +54,7 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         className="group"
       >
         <Card 
-          className={`transition-all duration-200 hover:shadow-md h-fit ${
+          className={`transition-all duration-200 hover:shadow-md h-fit w-full ${
             !bookmark.isRead ? 'border-l-4 border-l-blue-500' : ''
           }`}
         >
@@ -69,11 +69,11 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
               />
             </div>
           )}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1">
+          <div className="flex-1 min-w-0 pr-2">
+            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1 break-words">
               {bookmark.title}
             </h3>
-            <p className="text-sm text-muted-foreground line-clamp-1">
+            <p className="text-sm text-muted-foreground line-clamp-1 break-all">
               {bookmark.domain}
             </p>
           </div>
@@ -105,7 +105,7 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
       
       <CardContent className="pt-0">
         {bookmark.extended && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2 break-words">
             {bookmark.extended}
           </p>
         )}
@@ -120,9 +120,9 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
                 <span className="text-xs text-muted-foreground">•</span>
                 <div className="flex items-center space-x-1">
                   <Tag className="h-3 w-3 text-muted-foreground" />
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1 max-w-full">
                     {bookmark.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
+                      <Badge key={tag} variant="secondary" className="text-xs truncate max-w-20">
                         {tag}
                       </Badge>
                     ))}

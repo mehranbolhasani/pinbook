@@ -74,7 +74,7 @@ export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMas
   };
 
   return (
-    <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+    <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
       {bookmarks.map((bookmark) => (
         <Card key={bookmark.id} className="break-inside-avoid mb-4 hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">

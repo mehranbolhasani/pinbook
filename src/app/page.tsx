@@ -85,7 +85,7 @@ export default function Home() {
     };
 
     loadBookmarks();
-  }, [isAuthenticated, apiToken, setBookmarks, setTags, setLoading, setError, toast]);
+  }, [isAuthenticated, apiToken, setBookmarks, setTags, setLoading, setError]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

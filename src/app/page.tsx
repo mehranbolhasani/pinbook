@@ -28,8 +28,7 @@ export default function Home() {
     setBookmarks,
     setTags,
     setLoading,
-    setError,
-    isInitialized
+    setError
   } = useBookmarkStore();
   
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null);
@@ -44,12 +43,14 @@ export default function Home() {
   
   const searchInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
+  const isInitializedRef = useRef(false);
 
   // Load bookmarks when authenticated - simple approach
   useEffect(() => {
-    if (!isAuthenticated || !apiToken || isInitialized) return;
+    if (!isAuthenticated || !apiToken || isInitializedRef.current) return;
 
     const loadBookmarks = async () => {
+      isInitializedRef.current = true;
       setLoading(true);
       setError(null);
 
@@ -84,7 +85,7 @@ export default function Home() {
     };
 
     loadBookmarks();
-  }, [isAuthenticated, apiToken, isInitialized, setBookmarks, setTags, setLoading, setError, toast]);
+  }, [isAuthenticated, apiToken, setBookmarks, setTags, setLoading, setError, toast]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

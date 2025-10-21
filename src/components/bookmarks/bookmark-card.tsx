@@ -14,7 +14,6 @@ import { Bookmark } from '@/types/pinboard';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { Checkbox } from '@/components/ui/checkbox';
 import { BookmarkContextMenu } from './bookmark-context-menu';
-import { BookmarkQuickActions } from './bookmark-quick-actions';
 import { RightClickContextMenu } from './right-click-context-menu';
 import { motion } from 'framer-motion';
 
@@ -110,11 +109,6 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
             {bookmark.extended}
           </p>
         )}
-        
-        <BookmarkQuickActions 
-          bookmark={bookmark} 
-          showTags={false}
-        />
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">

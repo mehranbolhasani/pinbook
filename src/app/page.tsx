@@ -79,7 +79,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, isInitialized]);
+  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, isInitialized, toast]);
 
   // Load bookmarks when authenticated
   useEffect(() => {

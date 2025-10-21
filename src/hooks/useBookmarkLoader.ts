@@ -65,10 +65,10 @@ export function useBookmarkLoader() {
   }, [isAuthenticated, apiToken, setBookmarks, setTags, setLoading, setError, setIsInitialized, toast]);
 
   useEffect(() => {
-    if (isAuthenticated && apiToken) {
+    if (isAuthenticated && apiToken && !isInitializedRef.current && !isLoadingRef.current) {
       loadBookmarks();
     }
-  }, [isAuthenticated, apiToken, loadBookmarks]);
+  }, [isAuthenticated, apiToken]);
 
   return {
     loadBookmarks,

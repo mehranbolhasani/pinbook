@@ -8,6 +8,8 @@ import { BookmarkMasonryView } from './bookmark-masonry-view';
 import { BookmarkToolbar } from './bookmark-toolbar';
 import { SelectionModeToggle } from './selection-mode-toggle';
 import { BulkActionsToolbar } from './bulk-actions-toolbar';
+import { BookmarkListSkeleton } from './bookmark-skeleton';
+import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-container';
 import { Bookmark } from '@/types/pinboard';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { Button } from '@/components/ui/button';
@@ -136,31 +138,53 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
   }
 
   const renderBookmarks = () => {
+    if (isLoading) {
+      return <BookmarkListSkeleton count={6} layout={layout} />;
+    }
+
     switch (layout) {
       case 'list':
         return (
-          <BookmarkListView
-            bookmarks={filteredAndSortedBookmarks}
-            onEdit={onEditBookmark}
-            onDelete={onDeleteBookmark}
-          />
+          <AnimatedList>
+            {filteredAndSortedBookmarks.map((bookmark) => (
+              <AnimatedListItem key={bookmark.id}>
+                <BookmarkListView
+                  bookmarks={[bookmark]}
+                  onEdit={onEditBookmark}
+                  onDelete={onDeleteBookmark}
+                />
+              </AnimatedListItem>
+            ))}
+          </AnimatedList>
         );
       case 'minimal':
         return (
-          <BookmarkMinimalView
-            bookmarks={filteredAndSortedBookmarks}
-            onEdit={onEditBookmark}
-            onDelete={onDeleteBookmark}
-          />
+          <AnimatedList>
+            {filteredAndSortedBookmarks.map((bookmark) => (
+              <AnimatedListItem key={bookmark.id}>
+                <BookmarkMinimalView
+                  bookmarks={[bookmark]}
+                  onEdit={onEditBookmark}
+                  onDelete={onDeleteBookmark}
+                />
+              </AnimatedListItem>
+            ))}
+          </AnimatedList>
         );
       case 'card':
       default:
         return (
-          <BookmarkMasonryView
-            bookmarks={filteredAndSortedBookmarks}
-            onEdit={onEditBookmark}
-            onDelete={onDeleteBookmark}
-          />
+          <AnimatedList className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+            {filteredAndSortedBookmarks.map((bookmark) => (
+              <AnimatedListItem key={bookmark.id}>
+                <BookmarkMasonryView
+                  bookmarks={[bookmark]}
+                  onEdit={onEditBookmark}
+                  onDelete={onDeleteBookmark}
+                />
+              </AnimatedListItem>
+            ))}
+          </AnimatedList>
         );
     }
   };

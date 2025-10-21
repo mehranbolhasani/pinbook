@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeCustomizer } from '@/components/theme/theme-customizer';
 
 export default function SettingsPage() {
   const { 
@@ -247,6 +248,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Theme Customization */}
+          <ThemeCustomizer />
 
           {/* App Info */}
           <Card>

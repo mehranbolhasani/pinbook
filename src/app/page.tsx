@@ -43,6 +43,7 @@ export default function Home() {
   
   const searchInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
+  const isInitializedRef = useRef(false);
 
   const loadBookmarks = useCallback(async () => {
     if (!apiToken) return;
@@ -68,8 +69,9 @@ export default function Home() {
       setTags(Object.keys(tags));
       setIsInitialized(true);
       // Only show success toast on initial load, not on refreshes
-      if (bookmarks.length > 0 && !isInitialized) {
+      if (bookmarks.length > 0 && !isInitializedRef.current) {
         toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
+        isInitializedRef.current = true;
       }
     } catch (error) {
       console.error('Failed to load bookmarks:', error);
@@ -79,7 +81,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, isInitialized, toast]);
+  }, [apiToken, setLoading, setError, setBookmarks, setTags, setIsInitialized, toast]);
 
   // Load bookmarks when authenticated
   useEffect(() => {

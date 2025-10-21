@@ -16,6 +16,7 @@ interface BookmarkStore extends AppState {
   setSortOrder: (order: 'asc' | 'desc') => void;
   setTags: (tags: string[]) => void;
   setLayout: (layout: 'card' | 'list' | 'minimal') => void;
+  setIsInitialized: (initialized: boolean) => void;
   clearFilters: () => void;
   toggleBookmarkSelection: (id: string) => void;
   selectAllBookmarks: () => void;
@@ -35,6 +36,7 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
   sortBy: 'date',
   sortOrder: 'desc',
   layout: 'card',
+  isInitialized: false,
   selectedBookmarks: new Set<string>(),
   isSelectionMode: false,
 
@@ -72,6 +74,7 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
   setTags: (tags) => set({ tags }),
   
   setLayout: (layout) => set({ layout }),
+  setIsInitialized: (initialized) => set({ isInitialized: initialized }),
   
   clearFilters: () => set({ 
     searchQuery: '', 

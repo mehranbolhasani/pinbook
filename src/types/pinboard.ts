@@ -76,4 +76,5 @@ export interface AppState {
   sortBy: 'date' | 'title' | 'url';
   sortOrder: 'asc' | 'desc';
   layout: 'card' | 'list' | 'minimal';
+  isInitialized: boolean;
 }

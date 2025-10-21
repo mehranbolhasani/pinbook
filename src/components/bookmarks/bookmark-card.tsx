@@ -3,31 +3,18 @@
 // import { useState } from 'react';
 import { format } from 'date-fns';
 import { 
-  ExternalLink, 
   MoreHorizontal, 
-  Eye, 
-  EyeOff, 
-  Share, 
-  Share2,
-  Trash2,
-  Edit,
   Tag,
-  Copy
+  ExternalLink
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Bookmark } from '@/types/pinboard';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
-import { useAuthStore } from '@/lib/stores/auth';
 import { Checkbox } from '@/components/ui/checkbox';
+import { BookmarkContextMenu } from './bookmark-context-menu';
+import { BookmarkQuickActions } from './bookmark-quick-actions';
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -36,60 +23,8 @@ interface BookmarkCardProps {
 }
 
 export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
-  const { updateBookmark, selectedBookmarks, isSelectionMode, toggleBookmarkSelection } = useBookmarkStore();
-  const { apiToken } = useAuthStore();
+  const { selectedBookmarks, isSelectionMode, toggleBookmarkSelection } = useBookmarkStore();
 
-  const handleToggleRead = async () => {
-    const newReadStatus = !bookmark.isRead;
-    
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isRead: newReadStatus });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkReadStatus(bookmark.hash, newReadStatus);
-          console.log('Successfully updated read status to:', newReadStatus);
-        }
-      } catch (error) {
-        console.error('Failed to update read status:', error);
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isRead: bookmark.isRead });
-      }
-    }
-  };
-
-  const handleToggleShared = async () => {
-    const newSharedStatus = !bookmark.isShared;
-    
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isShared: newSharedStatus });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkShareStatus(bookmark.hash, newSharedStatus);
-        }
-      } catch (error) {
-        console.error('Failed to update share status:', error);
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isShared: bookmark.isShared });
-      }
-    }
-  };
-
-  const handleOpenUrl = () => {
-    window.open(bookmark.url, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleCopyUrl = () => {
-    navigator.clipboard.writeText(bookmark.url);
-    // You could add a toast notification here
-  };
 
   const formatDate = (date: Date) => {
     const now = new Date();
@@ -140,88 +75,15 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
               </Badge>
             )}
             
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleOpenUrl}
-                className="h-8 w-8 p-0"
-                title="Open Link"
-              >
-                <ExternalLink className="h-4 w-4" />
+            <BookmarkContextMenu 
+              bookmark={bookmark} 
+              onEdit={onEdit} 
+              onDelete={onDelete}
+            >
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopyUrl}
-                className="h-8 w-8 p-0"
-                title="Copy URL"
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-              
-              {onEdit && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(bookmark)}
-                  className="h-8 w-8 p-0"
-                  title="Edit Bookmark"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              )}
-              
-              {onDelete && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(bookmark)}
-                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                  title="Delete Bookmark"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleToggleRead}>
-                    {bookmark.isRead ? (
-                      <>
-                        <EyeOff className="h-4 w-4 mr-2" />
-                        Mark as Unread
-                      </>
-                    ) : (
-                      <>
-                        <Eye className="h-4 w-4 mr-2" />
-                        Mark as Read
-                      </>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleToggleShared}>
-                    {bookmark.isShared ? (
-                      <>
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Make Private
-                      </>
-                    ) : (
-                      <>
-                        <Share className="h-4 w-4 mr-2" />
-                        Make Public
-                      </>
-                    )}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            </BookmarkContextMenu>
           </div>
         </div>
       </CardHeader>
@@ -232,6 +94,11 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
             {bookmark.extended}
           </p>
         )}
+        
+        <BookmarkQuickActions 
+          bookmark={bookmark} 
+          showTags={false}
+        />
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -263,7 +130,7 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleOpenUrl}
+            onClick={() => window.open(bookmark.url, '_blank', 'noopener,noreferrer')}
             className="opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <ExternalLink className="h-4 w-4" />

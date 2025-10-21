@@ -6,6 +6,7 @@ import { Search, Settings, LogOut, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 
@@ -62,6 +63,7 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
 
         {/* User Actions */}
         <div className="flex items-center space-x-2">
+          <ThemeToggle />
           {isAuthenticated ? (
             <>
               <span className="text-sm text-muted-foreground">

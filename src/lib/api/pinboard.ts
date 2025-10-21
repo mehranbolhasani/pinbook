@@ -6,6 +6,7 @@ import {
   SearchParams,
   Bookmark 
 } from '@/types/pinboard';
+import { retry, retryConfigs } from '@/lib/utils/retry';
 
 export class PinboardAPI {
   private apiToken: string;
@@ -58,7 +59,10 @@ export class PinboardAPI {
       Object.entries(params).filter(([, value]) => value !== undefined)
     ) as Record<string, string | number | boolean>;
     
-    const response = await this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams);
+    const response = await retry(
+      () => this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams),
+      retryConfigs.api
+    );
     
     if (!Array.isArray(response)) {
       console.error('Expected array but got:', response);
@@ -181,11 +185,13 @@ export class PinboardAPI {
   }
 
   // Update bookmark read status
-  async updateBookmarkReadStatus(hash: string, isRead: boolean): Promise<void> {
-    // For Pinboard API v1, we need to use /posts/add with replace=yes
-    // But we need the URL, so let's get the bookmark first
-    const bookmarks = await this.getAllBookmarks();
-    const bookmark = bookmarks.find(b => b.hash === hash);
+  async updateBookmarkReadStatus(hash: string, isRead: boolean, bookmarkData?: Bookmark): Promise<void> {
+    // Use provided bookmark data or fetch it
+    let bookmark = bookmarkData;
+    if (!bookmark) {
+      const bookmarks = await this.getAllBookmarks();
+      bookmark = bookmarks.find(b => b.hash === hash);
+    }
     
     if (!bookmark) {
       throw new Error('Bookmark not found');
@@ -207,11 +213,13 @@ export class PinboardAPI {
   }
 
   // Update bookmark share status  
-  async updateBookmarkShareStatus(hash: string, isShared: boolean): Promise<void> {
-    // For Pinboard API v1, we need to use /posts/add with replace=yes
-    // But we need the URL, so let's get the bookmark first
-    const bookmarks = await this.getAllBookmarks();
-    const bookmark = bookmarks.find(b => b.hash === hash);
+  async updateBookmarkShareStatus(hash: string, isShared: boolean, bookmarkData?: Bookmark): Promise<void> {
+    // Use provided bookmark data or fetch it
+    let bookmark = bookmarkData;
+    if (!bookmark) {
+      const bookmarks = await this.getAllBookmarks();
+      bookmark = bookmarks.find(b => b.hash === hash);
+    }
     
     if (!bookmark) {
       throw new Error('Bookmark not found');

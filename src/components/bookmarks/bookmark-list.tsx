@@ -144,8 +144,8 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
       return <BookmarkListSkeleton count={6} layout={layout} />;
     }
 
-    // Mobile-optimized layout
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    // Mobile-optimized layout - use CSS classes instead of JS detection
+    const isMobile = false; // We'll handle mobile via CSS classes
     
     if (isMobile) {
       return (

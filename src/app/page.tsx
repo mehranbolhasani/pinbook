@@ -16,6 +16,7 @@ import { getPinboardAPI } from '@/lib/api/pinboard';
 import { Bookmark } from '@/types/pinboard';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useToast } from '@/hooks/useToast';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function Home() {
   const { isAuthenticated, apiToken } = useAuthStore();
@@ -202,65 +203,67 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Desktop Header */}
-      <div className="hidden lg:block">
-        <Header onSearch={handleSearch} searchQuery={searchQuery} searchRef={searchInputRef} />
-      </div>
-      
-      {/* Mobile Navigation */}
-      <MobileNav 
-        onAddBookmark={handleAddBookmark}
-      />
-      
-      <div className="flex">
-        {/* Desktop Sidebar */}
+    <ErrorBoundary>
+      <div className="min-h-screen bg-background">
+        {/* Desktop Header */}
         <div className="hidden lg:block">
-          <Sidebar onAddBookmark={handleAddBookmark} />
+          <Header onSearch={handleSearch} searchQuery={searchQuery} searchRef={searchInputRef} />
         </div>
         
-        {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
-          <div className="max-w-4xl mx-auto">
-            <BookmarkList 
-              onEditBookmark={handleEditBookmark}
-              onDeleteBookmark={handleDeleteBookmark}
-            />
+        {/* Mobile Navigation */}
+        <MobileNav 
+          onAddBookmark={handleAddBookmark}
+        />
+        
+        <div className="flex">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block">
+            <Sidebar onAddBookmark={handleAddBookmark} />
           </div>
-        </main>
-      </div>
-      
-      {/* Edit Bookmark Dialog */}
-      <EditBookmarkDialog
-        bookmark={editingBookmark}
-        isOpen={isEditDialogOpen}
-        onClose={handleCloseEditDialog}
-        onSave={handleSaveBookmark}
-      />
-      
-      {/* Add Bookmark Dialog */}
-      <AddBookmarkDialog
-        isOpen={isAddDialogOpen}
-        onClose={() => setIsAddDialogOpen(false)}
-      />
-      
-      {/* Keyboard Shortcuts Modal */}
-      <KeyboardShortcutsModal
-        isOpen={isShortcutsModalOpen}
-        onClose={() => setIsShortcutsModalOpen(false)}
-      />
+          
+          {/* Main Content */}
+          <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
+            <div className="max-w-4xl mx-auto">
+              <BookmarkList 
+                onEditBookmark={handleEditBookmark}
+                onDeleteBookmark={handleDeleteBookmark}
+              />
+            </div>
+          </main>
+        </div>
+        
+        {/* Edit Bookmark Dialog */}
+        <EditBookmarkDialog
+          bookmark={editingBookmark}
+          isOpen={isEditDialogOpen}
+          onClose={handleCloseEditDialog}
+          onSave={handleSaveBookmark}
+        />
+        
+        {/* Add Bookmark Dialog */}
+        <AddBookmarkDialog
+          isOpen={isAddDialogOpen}
+          onClose={() => setIsAddDialogOpen(false)}
+        />
+        
+        {/* Keyboard Shortcuts Modal */}
+        <KeyboardShortcutsModal
+          isOpen={isShortcutsModalOpen}
+          onClose={() => setIsShortcutsModalOpen(false)}
+        />
 
-      {/* Delete Confirmation Dialog */}
-      <ConfirmationDialog
-        isOpen={deleteConfirmation.isOpen}
-        onClose={() => setDeleteConfirmation({ isOpen: false, bookmark: null })}
-        onConfirm={handleConfirmDelete}
-        title="Delete Bookmark"
-        description={`Are you sure you want to delete "${deleteConfirmation.bookmark?.title}"? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        variant="destructive"
-      />
-    </div>
+        {/* Delete Confirmation Dialog */}
+        <ConfirmationDialog
+          isOpen={deleteConfirmation.isOpen}
+          onClose={() => setDeleteConfirmation({ isOpen: false, bookmark: null })}
+          onConfirm={handleConfirmDelete}
+          title="Delete Bookmark"
+          description={`Are you sure you want to delete "${deleteConfirmation.bookmark?.title}"? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          variant="destructive"
+        />
+      </div>
+    </ErrorBoundary>
   );
 }

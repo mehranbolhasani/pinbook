@@ -6,6 +6,8 @@ import { BookmarkListView } from './bookmark-list-view';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
 import { BookmarkMasonryView } from './bookmark-masonry-view';
 import { BookmarkToolbar } from './bookmark-toolbar';
+import { SelectionModeToggle } from './selection-mode-toggle';
+import { BulkActionsToolbar } from './bulk-actions-toolbar';
 import { Bookmark } from '@/types/pinboard';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { Button } from '@/components/ui/button';
@@ -24,8 +26,10 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
     sortOrder,
     layout,
     isLoading,
+    selectedBookmarks,
     setSearchQuery,
-    setSelectedTags
+    setSelectedTags,
+    toggleSelectionMode
   } = useBookmarkStore();
 
   const filteredAndSortedBookmarks = useMemo(() => {
@@ -164,7 +168,10 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
   return (
     <div>
       {/* Toolbar */}
-      <BookmarkToolbar />
+      <div className="flex items-center justify-between mb-4">
+        <BookmarkToolbar />
+        <SelectionModeToggle />
+      </div>
       
       {/* Results counter */}
       {(searchQuery || selectedTags.length > 0) && (
@@ -177,6 +184,12 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
       
       {/* Bookmarks */}
       {renderBookmarks()}
+      
+      {/* Bulk Actions Toolbar */}
+      <BulkActionsToolbar 
+        selectedCount={selectedBookmarks.size}
+        onClose={() => toggleSelectionMode()}
+      />
     </div>
   );
 }

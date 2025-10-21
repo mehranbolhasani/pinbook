@@ -7,6 +7,7 @@ import { ExternalLink, Eye, EyeOff, Share, Trash2, Edit, Copy } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
@@ -18,7 +19,7 @@ interface BookmarkMasonryViewProps {
 }
 
 export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMasonryViewProps) {
-  const { updateBookmark } = useBookmarkStore();
+  const { updateBookmark, selectedBookmarks, isSelectionMode, toggleBookmarkSelection } = useBookmarkStore();
   const { apiToken } = useAuthStore();
 
   const handleToggleRead = async (bookmark: Bookmark) => {
@@ -78,6 +79,15 @@ export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMas
         <Card key={bookmark.id} className="break-inside-avoid mb-4 hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
+              {isSelectionMode && (
+                <div className="flex items-center mr-2">
+                  <Checkbox
+                    checked={selectedBookmarks.has(bookmark.id)}
+                    onCheckedChange={() => toggleBookmarkSelection(bookmark.id)}
+                    className="mt-1"
+                  />
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-sm leading-tight line-clamp-2 mb-1">
                   {bookmark.title}

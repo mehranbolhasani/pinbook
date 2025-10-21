@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { Bookmark, AppState } from '@/types/pinboard';
 
 interface BookmarkStore extends AppState {
+  selectedBookmarks: Set<string>;
+  isSelectionMode: boolean;
   setBookmarks: (bookmarks: Bookmark[]) => void;
   addBookmark: (bookmark: Bookmark) => void;
   updateBookmark: (id: string, updates: Partial<Bookmark>) => void;
@@ -15,6 +17,12 @@ interface BookmarkStore extends AppState {
   setTags: (tags: string[]) => void;
   setLayout: (layout: 'card' | 'list' | 'minimal') => void;
   clearFilters: () => void;
+  toggleBookmarkSelection: (id: string) => void;
+  selectAllBookmarks: () => void;
+  deselectAllBookmarks: () => void;
+  toggleSelectionMode: () => void;
+  bulkUpdateBookmarks: (ids: string[], updates: Partial<Bookmark>) => void;
+  bulkDeleteBookmarks: (ids: string[]) => void;
 }
 
 export const useBookmarkStore = create<BookmarkStore>((set) => ({
@@ -27,6 +35,8 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
   sortBy: 'date',
   sortOrder: 'desc',
   layout: 'card',
+  selectedBookmarks: new Set<string>(),
+  isSelectionMode: false,
 
   setBookmarks: (bookmarks) => set({ bookmarks }),
   
@@ -67,4 +77,42 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
     searchQuery: '', 
     selectedTags: [] 
   }),
+
+  toggleBookmarkSelection: (id) => set((state) => {
+    const newSelected = new Set(state.selectedBookmarks);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    return { selectedBookmarks: newSelected };
+  }),
+
+  selectAllBookmarks: () => set((state) => {
+    const allIds = state.bookmarks.map(bookmark => bookmark.id);
+    return { selectedBookmarks: new Set(allIds) };
+  }),
+
+  deselectAllBookmarks: () => set({ selectedBookmarks: new Set<string>() }),
+
+  toggleSelectionMode: () => set((state) => {
+    const newMode = !state.isSelectionMode;
+    return { 
+      isSelectionMode: newMode,
+      selectedBookmarks: newMode ? state.selectedBookmarks : new Set<string>()
+    };
+  }),
+
+  bulkUpdateBookmarks: (ids, updates) => set((state) => ({
+    bookmarks: state.bookmarks.map(bookmark => 
+      ids.includes(bookmark.id) 
+        ? { ...bookmark, ...updates }
+        : bookmark
+    )
+  })),
+
+  bulkDeleteBookmarks: (ids) => set((state) => ({
+    bookmarks: state.bookmarks.filter(bookmark => !ids.includes(bookmark.id)),
+    selectedBookmarks: new Set<string>()
+  })),
 }));

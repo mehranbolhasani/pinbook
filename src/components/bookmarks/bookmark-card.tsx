@@ -27,6 +27,7 @@ import { Bookmark } from '@/types/pinboard';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -35,7 +36,7 @@ interface BookmarkCardProps {
 }
 
 export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
-  const { updateBookmark } = useBookmarkStore();
+  const { updateBookmark, selectedBookmarks, isSelectionMode, toggleBookmarkSelection } = useBookmarkStore();
   const { apiToken } = useAuthStore();
 
   const handleToggleRead = async () => {
@@ -109,6 +110,15 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
+          {isSelectionMode && (
+            <div className="flex items-center mr-3">
+              <Checkbox
+                checked={selectedBookmarks.has(bookmark.id)}
+                onCheckedChange={() => toggleBookmarkSelection(bookmark.id)}
+                className="mt-1"
+              />
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-lg leading-tight line-clamp-2">
               {bookmark.title}

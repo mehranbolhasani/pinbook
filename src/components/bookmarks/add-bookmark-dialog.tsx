@@ -19,8 +19,6 @@ import { X, Plus } from 'lucide-react';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
-import { motion } from 'framer-motion';
-import { scaleIn } from '@/lib/animations';
 import { useToast } from '@/hooks/useToast';
 
 interface AddBookmarkDialogProps {
@@ -148,13 +146,7 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]" asChild>
-        <motion.div
-          variants={scaleIn}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-        >
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Add New Bookmark</DialogTitle>
           <DialogDescription>
@@ -267,7 +259,6 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
             {isSubmitting ? 'Adding...' : 'Add Bookmark'}
           </Button>
         </DialogFooter>
-        </motion.div>
       </DialogContent>
     </Dialog>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
 import { MobileNav } from '@/components/layout/mobile-nav';
@@ -16,7 +16,6 @@ import { getPinboardAPI } from '@/lib/api/pinboard';
 import { Bookmark } from '@/types/pinboard';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useToast } from '@/hooks/useToast';
-import { useBookmarkLoader } from '@/hooks/useBookmarkLoader';
 import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function Home() {
@@ -26,8 +25,11 @@ export default function Home() {
     setSearchQuery,
     updateBookmark,
     removeBookmark,
+    setBookmarks,
+    setTags,
     setLoading,
-    setError
+    setError,
+    isInitialized
   } = useBookmarkStore();
   
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null);
@@ -43,8 +45,46 @@ export default function Home() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
-  // Use the custom hook for bookmark loading
-  useBookmarkLoader();
+  // Load bookmarks when authenticated - simple approach
+  useEffect(() => {
+    if (!isAuthenticated || !apiToken || isInitialized) return;
+
+    const loadBookmarks = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const api = getPinboardAPI(apiToken);
+        if (!api) throw new Error('Failed to initialize API');
+
+        console.log('Loading bookmarks and tags...');
+        const [bookmarks, tags] = await Promise.all([
+          api.getAllBookmarks(),
+          api.getTags()
+        ]);
+
+        console.log('Loaded bookmarks:', bookmarks.length);
+        console.log('Loaded tags:', Object.keys(tags).length);
+
+        setBookmarks(bookmarks);
+        setTags(Object.keys(tags));
+        
+        // Only show success toast on initial load
+        if (bookmarks.length > 0) {
+          toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
+        }
+      } catch (error) {
+        console.error('Failed to load bookmarks:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load bookmarks';
+        setError(errorMessage);
+        toast.showError('Failed to load bookmarks', errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBookmarks();
+  }, [isAuthenticated, apiToken, isInitialized, setBookmarks, setTags, setLoading, setError, toast]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

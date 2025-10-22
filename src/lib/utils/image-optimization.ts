@@ -115,7 +115,7 @@ export class ImageOptimization {
       if (response.ok) {
         return url;
       }
-    } catch (error) {
+    } catch {
       // Try with GET request as fallback
       try {
         const response = await fetch(url, {
@@ -200,7 +200,7 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [imageSrc, setImageSrc] = React.useState(src);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [hasError, setHasError] = React.useState(false);
+  const [, setHasError] = React.useState(false);
 
   React.useEffect(() => {
     if (lazy) {

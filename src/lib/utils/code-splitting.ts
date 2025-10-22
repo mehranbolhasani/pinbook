@@ -115,10 +115,10 @@ export const LazySettingsPage = dynamic(
 );
 
 // Conditional loading based on feature flags
-export function createConditionalComponent<T extends ComponentType<any>>(
+export function createConditionalComponent<T extends ComponentType<unknown>>(
   importFn: () => Promise<{ default: T }>,
   condition: () => boolean,
-  fallback?: ComponentType<any>
+  fallback?: ComponentType<unknown>
 ) {
   return dynamic(importFn, {
     loading: () => fallback ? React.createElement(fallback) : React.createElement('div', { className: 'animate-pulse h-32 bg-muted rounded-lg' }),

@@ -32,19 +32,20 @@ export class CacheStrategy {
     // Check cache first (unless force refresh)
     if (!forceRefresh) {
       const cached = await indexedDBManager.getCache(cacheKey);
-      if (cached) {
+      if (cached && typeof cached === 'object' && 'timestamp' in cached && 'data' in cached) {
+        const cachedData = cached as { timestamp: number; data: unknown };
         // Check if data is still fresh
-        const age = Date.now() - cached.timestamp;
+        const age = Date.now() - cachedData.timestamp;
         if (age < this.config.maxAge) {
           console.log('Serving fresh data from cache');
-          return cached.data;
+          return cachedData.data as Bookmark[];
         }
 
         // Data is stale but still usable
         if (age < this.config.staleWhileRevalidate) {
           console.log('Serving stale data from cache, revalidating in background');
           this.backgroundSync(apiToken);
-          return cached.data;
+          return cachedData.data as Bookmark[];
         }
       }
     }

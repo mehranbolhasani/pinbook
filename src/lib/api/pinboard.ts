@@ -155,19 +155,10 @@ export class PinboardAPI {
         return [];
       }
       
-      // Cache the bookmarks for offline use
-      this.cacheBookmarks(response.map(this.transformBookmark));
+      // Bookmarks loaded successfully
       
       return response.map(this.transformBookmark);
     } catch (error) {
-      if (error instanceof OfflineError) {
-        // Try to load from cache when offline
-        const cachedBookmarks = this.getCachedBookmarks();
-        if (cachedBookmarks.length > 0) {
-          console.warn('Using cached bookmarks due to offline status');
-          return cachedBookmarks;
-        }
-      }
       throw error;
     }
   }
@@ -353,67 +344,6 @@ export class PinboardAPI {
     }
   }
 
-  // Cache management methods
-  private cacheBookmarks(bookmarks: Bookmark[]): void {
-    try {
-      const cacheData = {
-        bookmarks,
-        timestamp: Date.now(),
-        version: '1.0'
-      };
-      localStorage.setItem('pinbook-cache', JSON.stringify(cacheData));
-    } catch (error) {
-      console.warn('Failed to cache bookmarks:', error);
-    }
-  }
-
-  private getCachedBookmarks(): Bookmark[] {
-    try {
-      const cacheData = localStorage.getItem('pinbook-cache');
-      if (!cacheData) return [];
-
-      const parsed = JSON.parse(cacheData);
-      const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-      
-      if (Date.now() - parsed.timestamp > maxAge) {
-        // Cache is too old, clear it
-        localStorage.removeItem('pinbook-cache');
-        return [];
-      }
-
-      return parsed.bookmarks || [];
-    } catch (error) {
-      console.warn('Failed to load cached bookmarks:', error);
-      return [];
-    }
-  }
-
-  // Clear cache
-  clearCache(): void {
-    try {
-      localStorage.removeItem('pinbook-cache');
-    } catch (error) {
-      console.warn('Failed to clear cache:', error);
-    }
-  }
-
-  // Get cache info
-  getCacheInfo(): { hasCache: boolean; age?: number; count?: number } {
-    try {
-      const cacheData = localStorage.getItem('pinbook-cache');
-      if (!cacheData) return { hasCache: false };
-
-      const parsed = JSON.parse(cacheData);
-      return {
-        hasCache: true,
-        age: Date.now() - parsed.timestamp,
-        count: parsed.bookmarks?.length || 0
-      };
-    } catch (error) {
-      console.warn('Failed to get cache info:', error);
-      return { hasCache: false };
-    }
-  }
 }
 
 // Create a singleton instance

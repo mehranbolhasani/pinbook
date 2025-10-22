@@ -1,5 +1,4 @@
 import React from 'react';
-import { indexedDBManager } from '@/lib/cache/indexeddb-manager';
 
 export interface FaviconData {
   url: string;

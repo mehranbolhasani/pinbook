@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Bookmark, AppState } from '@/types/pinboard';
-import { cacheStrategy } from '@/lib/cache/cache-strategy';
 import { performanceMonitor } from '@/lib/utils/performance-monitor';
+import { getPinboardAPI } from '@/lib/api/pinboard';
 
 interface BookmarkStore extends AppState {
   selectedBookmarks: Set<string>;
@@ -131,7 +131,9 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
     try {
       set({ isLoading: true, error: null });
       
-      const bookmarks = await cacheStrategy.getBookmarks(apiToken);
+      const api = getPinboardAPI(apiToken);
+      if (!api) throw new Error('Failed to initialize API');
+      const bookmarks = await api.getAllBookmarks();
       const tags = Array.from(new Set(bookmarks.flatMap(b => b.tags)));
       
       set({ 
@@ -155,7 +157,9 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
     performanceMonitor.mark('search-bookmarks-start');
     
     try {
-      const results = await cacheStrategy.searchBookmarks(query, apiToken);
+      const api = getPinboardAPI(apiToken);
+      if (!api) throw new Error('Failed to initialize API');
+      const results = await api.searchBookmarks({ q: query });
       performanceMonitor.measure('search-bookmarks', 'search-bookmarks-start');
       return results;
     } catch (error) {
@@ -168,7 +172,9 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
     performanceMonitor.mark('get-bookmarks-by-tag-start');
     
     try {
-      const results = await cacheStrategy.getBookmarksByTag(tag, apiToken);
+      const api = getPinboardAPI(apiToken);
+      if (!api) throw new Error('Failed to initialize API');
+      const results = await api.searchBookmarks({ tag });
       performanceMonitor.measure('get-bookmarks-by-tag', 'get-bookmarks-by-tag-start');
       return results;
     } catch (error) {

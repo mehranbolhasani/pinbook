@@ -32,21 +32,10 @@ export class CacheStrategy {
     // Check cache first (unless force refresh)
     if (!forceRefresh) {
       const cached = await indexedDBManager.getCache(cacheKey);
-      if (cached && typeof cached === 'object' && 'timestamp' in cached && 'data' in cached) {
-        const cachedData = cached as { timestamp: number; data: unknown };
-        // Check if data is still fresh
-        const age = Date.now() - cachedData.timestamp;
-        if (age < this.config.maxAge) {
-          console.log('Serving fresh data from cache');
-          return cachedData.data as Bookmark[];
-        }
-
-        // Data is stale but still usable
-        if (age < this.config.staleWhileRevalidate) {
-          console.log('Serving stale data from cache, revalidating in background');
-          this.backgroundSync(apiToken);
-          return cachedData.data as Bookmark[];
-        }
+      if (cached) {
+        // Simplified cache check - assume cached data is valid
+        console.log('Serving data from cache');
+        return cached as Bookmark[];
       }
     }
 
@@ -117,9 +106,8 @@ export class CacheStrategy {
     const cacheKey = `bookmarks_${apiToken}`;
     const cached = await indexedDBManager.getCache(cacheKey);
     
-    if (cached && typeof cached === 'object' && 'data' in cached) {
-      const cachedData = cached as { data: unknown };
-      const updatedBookmarks = [bookmark, ...(cachedData.data as Bookmark[])];
+    if (cached) {
+      const updatedBookmarks = [bookmark, ...(cached as Bookmark[])];
       await indexedDBManager.setCache(cacheKey, updatedBookmarks, this.config.maxAge);
     }
 
@@ -136,9 +124,8 @@ export class CacheStrategy {
     const cacheKey = `bookmarks_${apiToken}`;
     const cached = await indexedDBManager.getCache(cacheKey);
     
-    if (cached && typeof cached === 'object' && 'data' in cached) {
-      const cachedData = cached as { data: unknown };
-      const updatedBookmarks = (cachedData.data as Bookmark[]).map((b: Bookmark) => 
+    if (cached) {
+      const updatedBookmarks = (cached as Bookmark[]).map((b: Bookmark) => 
         b.id === bookmark.id ? bookmark : b
       );
       await indexedDBManager.setCache(cacheKey, updatedBookmarks, this.config.maxAge);
@@ -157,9 +144,8 @@ export class CacheStrategy {
     const cacheKey = `bookmarks_${apiToken}`;
     const cached = await indexedDBManager.getCache(cacheKey);
     
-    if (cached && typeof cached === 'object' && 'data' in cached) {
-      const cachedData = cached as { data: unknown };
-      const updatedBookmarks = (cachedData.data as Bookmark[]).filter((b: Bookmark) => b.id !== bookmarkId);
+    if (cached) {
+      const updatedBookmarks = (cached as Bookmark[]).filter((b: Bookmark) => b.id !== bookmarkId);
       await indexedDBManager.setCache(cacheKey, updatedBookmarks, this.config.maxAge);
     }
 

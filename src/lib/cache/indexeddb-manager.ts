@@ -188,52 +188,47 @@ class IndexedDBManager {
 
   // Cache operations
   async setCache(key: string, data: unknown, ttl: number = 3600000): Promise<void> {
-    await this.init();
-    if (!this.db) throw new Error('Database not initialized');
-
-    const tx = this.db.transaction('cache', 'readwrite');
-    const store = tx.objectStore('cache');
-    
-    await store.put({
-      key,
-      value: {
+    // Simplified cache - just use localStorage for now
+    try {
+      const cacheData = {
         data,
         timestamp: Date.now(),
         expires: Date.now() + ttl,
-      }
-    });
-    
-    await tx.done;
+      };
+      localStorage.setItem(`cache_${key}`, JSON.stringify(cacheData));
+    } catch (error) {
+      console.warn('Failed to cache data:', error);
+    }
   }
 
   async getCache(key: string): Promise<unknown | null> {
-    await this.init();
-    if (!this.db) throw new Error('Database not initialized');
+    // Simplified cache - just use localStorage for now
+    try {
+      const cached = localStorage.getItem(`cache_${key}`);
+      if (!cached) return null;
 
-    const tx = this.db.transaction('cache', 'readonly');
-    const store = tx.objectStore('cache');
-    const cached = await store.get(key);
-    await tx.done;
+      const cacheData = JSON.parse(cached);
+      
+      // Check if expired
+      if (Date.now() > cacheData.expires) {
+        localStorage.removeItem(`cache_${key}`);
+        return null;
+      }
 
-    if (!cached) return null;
-
-    // Check if expired
-    if (Date.now() > cached.value.expires) {
-      await this.deleteCache(key);
+      return cacheData.data;
+    } catch (error) {
+      console.warn('Failed to get cached data:', error);
       return null;
     }
-
-    return cached.value.data;
   }
 
   async deleteCache(key: string): Promise<void> {
-    await this.init();
-    if (!this.db) throw new Error('Database not initialized');
-
-    const tx = this.db.transaction('cache', 'readwrite');
-    const store = tx.objectStore('cache');
-    await store.delete(key);
-    await tx.done;
+    // Simplified cache - just use localStorage for now
+    try {
+      localStorage.removeItem(`cache_${key}`);
+    } catch (error) {
+      console.warn('Failed to delete cached data:', error);
+    }
   }
 
   async clearExpiredCache(): Promise<void> {

@@ -279,19 +279,15 @@ export function Favicon({ url, className = '', size = 16 }: FaviconProps) {
     loadFavicon();
   }, [url]);
 
-  return (
-    <OptimizedImage
-      src={favicon}
-      alt={`Favicon for ${url}`}
-      className={`${className} ${isLoading ? 'animate-pulse' : ''}`}
-      style={{ width: size, height: size }}
-      lazy={false}
-    />
-  );
+  return React.createElement(OptimizedImage, {
+    src: favicon,
+    alt: `Favicon for ${url}`,
+    className: `${className} ${isLoading ? 'animate-pulse' : ''}`,
+    style: { width: size, height: size },
+    lazy: false
+  });
 }
 
-// Import React for components
-import React from 'react';
 
 // Export singleton instance
 export const imageOptimization = ImageOptimization.getInstance();

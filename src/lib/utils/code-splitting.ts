@@ -71,7 +71,7 @@ export const LazyMobileBookmarkCard = dynamic(
 export const LazyMobileNav = dynamic(
   () => import('@/components/layout/mobile-nav').then(mod => ({ default: mod.MobileNav })),
   {
-    loading: () => <div className="animate-pulse h-16 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-16 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -80,7 +80,7 @@ export const LazyMobileNav = dynamic(
 export const LazyProgressIndicator = dynamic(
   () => import('@/components/ui/progress-indicator').then(mod => ({ default: mod.ProgressIndicator })),
   {
-    loading: () => <div className="animate-pulse h-2 bg-muted rounded" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-2 bg-muted rounded' }),
     ssr: false,
   }
 );
@@ -88,7 +88,7 @@ export const LazyProgressIndicator = dynamic(
 export const LazyOptimizedMotion = dynamic(
   () => import('@/components/ui/optimized-motion').then(mod => ({ default: mod.OptimizedMotion })),
   {
-    loading: () => <div />,
+    loading: () => React.createElement('div'),
     ssr: false,
   }
 );
@@ -97,20 +97,18 @@ export const LazyOptimizedMotion = dynamic(
 export const LazySettingsPage = dynamic(
   () => import('@/app/settings/page'),
   {
-    loading: () => (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded w-1/3"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
-            <div className="space-y-4">
-              <div className="h-32 bg-muted rounded"></div>
-              <div className="h-32 bg-muted rounded"></div>
-              <div className="h-32 bg-muted rounded"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+    loading: () => React.createElement('div', { className: 'min-h-screen bg-background' }, 
+      React.createElement('div', { className: 'container mx-auto px-4 py-8 max-w-4xl' },
+        React.createElement('div', { className: 'animate-pulse space-y-6' }, [
+          React.createElement('div', { key: 'title', className: 'h-8 bg-muted rounded w-1/3' }),
+          React.createElement('div', { key: 'subtitle', className: 'h-4 bg-muted rounded w-1/2' }),
+          React.createElement('div', { key: 'content', className: 'space-y-4' }, [
+            React.createElement('div', { key: 'item1', className: 'h-32 bg-muted rounded' }),
+            React.createElement('div', { key: 'item2', className: 'h-32 bg-muted rounded' }),
+            React.createElement('div', { key: 'item3', className: 'h-32 bg-muted rounded' })
+          ])
+        ])
+      )
     ),
     ssr: false,
   }
@@ -123,7 +121,7 @@ export function createConditionalComponent<T extends ComponentType<any>>(
   fallback?: ComponentType<any>
 ) {
   return dynamic(importFn, {
-    loading: () => fallback ? <fallback /> : <div className="animate-pulse h-32 bg-muted rounded-lg" />,
+    loading: () => fallback ? React.createElement(fallback) : React.createElement('div', { className: 'animate-pulse h-32 bg-muted rounded-lg' }),
     ssr: false,
   });
 }

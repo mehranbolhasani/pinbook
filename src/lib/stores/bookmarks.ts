@@ -159,7 +159,7 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
     try {
       const api = getPinboardAPI(apiToken);
       if (!api) throw new Error('Failed to initialize API');
-      const results = await api.searchBookmarks({ q: query });
+      const results = await api.searchBookmarks(query);
       performanceMonitor.measure('search-bookmarks', 'search-bookmarks-start');
       return results;
     } catch (error) {
@@ -174,7 +174,7 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
     try {
       const api = getPinboardAPI(apiToken);
       if (!api) throw new Error('Failed to initialize API');
-      const results = await api.searchBookmarks({ tag });
+      const results = await api.searchBookmarks(tag);
       performanceMonitor.measure('get-bookmarks-by-tag', 'get-bookmarks-by-tag-start');
       return results;
     } catch (error) {

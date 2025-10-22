@@ -24,7 +24,7 @@ export function VirtualizedBookmarkList({
   className = ''
 }: VirtualizedBookmarkListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const { selectedBookmarks, isSelectionMode } = useBookmarkStore();
+  const { selectedBookmarks } = useBookmarkStore();
 
   // Calculate item height based on layout
   const getItemHeight = (layout: string) => {
@@ -52,7 +52,6 @@ export function VirtualizedBookmarkList({
   const items = virtualizer.getVirtualItems();
 
   const renderBookmark = (bookmark: Bookmark) => {
-    const isSelected = selectedBookmarks.has(bookmark.id);
     
     switch (layout) {
       case 'minimal':

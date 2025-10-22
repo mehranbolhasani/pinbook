@@ -143,7 +143,7 @@ export class RateLimitedQueue {
       this.queue.push({
         id,
         operation,
-        resolve,
+        resolve: resolve as (value: unknown) => void,
         reject,
         timestamp: Date.now(),
       });

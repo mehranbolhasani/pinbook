@@ -75,7 +75,7 @@ export function validateUrl(url: string): { isValid: boolean; error?: string } {
     return { isValid: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { isValid: false, error: error.errors[0].message };
+      return { isValid: false, error: error.issues[0].message };
     }
     return { isValid: false, error: 'Invalid URL' };
   }
@@ -87,7 +87,7 @@ export function validateBookmark(bookmark: unknown): { isValid: boolean; data?: 
     return { isValid: true, data };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { isValid: false, error: error.errors[0].message };
+      return { isValid: false, error: error.issues[0].message };
     }
     return { isValid: false, error: 'Invalid bookmark data' };
   }
@@ -99,7 +99,7 @@ export function validateAddBookmark(data: unknown): { isValid: boolean; data?: u
     return { isValid: true, data: validated };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { isValid: false, error: error.errors[0].message };
+      return { isValid: false, error: error.issues[0].message };
     }
     return { isValid: false, error: 'Invalid bookmark data' };
   }
@@ -111,7 +111,7 @@ export function validateApiToken(token: string): { isValid: boolean; error?: str
     return { isValid: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { isValid: false, error: error.errors[0].message };
+      return { isValid: false, error: error.issues[0].message };
     }
     return { isValid: false, error: 'Invalid API token format' };
   }
@@ -123,7 +123,7 @@ export function validateUsername(username: string): { isValid: boolean; error?: 
     return { isValid: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { isValid: false, error: error.errors[0].message };
+      return { isValid: false, error: error.issues[0].message };
     }
     return { isValid: false, error: 'Invalid username format' };
   }

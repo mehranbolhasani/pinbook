@@ -52,11 +52,15 @@ export class ImageOptimization {
 
   private async loadFavicon(url: string, domain: string): Promise<string> {
     try {
-      // Check IndexedDB cache
-      const cached = await indexedDBManager.getCache(`favicon_${domain}`);
-      if (cached && Date.now() - cached.timestamp < 24 * 60 * 60 * 1000) {
-        this.faviconCache.set(domain, cached);
-        return cached.favicon;
+      // Check localStorage cache
+      const cacheKey = `favicon_${domain}`;
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const cacheData = JSON.parse(cached);
+        if (Date.now() - cacheData.timestamp < 24 * 60 * 60 * 1000) {
+          this.faviconCache.set(domain, cacheData);
+          return cacheData.favicon;
+        }
       }
 
       // Try multiple favicon sources
@@ -76,7 +80,8 @@ export class ImageOptimization {
             };
 
             this.faviconCache.set(domain, faviconData);
-            await indexedDBManager.setCache(`favicon_${domain}`, faviconData, 24 * 60 * 60 * 1000);
+            // Save to localStorage cache
+            localStorage.setItem(`favicon_${domain}`, JSON.stringify(faviconData));
             
             return favicon;
           }
@@ -168,7 +173,7 @@ export class ImageOptimization {
     // Clear from IndexedDB
     const keys = Array.from(this.faviconCache.keys());
     for (const key of keys) {
-      await indexedDBManager.deleteCache(`favicon_${key}`);
+      localStorage.removeItem(`favicon_${key}`);
     }
   }
 
@@ -188,6 +193,7 @@ export interface OptimizedImageProps {
   className?: string;
   fallback?: string;
   lazy?: boolean;
+  style?: React.CSSProperties;
 }
 
 export function OptimizedImage({ 
@@ -195,7 +201,8 @@ export function OptimizedImage({
   alt, 
   className = '', 
   fallback = '/favicon.ico',
-  lazy = true 
+  lazy = true,
+  style
 }: OptimizedImageProps) {
   const [imageSrc, setImageSrc] = React.useState(src);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -245,7 +252,8 @@ export function OptimizedImage({
       onLoad: handleLoad,
       onError: handleError,
       className: `${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200`,
-      loading: lazy ? 'lazy' : 'eager'
+      loading: lazy ? 'lazy' : 'eager',
+      style: style
     })
   ].filter(Boolean));
 }

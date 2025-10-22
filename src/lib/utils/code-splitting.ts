@@ -126,14 +126,14 @@ export function createConditionalComponent<T extends ComponentType<unknown>>(
   });
 }
 
-// Lazy load based on user preferences
-export const LazyAdvancedFeatures = createConditionalComponent(
-  () => import('@/components/advanced-features').then(mod => ({ default: mod.AdvancedFeatures })),
-  () => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem('pinbook-advanced-features') === 'true';
-  }
-);
+// Lazy load based on user preferences - removed for now
+// export const LazyAdvancedFeatures = createConditionalComponent(
+//   () => import('@/components/advanced-features').then(mod => ({ default: mod.AdvancedFeatures })),
+//   () => {
+//     if (typeof window === 'undefined') return false;
+//     return localStorage.getItem('pinbook-advanced-features') === 'true';
+//   }
+// );
 
 // Performance monitoring for code splitting
 export class CodeSplittingMonitor {

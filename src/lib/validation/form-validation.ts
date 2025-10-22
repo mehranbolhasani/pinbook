@@ -22,7 +22,7 @@ export function useFieldValidation<T>(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errors: Record<string, string> = {};
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const path = err.path.join('.');
         errors[path] = err.message;
       });
@@ -97,7 +97,7 @@ export function validateApiTokenField(token: string): {
     return { isValid: false, error: 'API token is required' };
   }
 
-  const result = validateApiToken(token);
+  const result = validateApiTokenField(token);
   if (!result.isValid) {
     return { isValid: false, error: result.error };
   }
@@ -116,7 +116,7 @@ export function validateUsernameField(username: string): {
     return { isValid: false, error: 'Username is required' };
   }
 
-  return validateUsername(username);
+  return validateUsernameField(username);
 }
 
 // Bookmark form validation

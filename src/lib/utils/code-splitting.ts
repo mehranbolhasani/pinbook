@@ -1,11 +1,11 @@
 import dynamic from 'next/dynamic';
-import { ComponentType } from 'react';
+import React, { ComponentType } from 'react';
 
 // Lazy load heavy components
 export const LazyBookmarkMasonryView = dynamic(
   () => import('@/components/bookmarks/bookmark-masonry-view').then(mod => ({ default: mod.BookmarkMasonryView })),
   {
-    loading: () => <div className="animate-pulse h-32 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-32 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -13,7 +13,7 @@ export const LazyBookmarkMasonryView = dynamic(
 export const LazyVirtualizedBookmarkList = dynamic(
   () => import('@/components/bookmarks/virtualized-bookmark-list').then(mod => ({ default: mod.VirtualizedBookmarkList })),
   {
-    loading: () => <div className="animate-pulse h-96 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-96 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -21,7 +21,7 @@ export const LazyVirtualizedBookmarkList = dynamic(
 export const LazyThemeCustomizer = dynamic(
   () => import('@/components/theme/theme-customizer').then(mod => ({ default: mod.ThemeCustomizer })),
   {
-    loading: () => <div className="animate-pulse h-64 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-64 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -29,7 +29,7 @@ export const LazyThemeCustomizer = dynamic(
 export const LazyKeyboardShortcutsModal = dynamic(
   () => import('@/components/ui/keyboard-shortcuts-modal').then(mod => ({ default: mod.KeyboardShortcutsModal })),
   {
-    loading: () => <div className="animate-pulse h-32 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-32 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -37,7 +37,7 @@ export const LazyKeyboardShortcutsModal = dynamic(
 export const LazyBulkActionsToolbar = dynamic(
   () => import('@/components/bookmarks/bulk-actions-toolbar').then(mod => ({ default: mod.BulkActionsToolbar })),
   {
-    loading: () => <div className="animate-pulse h-12 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-12 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -46,7 +46,7 @@ export const LazyBulkActionsToolbar = dynamic(
 export const LazyAddBookmarkDialog = dynamic(
   () => import('@/components/bookmarks/add-bookmark-dialog').then(mod => ({ default: mod.AddBookmarkDialog })),
   {
-    loading: () => <div className="animate-pulse h-96 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-96 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -54,7 +54,7 @@ export const LazyAddBookmarkDialog = dynamic(
 export const LazyEditBookmarkDialog = dynamic(
   () => import('@/components/bookmarks/edit-bookmark-dialog').then(mod => ({ default: mod.EditBookmarkDialog })),
   {
-    loading: () => <div className="animate-pulse h-96 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-96 bg-muted rounded-lg' }),
     ssr: false,
   }
 );
@@ -63,7 +63,7 @@ export const LazyEditBookmarkDialog = dynamic(
 export const LazyMobileBookmarkCard = dynamic(
   () => import('@/components/bookmarks/mobile-bookmark-card').then(mod => ({ default: mod.MobileBookmarkCard })),
   {
-    loading: () => <div className="animate-pulse h-20 bg-muted rounded-lg" />,
+    loading: () => React.createElement('div', { className: 'animate-pulse h-20 bg-muted rounded-lg' }),
     ssr: false,
   }
 );

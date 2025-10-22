@@ -78,7 +78,7 @@ export function validateTagsField(tags: string): {
     }
 
     return { isValid: true, normalizedTags };
-  } catch (error) {
+  } catch {
     return { 
       isValid: false, 
       normalizedTags: [],

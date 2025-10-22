@@ -54,7 +54,7 @@ export class OfflineQueue {
     }
   }
 
-  addAction(type: QueuedAction['type'], data: any): string {
+  addAction(type: QueuedAction['type'], data: unknown): string {
     const id = `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const action: QueuedAction = {
       id,

@@ -1,3 +1,4 @@
+import React from 'react';
 import { indexedDBManager } from '@/lib/cache/indexeddb-manager';
 
 export interface FaviconData {
@@ -233,21 +234,21 @@ export function OptimizedImage({
     setImageSrc(fallback);
   };
 
-  return (
-    <div className={`relative ${className}`}>
-      {isLoading && (
-        <div className="absolute inset-0 bg-muted animate-pulse rounded" />
-      )}
-      <img
-        src={imageSrc}
-        alt={alt}
-        onLoad={handleLoad}
-        onError={handleError}
-        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200`}
-        loading={lazy ? 'lazy' : 'eager'}
-      />
-    </div>
-  );
+  return React.createElement('div', { className: `relative ${className}` }, [
+    isLoading && React.createElement('div', { 
+      key: 'loading',
+      className: 'absolute inset-0 bg-muted animate-pulse rounded' 
+    }),
+    React.createElement('img', {
+      key: 'image',
+      src: imageSrc,
+      alt: alt,
+      onLoad: handleLoad,
+      onError: handleError,
+      className: `${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200`,
+      loading: lazy ? 'lazy' : 'eager'
+    })
+  ].filter(Boolean));
 }
 
 // Favicon component

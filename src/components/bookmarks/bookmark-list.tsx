@@ -37,6 +37,9 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
     toggleSelectionMode
   } = useBookmarkStore();
 
+  // Check if we should use virtualization (moved to component level)
+  const virtualizationThreshold = useVirtualizationThreshold();
+
   const filteredAndSortedBookmarks = useMemo(() => {
     let filtered = bookmarks;
 
@@ -140,8 +143,6 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
     );
   }
 
-  // Check if we should use virtualization (moved outside renderBookmarks)
-  const virtualizationThreshold = useVirtualizationThreshold();
   const shouldUseVirtualization = filteredAndSortedBookmarks.length > virtualizationThreshold;
 
   const renderBookmarks = () => {

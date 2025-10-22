@@ -81,7 +81,7 @@ export function validateUrl(url: string): { isValid: boolean; error?: string } {
   }
 }
 
-export function validateBookmark(bookmark: unknown): { isValid: boolean; data?: any; error?: string } {
+export function validateBookmark(bookmark: unknown): { isValid: boolean; data?: unknown; error?: string } {
   try {
     const data = bookmarkSchema.parse(bookmark);
     return { isValid: true, data };
@@ -93,7 +93,7 @@ export function validateBookmark(bookmark: unknown): { isValid: boolean; data?: 
   }
 }
 
-export function validateAddBookmark(data: unknown): { isValid: boolean; data?: any; error?: string } {
+export function validateAddBookmark(data: unknown): { isValid: boolean; data?: unknown; error?: string } {
   try {
     const validated = addBookmarkSchema.parse(data);
     return { isValid: true, data: validated };

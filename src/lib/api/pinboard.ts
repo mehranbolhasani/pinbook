@@ -127,7 +127,11 @@ export class PinboardAPI {
         throw new NetworkError('Network connection failed');
       }
       
-      throw new PinboardAPIError(error.message || 'Unknown error', undefined, endpoint);
+      throw new PinboardAPIError(
+        error instanceof Error ? error.message : 'Unknown error', 
+        undefined, 
+        endpoint
+      );
     }
   }
 

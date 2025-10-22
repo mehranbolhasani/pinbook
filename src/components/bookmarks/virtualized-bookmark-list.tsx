@@ -24,7 +24,7 @@ export function VirtualizedBookmarkList({
   className = ''
 }: VirtualizedBookmarkListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const { selectedBookmarks } = useBookmarkStore();
+  // const { selectedBookmarks } = useBookmarkStore();
 
   // Calculate item height based on layout
   const getItemHeight = (layout: string) => {

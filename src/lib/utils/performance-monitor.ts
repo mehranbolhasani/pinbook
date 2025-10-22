@@ -96,10 +96,11 @@ export class PerformanceMonitor {
       try {
         const fidObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
-          entries.forEach((entry: any) => {
+          entries.forEach((entry) => {
+            const fidEntry = entry as PerformanceEventTiming;
             this.recordMetric({
               name: 'fid',
-              value: entry.processingStart - entry.startTime,
+              value: fidEntry.processingStart - fidEntry.startTime,
               timestamp: Date.now(),
               type: 'timing',
             });
@@ -196,12 +197,12 @@ export class PerformanceMonitor {
     // Get FID
     const fidEntries = performance.getEntriesByType('first-input');
     if (fidEntries.length > 0) {
-      const fidEntry = fidEntries[0] as any;
+      const fidEntry = fidEntries[0] as PerformanceEventTiming;
       vitals.FID = fidEntry.processingStart - fidEntry.startTime;
     }
 
-    // Get TTFB
-    const navEntry = performance.getEntriesByType('navigation')[0] as any;
+  // Get TTFB
+  const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     if (navEntry) {
       vitals.TTFB = navEntry.responseStart - navEntry.requestStart;
     }
@@ -284,7 +285,7 @@ export function usePerformanceMonitor() {
     updateMetrics();
 
     return () => clearInterval(interval);
-  }, []);
+  }, [monitor]);
 
   return {
     metrics,

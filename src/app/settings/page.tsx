@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Palette } from 'lucide-react';
+import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeCustomizer } from '@/components/theme/theme-customizer';
 import { SettingsErrorBoundary } from '@/components/error-boundary';

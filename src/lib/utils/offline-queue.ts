@@ -1,7 +1,7 @@
 export interface QueuedAction {
   id: string;
   type: 'add' | 'update' | 'delete' | 'mark_read' | 'mark_shared';
-  data: any;
+  data: unknown;
   timestamp: number;
   retries: number;
 }

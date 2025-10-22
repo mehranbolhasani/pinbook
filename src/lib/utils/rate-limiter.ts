@@ -90,7 +90,7 @@ export const rateLimiters = {
 };
 
 // Rate limit decorator for API calls
-export function withRateLimit<T extends any[], R>(
+export function withRateLimit<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>,
   rateLimiter: RateLimiter,
   operationName: string = 'operation'
@@ -126,9 +126,9 @@ export function withRateLimit<T extends any[], R>(
 export class RateLimitedQueue {
   private queue: Array<{
     id: string;
-    operation: () => Promise<any>;
-    resolve: (value: any) => void;
-    reject: (error: any) => void;
+    operation: () => Promise<unknown>;
+    resolve: (value: unknown) => void;
+    reject: (error: unknown) => void;
     timestamp: number;
   }> = [];
   

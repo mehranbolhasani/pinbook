@@ -130,13 +130,14 @@ export function validateUsername(username: string): { isValid: boolean; error?: 
 }
 
 // Duplicate detection
-export function detectDuplicateBookmarks(bookmarks: any[]): { duplicates: any[]; unique: any[] } {
+export function detectDuplicateBookmarks(bookmarks: unknown[]): { duplicates: unknown[]; unique: unknown[] } {
   const seen = new Set<string>();
-  const duplicates: any[] = [];
-  const unique: any[] = [];
+  const duplicates: unknown[] = [];
+  const unique: unknown[] = [];
 
   for (const bookmark of bookmarks) {
-    const key = bookmark.url?.toLowerCase() || bookmark.href?.toLowerCase();
+    const bookmarkObj = bookmark as { url?: string; href?: string };
+    const key = bookmarkObj.url?.toLowerCase() || bookmarkObj.href?.toLowerCase();
     if (key && seen.has(key)) {
       duplicates.push(bookmark);
     } else {

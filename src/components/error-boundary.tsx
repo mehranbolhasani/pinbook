@@ -174,7 +174,7 @@ export function BookmarkListErrorBoundary({ children }: { children: React.ReactN
   return (
     <ErrorBoundary 
       level="component"
-      fallback={({ error, resetError }) => (
+      fallback={({ resetError }) => (
         <div className="flex flex-col items-center justify-center p-8 bg-muted/50 rounded-lg border border-destructive/20">
           <Bug className="h-8 w-8 text-destructive mb-2" />
           <h3 className="font-semibold mb-2">Bookmark List Error</h3>
@@ -197,7 +197,7 @@ export function SettingsErrorBoundary({ children }: { children: React.ReactNode 
   return (
     <ErrorBoundary 
       level="component"
-      fallback={({ error, resetError }) => (
+      fallback={({ resetError }) => (
         <div className="flex flex-col items-center justify-center p-8 bg-muted/50 rounded-lg border border-destructive/20">
           <AlertTriangle className="h-8 w-8 text-destructive mb-2" />
           <h3 className="font-semibold mb-2">Settings Error</h3>

@@ -20,13 +20,13 @@ import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useToast } from '@/hooks/useToast';
-import { 
-  validateUrlField, 
-  validateTagsField, 
-  validateBookmarkForm,
-  detectDuplicateBookmark,
-  FormValidationManager 
-} from '@/lib/validation/form-validation';
+// import { 
+//   validateUrlField, 
+//   validateTagsField, 
+//   validateBookmarkForm,
+//   detectDuplicateBookmark,
+//   FormValidationManager 
+// } from '@/lib/validation/form-validation';
 
 interface AddBookmarkDialogProps {
   isOpen: boolean;

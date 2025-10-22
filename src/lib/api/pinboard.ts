@@ -46,9 +46,9 @@ export class PinboardAPI {
   private async makeRequest<T>(
     endpoint: string, 
     params: Record<string, string | number | boolean> = {},
-    options: { timeout?: number; retryConfig?: typeof retryConfigs.api } = {}
+    options: { timeout?: number } = {}
   ): Promise<T> {
-    const { timeout = 10000, retryConfig = retryConfigs.api } = options;
+    const { timeout = 10000 } = options;
     
     // Check if offline
     if (!navigator.onLine) {

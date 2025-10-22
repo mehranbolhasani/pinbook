@@ -1,7 +1,7 @@
 'use client';
 
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useRef, useMemo } from 'react';
+import { useRef } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { BookmarkCard } from './bookmark-card';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
@@ -51,7 +51,7 @@ export function VirtualizedBookmarkList({
 
   const items = virtualizer.getVirtualItems();
 
-  const renderBookmark = (bookmark: Bookmark, index: number) => {
+  const renderBookmark = (bookmark: Bookmark) => {
     const isSelected = selectedBookmarks.has(bookmark.id);
     
     switch (layout) {
@@ -120,7 +120,7 @@ export function VirtualizedBookmarkList({
               transform: `translateY(${virtualItem.start}px)`,
             }}
           >
-            {renderBookmark(bookmarks[virtualItem.index], virtualItem.index)}
+            {renderBookmark(bookmarks[virtualItem.index])}
           </div>
         ))}
       </div>

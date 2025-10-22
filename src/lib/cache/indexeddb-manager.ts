@@ -18,7 +18,7 @@ interface PinbookDB extends DBSchema {
   cache: {
     key: string;
     value: {
-      data: any;
+      data: unknown;
       timestamp: number;
       expires: number;
     };
@@ -187,7 +187,7 @@ class IndexedDBManager {
   }
 
   // Cache operations
-  async setCache(key: string, data: any, ttl: number = 3600000): Promise<void> {
+  async setCache(key: string, data: unknown, ttl: number = 3600000): Promise<void> {
     await this.init();
     if (!this.db) throw new Error('Database not initialized');
 
@@ -204,7 +204,7 @@ class IndexedDBManager {
     await tx.done;
   }
 
-  async getCache(key: string): Promise<any | null> {
+  async getCache(key: string): Promise<unknown | null> {
     await this.init();
     if (!this.db) throw new Error('Database not initialized');
 

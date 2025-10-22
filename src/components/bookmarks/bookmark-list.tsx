@@ -140,14 +140,14 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
     );
   }
 
+  // Check if we should use virtualization (moved outside renderBookmarks)
+  const virtualizationThreshold = useVirtualizationThreshold();
+  const shouldUseVirtualization = filteredAndSortedBookmarks.length > virtualizationThreshold;
+
   const renderBookmarks = () => {
     if (isLoading) {
       return <BookmarkListSkeleton count={6} layout={layout} />;
     }
-
-    // Check if we should use virtualization
-    const virtualizationThreshold = useVirtualizationThreshold();
-    const shouldUseVirtualization = filteredAndSortedBookmarks.length > virtualizationThreshold;
 
     // Mobile-optimized layout - use CSS classes instead of JS detection
     const isMobile = false; // We'll handle mobile via CSS classes

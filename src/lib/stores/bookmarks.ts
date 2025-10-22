@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { Bookmark, AppState } from '@/types/pinboard';
+import { cacheStrategy } from '@/lib/cache/cache-strategy';
+import { performanceMonitor } from '@/lib/utils/performance-monitor';
 
 interface BookmarkStore extends AppState {
   selectedBookmarks: Set<string>;
@@ -24,6 +26,9 @@ interface BookmarkStore extends AppState {
   toggleSelectionMode: () => void;
   bulkUpdateBookmarks: (ids: string[], updates: Partial<Bookmark>) => void;
   bulkDeleteBookmarks: (ids: string[]) => void;
+  loadBookmarksFromCache: (apiToken: string) => Promise<void>;
+  searchBookmarksCached: (query: string, apiToken: string) => Promise<Bookmark[]>;
+  getBookmarksByTagCached: (tag: string, apiToken: string) => Promise<Bookmark[]>;
 }
 
 export const useBookmarkStore = create<BookmarkStore>((set) => ({
@@ -118,4 +123,57 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
     bookmarks: state.bookmarks.filter(bookmark => !ids.includes(bookmark.id)),
     selectedBookmarks: new Set<string>()
   })),
+
+  // Cache-optimized methods
+  loadBookmarksFromCache: async (apiToken) => {
+    performanceMonitor.mark('load-bookmarks-start');
+    
+    try {
+      set({ isLoading: true, error: null });
+      
+      const bookmarks = await cacheStrategy.getBookmarks(apiToken);
+      const tags = Array.from(new Set(bookmarks.flatMap(b => b.tags)));
+      
+      set({ 
+        bookmarks, 
+        tags, 
+        isLoading: false,
+        isInitialized: true 
+      });
+      
+      performanceMonitor.measure('load-bookmarks', 'load-bookmarks-start');
+    } catch (error) {
+      console.error('Failed to load bookmarks from cache:', error);
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to load bookmarks',
+        isLoading: false 
+      });
+    }
+  },
+
+  searchBookmarksCached: async (query, apiToken) => {
+    performanceMonitor.mark('search-bookmarks-start');
+    
+    try {
+      const results = await cacheStrategy.searchBookmarks(query, apiToken);
+      performanceMonitor.measure('search-bookmarks', 'search-bookmarks-start');
+      return results;
+    } catch (error) {
+      console.error('Failed to search bookmarks:', error);
+      return [];
+    }
+  },
+
+  getBookmarksByTagCached: async (tag, apiToken) => {
+    performanceMonitor.mark('get-bookmarks-by-tag-start');
+    
+    try {
+      const results = await cacheStrategy.getBookmarksByTag(tag, apiToken);
+      performanceMonitor.measure('get-bookmarks-by-tag', 'get-bookmarks-by-tag-start');
+      return results;
+    } catch (error) {
+      console.error('Failed to get bookmarks by tag:', error);
+      return [];
+    }
+  },
 }));

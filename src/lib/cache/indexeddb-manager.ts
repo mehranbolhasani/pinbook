@@ -196,9 +196,11 @@ class IndexedDBManager {
     
     await store.put({
       key,
-      data,
-      timestamp: Date.now(),
-      expires: Date.now() + ttl,
+      value: {
+        data,
+        timestamp: Date.now(),
+        expires: Date.now() + ttl,
+      }
     });
     
     await tx.done;
@@ -216,12 +218,12 @@ class IndexedDBManager {
     if (!cached) return null;
 
     // Check if expired
-    if (Date.now() > cached.expires) {
+    if (Date.now() > cached.value.expires) {
       await this.deleteCache(key);
       return null;
     }
 
-    return cached.data;
+    return cached.value.data;
   }
 
   async deleteCache(key: string): Promise<void> {

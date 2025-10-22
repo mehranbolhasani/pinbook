@@ -10,8 +10,8 @@ import { useBookmarkStore } from '@/lib/stores/bookmarks';
 
 interface VirtualizedBookmarkListProps {
   bookmarks: Bookmark[];
-  onEditBookmark: (bookmark: Bookmark) => void;
-  onDeleteBookmark: (bookmark: Bookmark) => void;
+  onEditBookmark?: (bookmark: Bookmark) => void;
+  onDeleteBookmark?: (bookmark: Bookmark) => void;
   layout: 'card' | 'list' | 'minimal';
   className?: string;
 }
@@ -59,22 +59,18 @@ export function VirtualizedBookmarkList({
         return (
           <BookmarkMinimalView
             key={bookmark.id}
-            bookmark={bookmark}
+            bookmarks={[bookmark]}
             onEdit={onEditBookmark}
             onDelete={onDeleteBookmark}
-            isSelected={isSelected}
-            isSelectionMode={isSelectionMode}
           />
         );
       case 'list':
         return (
           <BookmarkListView
             key={bookmark.id}
-            bookmark={bookmark}
+            bookmarks={[bookmark]}
             onEdit={onEditBookmark}
             onDelete={onDeleteBookmark}
-            isSelected={isSelected}
-            isSelectionMode={isSelectionMode}
           />
         );
       case 'card':
@@ -84,8 +80,6 @@ export function VirtualizedBookmarkList({
             bookmark={bookmark}
             onEdit={onEditBookmark}
             onDelete={onDeleteBookmark}
-            isSelected={isSelected}
-            isSelectionMode={isSelectionMode}
           />
         );
       default:

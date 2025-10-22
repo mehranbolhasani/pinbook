@@ -71,7 +71,7 @@ export function BookmarkListView({ bookmarks, onEdit, onDelete }: BookmarkListVi
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 mb-4">
       {bookmarks.map((bookmark) => (
         <div
           key={bookmark.id}

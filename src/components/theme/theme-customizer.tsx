@@ -1,178 +1,117 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-// import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Palette, RotateCcw } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
-interface ColorPreset {
+interface AccentColor {
   name: string;
-  primary: string;
-  secondary: string;
-  accent: string;
-  background: string;
-  foreground: string;
+  value: string;
+  description: string;
 }
 
-const colorPresets: ColorPreset[] = [
-  {
-    name: 'Default',
-    primary: 'hsl(210, 40%, 98%)',
-    secondary: 'hsl(210, 40%, 96%)',
-    accent: 'hsl(210, 40%, 94%)',
-    background: 'hsl(0, 0%, 100%)',
-    foreground: 'hsl(222.2, 84%, 4.9%)',
-  },
-  {
-    name: 'Blue',
-    primary: 'hsl(214, 95%, 93%)',
-    secondary: 'hsl(214, 95%, 90%)',
-    accent: 'hsl(214, 95%, 87%)',
-    background: 'hsl(0, 0%, 100%)',
-    foreground: 'hsl(222.2, 84%, 4.9%)',
-  },
-  {
-    name: 'Green',
-    primary: 'hsl(142, 76%, 93%)',
-    secondary: 'hsl(142, 76%, 90%)',
-    accent: 'hsl(142, 76%, 87%)',
-    background: 'hsl(0, 0%, 100%)',
-    foreground: 'hsl(222.2, 84%, 4.9%)',
-  },
-  {
-    name: 'Purple',
-    primary: 'hsl(262, 83%, 93%)',
-    secondary: 'hsl(262, 83%, 90%)',
-    accent: 'hsl(262, 83%, 87%)',
-    background: 'hsl(0, 0%, 100%)',
-    foreground: 'hsl(222.2, 84%, 4.9%)',
-  },
-  {
-    name: 'Orange',
-    primary: 'hsl(24, 95%, 93%)',
-    secondary: 'hsl(24, 95%, 90%)',
-    accent: 'hsl(24, 95%, 87%)',
-    background: 'hsl(0, 0%, 100%)',
-    foreground: 'hsl(222.2, 84%, 4.9%)',
-  },
-  {
-    name: 'Dark Blue',
-    primary: 'hsl(214, 95%, 15%)',
-    secondary: 'hsl(214, 95%, 20%)',
-    accent: 'hsl(214, 95%, 25%)',
-    background: 'hsl(222.2, 84%, 4.9%)',
-    foreground: 'hsl(210, 40%, 98%)',
-  },
+const accentColors: AccentColor[] = [
+  { name: 'Default', value: 'hsl(210, 40%, 50%)', description: 'Blue' },
+  { name: 'Red', value: 'hsl(0, 84%, 60%)', description: 'Red' },
+  { name: 'Rose', value: 'hsl(346, 87%, 43%)', description: 'Rose' },
+  { name: 'Orange', value: 'hsl(24, 95%, 53%)', description: 'Orange' },
+  { name: 'Green', value: 'hsl(142, 76%, 36%)', description: 'Green' },
+  { name: 'Blue', value: 'hsl(221, 83%, 53%)', description: 'Blue' },
+  { name: 'Yellow', value: 'hsl(45, 93%, 47%)', description: 'Yellow' },
+  { name: 'Violet', value: 'hsl(262, 83%, 58%)', description: 'Violet' },
 ];
 
 export function ThemeCustomizer() {
   const { theme, setTheme } = useTheme();
-  const [customColors, setCustomColors] = useState({
-    primary: 'hsl(210, 40%, 98%)',
-    secondary: 'hsl(210, 40%, 96%)',
-    accent: 'hsl(210, 40%, 94%)',
-    background: 'hsl(0, 0%, 100%)',
-    foreground: 'hsl(222.2, 84%, 4.9%)',
-  });
-  const [useCustomColors, setUseCustomColors] = useState(false);
+  const [selectedAccent, setSelectedAccent] = useState<string>('Default');
+  const [customAccent, setCustomAccent] = useState<string>('#3b82f6');
 
-  const applyPreset = (preset: ColorPreset) => {
-    setCustomColors(preset);
-    applyCustomColors(preset);
+  useEffect(() => {
+    // Load saved accent color from localStorage
+    const savedAccent = localStorage.getItem('pinbook-accent-color');
+    if (savedAccent) {
+      setCustomAccent(savedAccent);
+      // Check if it matches any preset
+      const preset = accentColors.find(p => p.value === savedAccent);
+      if (preset) {
+        setSelectedAccent(preset.name);
+      } else {
+        setSelectedAccent('Custom');
+      }
+    }
+  }, []);
+
+  const applyAccentColor = (color: string) => {
+    // Apply the accent color to CSS custom properties
+    document.documentElement.style.setProperty('--primary', color);
+    document.documentElement.style.setProperty('--primary-foreground', 'hsl(0, 0%, 98%)');
+    
+    // Save to localStorage
+    localStorage.setItem('pinbook-accent-color', color);
   };
 
-  const applyCustomColors = (colors: typeof customColors) => {
-    const root = document.documentElement;
-    root.style.setProperty('--primary', colors.primary);
-    root.style.setProperty('--secondary', colors.secondary);
-    root.style.setProperty('--accent', colors.accent);
-    root.style.setProperty('--background', colors.background);
-    root.style.setProperty('--foreground', colors.foreground);
-    
-    // Store in localStorage
-    localStorage.setItem('custom-theme-colors', JSON.stringify(colors));
+  const handleAccentSelect = (accent: AccentColor) => {
+    setSelectedAccent(accent.name);
+    setCustomAccent(accent.value);
+    applyAccentColor(accent.value);
+  };
+
+  const handleCustomAccentChange = (color: string) => {
+    setCustomAccent(color);
+    setSelectedAccent('Custom');
+    applyAccentColor(color);
   };
 
   const resetToDefault = () => {
-    const defaultPreset = colorPresets[0];
-    setCustomColors(defaultPreset);
-    applyCustomColors(defaultPreset);
-    setUseCustomColors(false);
-    localStorage.removeItem('custom-theme-colors');
-  };
-
-  const handleColorChange = (colorKey: keyof typeof customColors, value: string) => {
-    const newColors = { ...customColors, [colorKey]: value };
-    setCustomColors(newColors);
-    if (useCustomColors) {
-      applyCustomColors(newColors);
-    }
+    const defaultAccent = accentColors[0];
+    setSelectedAccent(defaultAccent.name);
+    setCustomAccent(defaultAccent.value);
+    applyAccentColor(defaultAccent.value);
   };
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Palette className="h-5 w-5" />
           Theme Customization
         </CardTitle>
         <CardDescription>
-          Customize your app&apos;s color scheme and appearance
+          Customize your app&apos;s accent color and appearance
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Theme Mode */}
-        <div className="space-y-2">
-          <Label>Theme Mode</Label>
-          <div className="flex gap-2">
-            <Button
-              variant={theme === 'light' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setTheme('light')}
-            >
-              Light
-            </Button>
-            <Button
-              variant={theme === 'dark' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setTheme('dark')}
-            >
-              Dark
-            </Button>
-            <Button
-              variant={theme === 'system' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setTheme('system')}
-            >
-              System
-            </Button>
-          </div>
+      <CardContent className="grid gap-6">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="theme-mode">Dark Mode</Label>
+          <Switch
+            id="theme-mode"
+            checked={theme === 'dark'}
+            onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+          />
         </div>
 
         <Separator />
 
-        {/* Color Presets */}
-        <div className="space-y-3">
-          <Label>Color Presets</Label>
-          <div className="grid grid-cols-2 gap-2">
-            {colorPresets.map((preset) => (
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium">Accent Color</h4>
+          <div className="grid grid-cols-4 gap-2">
+            {accentColors.map((accent) => (
               <Button
-                key={preset.name}
-                variant="outline"
-                size="sm"
-                onClick={() => applyPreset(preset)}
-                className="justify-start"
+                key={accent.name}
+                variant={selectedAccent === accent.name ? 'default' : 'outline'}
+                onClick={() => handleAccentSelect(accent)}
+                className="flex flex-col h-auto p-3"
               >
                 <div
-                  className="w-4 h-4 rounded-full mr-2"
-                  style={{ backgroundColor: preset.primary }}
+                  className="w-6 h-6 rounded-full mb-2 border-2 border-white shadow-sm"
+                  style={{ backgroundColor: accent.value }}
                 />
-                {preset.name}
+                <span className="text-xs font-medium">{accent.name}</span>
               </Button>
             ))}
           </div>
@@ -180,50 +119,30 @@ export function ThemeCustomizer() {
 
         <Separator />
 
-        {/* Custom Colors */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label>Custom Colors</Label>
-            <Switch
-              checked={useCustomColors}
-              onCheckedChange={setUseCustomColors}
+          <h4 className="text-sm font-medium">Custom Accent Color</h4>
+          <div className="flex items-center space-x-4">
+            <div className="flex-1">
+              <Label htmlFor="custom-accent">Choose a custom color</Label>
+              <input
+                id="custom-accent"
+                type="color"
+                value={customAccent}
+                onChange={(e) => handleCustomAccentChange(e.target.value)}
+                className="w-full h-10 rounded border border-input bg-background"
+              />
+            </div>
+            <div
+              className="w-12 h-12 rounded border-2 border-border shadow-sm"
+              style={{ backgroundColor: customAccent }}
             />
           </div>
-          
-          {useCustomColors && (
-            <div className="space-y-4">
-              {Object.entries(customColors).map(([key, value]) => (
-                <div key={key} className="space-y-2">
-                  <Label className="capitalize">{key}</Label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={value}
-                      onChange={(e) => handleColorChange(key as keyof typeof customColors, e.target.value)}
-                      className="w-8 h-8 rounded border"
-                    />
-                    <input
-                      type="text"
-                      value={value}
-                      onChange={(e) => handleColorChange(key as keyof typeof customColors, e.target.value)}
-                      className="flex-1 px-2 py-1 text-sm border rounded"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         <Separator />
 
-        {/* Reset Button */}
-        <Button
-          variant="outline"
-          onClick={resetToDefault}
-          className="w-full"
-        >
-          <RotateCcw className="h-4 w-4 mr-2" />
+        <Button variant="outline" onClick={resetToDefault} className="w-full flex items-center gap-2">
+          <RotateCcw className="h-4 w-4" />
           Reset to Default
         </Button>
       </CardContent>

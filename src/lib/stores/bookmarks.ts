@@ -35,7 +35,7 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
   selectedTags: [],
   sortBy: 'date',
   sortOrder: 'desc',
-  layout: 'card',
+  layout: 'list',
   isInitialized: false,
   selectedBookmarks: new Set<string>(),
   isSelectionMode: false,

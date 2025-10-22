@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Palette } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeCustomizer } from '@/components/theme/theme-customizer';
+import { SettingsErrorBoundary } from '@/components/error-boundary';
 
 export default function SettingsPage() {
   const { 
@@ -72,7 +73,8 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="pinboard" className="w-full">
+        <SettingsErrorBoundary>
+          <Tabs defaultValue="pinboard" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="pinboard" className="flex items-center space-x-2">
               <User className="h-4 w-4" />
@@ -287,6 +289,7 @@ export default function SettingsPage() {
             <ThemeCustomizer />
           </TabsContent>
         </Tabs>
+        </SettingsErrorBoundary>
       </div>
     </div>
   );

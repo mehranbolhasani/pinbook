@@ -16,7 +16,7 @@ import { getPinboardAPI } from '@/lib/api/pinboard';
 import { Bookmark } from '@/types/pinboard';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useToast } from '@/hooks/useToast';
-import { ErrorBoundary } from '@/components/error-boundary';
+import { ErrorBoundary, BookmarkListErrorBoundary } from '@/components/error-boundary';
 
 export default function Home() {
   const { isAuthenticated, apiToken } = useAuthStore();
@@ -220,10 +220,12 @@ export default function Home() {
           {/* Main Content */}
           <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
             <div className="max-w-4xl mx-auto">
-              <BookmarkList 
-                onEditBookmark={handleEditBookmark}
-                onDeleteBookmark={handleDeleteBookmark}
-              />
+              <BookmarkListErrorBoundary>
+                <BookmarkList 
+                  onEditBookmark={handleEditBookmark}
+                  onDeleteBookmark={handleDeleteBookmark}
+                />
+              </BookmarkListErrorBoundary>
             </div>
           </main>
         </div>

@@ -117,8 +117,9 @@ export class CacheStrategy {
     const cacheKey = `bookmarks_${apiToken}`;
     const cached = await indexedDBManager.getCache(cacheKey);
     
-    if (cached) {
-      const updatedBookmarks = [bookmark, ...cached.data];
+    if (cached && typeof cached === 'object' && 'data' in cached) {
+      const cachedData = cached as { data: unknown };
+      const updatedBookmarks = [bookmark, ...(cachedData.data as Bookmark[])];
       await indexedDBManager.setCache(cacheKey, updatedBookmarks, this.config.maxAge);
     }
 
@@ -135,8 +136,9 @@ export class CacheStrategy {
     const cacheKey = `bookmarks_${apiToken}`;
     const cached = await indexedDBManager.getCache(cacheKey);
     
-    if (cached) {
-      const updatedBookmarks = cached.data.map((b: Bookmark) => 
+    if (cached && typeof cached === 'object' && 'data' in cached) {
+      const cachedData = cached as { data: unknown };
+      const updatedBookmarks = (cachedData.data as Bookmark[]).map((b: Bookmark) => 
         b.id === bookmark.id ? bookmark : b
       );
       await indexedDBManager.setCache(cacheKey, updatedBookmarks, this.config.maxAge);
@@ -155,8 +157,9 @@ export class CacheStrategy {
     const cacheKey = `bookmarks_${apiToken}`;
     const cached = await indexedDBManager.getCache(cacheKey);
     
-    if (cached) {
-      const updatedBookmarks = cached.data.filter((b: Bookmark) => b.id !== bookmarkId);
+    if (cached && typeof cached === 'object' && 'data' in cached) {
+      const cachedData = cached as { data: unknown };
+      const updatedBookmarks = (cachedData.data as Bookmark[]).filter((b: Bookmark) => b.id !== bookmarkId);
       await indexedDBManager.setCache(cacheKey, updatedBookmarks, this.config.maxAge);
     }
 

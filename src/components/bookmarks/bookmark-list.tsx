@@ -6,6 +6,7 @@ import { BookmarkListView } from './bookmark-list-view';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
 import { BookmarkCard } from './bookmark-card';
 import { MobileBookmarkCard } from './mobile-bookmark-card';
+import { VirtualizedBookmarkList, useVirtualizationThreshold } from './virtualized-bookmark-list';
 import { BookmarkToolbar } from './bookmark-toolbar';
 import { SelectionModeToggle } from './selection-mode-toggle';
 import { BulkActionsToolbar } from './bulk-actions-toolbar';
@@ -144,6 +145,10 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
       return <BookmarkListSkeleton count={6} layout={layout} />;
     }
 
+    // Check if we should use virtualization
+    const virtualizationThreshold = useVirtualizationThreshold();
+    const shouldUseVirtualization = filteredAndSortedBookmarks.length > virtualizationThreshold;
+
     // Mobile-optimized layout - use CSS classes instead of JS detection
     const isMobile = false; // We'll handle mobile via CSS classes
     
@@ -160,6 +165,19 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
             </AnimatedListItem>
           ))}
         </AnimatedList>
+      );
+    }
+
+    // Use virtualization for large lists
+    if (shouldUseVirtualization) {
+      return (
+        <VirtualizedBookmarkList
+          bookmarks={filteredAndSortedBookmarks}
+          onEditBookmark={onEditBookmark}
+          onDeleteBookmark={onDeleteBookmark}
+          layout={layout}
+          className="h-[600px]" // Set a fixed height for virtualization
+        />
       );
     }
 

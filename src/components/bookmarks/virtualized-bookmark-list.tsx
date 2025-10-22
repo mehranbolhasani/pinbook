@@ -6,7 +6,7 @@ import { Bookmark } from '@/types/pinboard';
 import { BookmarkCard } from './bookmark-card';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
 import { BookmarkListView } from './bookmark-list-view';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
+// import { useBookmarkStore } from '@/lib/stores/bookmarks';
 
 interface VirtualizedBookmarkListProps {
   bookmarks: Bookmark[];

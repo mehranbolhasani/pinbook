@@ -145,8 +145,7 @@ export class PinboardAPI {
     try {
       const response = await retry(
         () => this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams, { 
-          timeout: 15000, 
-          retryConfig: retryConfigs.network 
+          timeout: 15000
         }),
         retryConfigs.network
       );

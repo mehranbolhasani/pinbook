@@ -2,12 +2,11 @@
 
 import { Bookmark } from '@/types/pinboard';
 import { format } from 'date-fns';
-import { ExternalLink, Eye, EyeOff, Share, Trash2, Edit, Copy } from 'lucide-react';
+import { ExternalLink, Share, Trash2, Edit, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 // import { Badge } from '@/components/ui/badge';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
-import { useAuthStore } from '@/lib/stores/auth';
+ 
+ 
 
 interface BookmarkMinimalViewProps {
   bookmarks: Bookmark[];
@@ -16,29 +15,7 @@ interface BookmarkMinimalViewProps {
 }
 
 export function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMinimalViewProps) {
-  const { updateBookmark } = useBookmarkStore();
-  const { apiToken } = useAuthStore();
-
-  const handleToggleRead = async (bookmark: Bookmark) => {
-    const newReadStatus = !bookmark.isRead;
-    
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isRead: newReadStatus });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkReadStatus(bookmark.hash, newReadStatus);
-        }
-      } catch (error) {
-        console.error('Failed to update read status:', error);
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isRead: bookmark.isRead });
-      }
-    }
-  };
+  
 
   // const handleToggleShared = async (bookmark: Bookmark) => {
   //   const newSharedStatus = !bookmark.isShared;
@@ -70,18 +47,14 @@ export function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMin
   };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 group">
       {bookmarks.map((bookmark) => (
         <div
           key={bookmark.id}
-          className="flex items-center justify-between py-2 px-3 hover:bg-muted/50 transition-colors rounded"
+          className="flex items-center justify-between py-2 px-3 hover:bg-muted/80 transition-colors rounded"
         >
           <div className="flex-1 min-w-0 flex items-center space-x-3">
-            <div className="flex-shrink-0">
-              {!bookmark.isRead && (
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-              )}
-            </div>
+            
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
@@ -98,8 +71,8 @@ export function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMin
             </div>
           </div>
           
-          <div className="flex items-center space-x-1 ml-4">
-            <span className="text-xs text-muted-foreground">
+          <div className="flex items-center space-x-1 invisible group-hover:visible transition-opacity duration-50 bg-white p-2 rounded-md border border-muted-foreground/20 dark:bg-neutral-800 dark:border-neutral-700">
+            <span className="text-xs text-muted-foreground dark:text-neutral-400">
               {format(bookmark.createdAt, 'MMM d')}
             </span>
             
@@ -107,7 +80,7 @@ export function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMin
               variant="ghost"
               size="sm"
               onClick={() => handleOpenUrl(bookmark.url)}
-              className="h-6 w-6 p-0"
+              className="h-6 w-6 p-0 cursor-pointer scale-75"
               title="Open Link"
             >
               <ExternalLink className="h-3 w-3" />
@@ -117,32 +90,20 @@ export function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMin
               variant="ghost"
               size="sm"
               onClick={() => handleCopyUrl(bookmark.url)}
-              className="h-6 w-6 p-0"
+              className="h-6 w-6 p-0 cursor-pointer scale-75"
               title="Copy URL"
             >
               <Copy className="h-3 w-3" />
             </Button>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleToggleRead(bookmark)}
-              className="h-6 w-6 p-0"
-              title={bookmark.isRead ? "Mark as Unread" : "Mark as Read"}
-            >
-              {bookmark.isRead ? (
-                <EyeOff className="h-3 w-3" />
-              ) : (
-                <Eye className="h-3 w-3" />
-              )}
-            </Button>
+            
             
             {onEdit && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(bookmark)}
-                className="h-6 w-6 p-0"
+                className="h-6 w-6 p-0 cursor-pointer scale-75"
                 title="Edit Bookmark"
               >
                 <Edit className="h-3 w-3" />
@@ -154,7 +115,7 @@ export function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMin
                 variant="ghost"
                 size="sm"
                 onClick={() => onDelete(bookmark)}
-                className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                className="h-6 w-6 p-0 text-destructive hover:text-destructive cursor-pointer scale-75"
                 title="Delete Bookmark"
               >
                 <Trash2 className="h-3 w-3" />

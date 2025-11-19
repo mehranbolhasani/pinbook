@@ -4,7 +4,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 // import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Keyboard, Search, Plus, Edit, Trash2, Eye, ArrowUp, CornerDownLeft, X } from 'lucide-react';
+import { Keyboard, Search, Plus, Edit, Trash2, ArrowUp, CornerDownLeft, X } from 'lucide-react';
 
 interface KeyboardShortcut {
   keys: string[];
@@ -48,12 +48,6 @@ const shortcuts: KeyboardShortcut[] = [
     keys: ['E'],
     description: 'Edit selected bookmark',
     icon: <Edit className="h-4 w-4" />,
-    category: 'Actions'
-  },
-  {
-    keys: ['R'],
-    description: 'Toggle read/unread status',
-    icon: <Eye className="h-4 w-4" />,
     category: 'Actions'
   },
   {

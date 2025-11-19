@@ -2,11 +2,8 @@
 
 import { useState } from 'react';
 import { 
-  Clock, 
   Tag, 
-  Star, 
   Plus, 
-  Filter,
   ChevronDown,
   ChevronRight,
   X
@@ -31,14 +28,6 @@ export function MobileSidebar({ onAddBookmark, onClose }: MobileSidebarProps) {
   } = useBookmarkStore();
   
   const [isTagsExpanded, setIsTagsExpanded] = useState(false);
-  const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
-
-  const unreadCount = bookmarks.filter(bookmark => !bookmark.isRead).length;
-  const recentCount = bookmarks.filter(bookmark => {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    return new Date(bookmark.createdAt) > oneWeekAgo;
-  }).length;
 
   const handleTagClick = (tag: string) => {
     if (selectedTags.includes(tag)) {
@@ -65,67 +54,9 @@ export function MobileSidebar({ onAddBookmark, onClose }: MobileSidebarProps) {
         )}
       </div>
 
-      {/* Search */}
-      <div className="p-4 border-b">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search bookmarks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          />
-        </div>
-      </div>
+      
 
-      {/* Quick Filters */}
-      <div className="p-4 border-b">
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
-        >
-          <Filter className="mr-2 h-4 w-4" />
-          Quick Filters
-          {isFiltersExpanded ? (
-            <ChevronDown className="ml-auto h-4 w-4" />
-          ) : (
-            <ChevronRight className="ml-auto h-4 w-4" />
-          )}
-        </Button>
-        
-        {isFiltersExpanded && (
-          <div className="mt-2 space-y-2">
-            <Button
-              variant={selectedTags.includes('unread') ? 'secondary' : 'ghost'}
-              className="w-full justify-start"
-              onClick={() => handleTagClick('unread')}
-            >
-              <Clock className="mr-2 h-4 w-4" />
-              Unread
-              {unreadCount > 0 && (
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {unreadCount}
-                </Badge>
-              )}
-            </Button>
-            
-            <Button
-              variant={selectedTags.includes('recent') ? 'secondary' : 'ghost'}
-              className="w-full justify-start"
-              onClick={() => handleTagClick('recent')}
-            >
-              <Star className="mr-2 h-4 w-4" />
-              Recent
-              {recentCount > 0 && (
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {recentCount}
-                </Badge>
-              )}
-            </Button>
-          </div>
-        )}
-      </div>
+      
 
       {/* Tags */}
       <div className="flex-1 overflow-y-auto p-4">

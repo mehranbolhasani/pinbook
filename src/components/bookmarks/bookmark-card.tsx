@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bookmark } from '@/types/pinboard';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { Checkbox } from '@/components/ui/checkbox';
 import { BookmarkContextMenu } from './bookmark-context-menu';
 import { RightClickContextMenu } from './right-click-context-menu';
 import { motion } from 'framer-motion';
@@ -25,7 +24,7 @@ interface BookmarkCardProps {
 }
 
 export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
-  const { selectedBookmarks, isSelectionMode, toggleBookmarkSelection } = useBookmarkStore();
+  const {} = useBookmarkStore();
 
 
   const formatDate = (date: Date) => {
@@ -56,23 +55,12 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         className="group"
       >
         <Card 
-          className={`transition-all duration-200 hover:shadow-md h-fit w-full ${
-            !bookmark.isRead ? 'border-l-4 border-l-blue-500' : ''
-          }`}
+          className={`transition-all duration-200 hover:shadow-md h-fit w-full`}
         >
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-0">
         <div className="flex items-start justify-between">
-          {isSelectionMode && (
-            <div className="flex items-center mr-3">
-              <Checkbox
-                checked={selectedBookmarks.has(bookmark.id)}
-                onCheckedChange={() => toggleBookmarkSelection(bookmark.id)}
-                className="mt-1"
-              />
-            </div>
-          )}
           <div className="flex-1 min-w-0 pr-2">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1 break-words">
+            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1 wrap-break-words">
               {bookmark.title}
             </h3>
             <p className="text-sm text-muted-foreground line-clamp-1 break-all">
@@ -81,11 +69,7 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
           </div>
           
           <div className="flex items-center space-x-2 ml-4">
-            {!bookmark.isRead && (
-              <Badge variant="secondary" className="text-xs">
-                Unread
-              </Badge>
-            )}
+            
             {bookmark.isShared && (
               <Badge variant="outline" className="text-xs">
                 Shared
@@ -113,13 +97,13 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         )}
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2 flex-col">
             <span className="text-xs text-muted-foreground">
               {formatDate(bookmark.createdAt)}
             </span>
             {bookmark.tags.length > 0 && (
               <>
-                <span className="text-xs text-muted-foreground">•</span>
+                <span className="bg-muted-foreground h-px w-12 my-4 opacity-35"></span>
                 <div className="flex items-center space-x-1">
                   <Tag className="h-3 w-3 text-muted-foreground" />
                   <div className="flex flex-wrap gap-1 max-w-full">

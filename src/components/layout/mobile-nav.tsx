@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
+ 
 import { 
   Menu, 
   Bookmark, 
@@ -26,12 +26,12 @@ interface MobileNavProps {
 
 export function MobileNav({ onAddBookmark }: MobileNavProps) {
   const { isAuthenticated } = useAuthStore();
-  const { bookmarks, layout, setLayout } = useBookmarkStore();
+  const { layout, setLayout } = useBookmarkStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (!isAuthenticated) return null;
 
-  const unreadCount = bookmarks.filter(bookmark => !bookmark.isRead).length;
+  
 
   return (
     <div className="lg:hidden">
@@ -54,11 +54,7 @@ export function MobileNav({ onAddBookmark }: MobileNavProps) {
             <div className="flex items-center space-x-2">
               <Bookmark className="h-5 w-5 text-primary" />
               <span className="font-semibold">Pinbook</span>
-              {unreadCount > 0 && (
-                <Badge variant="secondary" className="text-xs">
-                  {unreadCount}
-                </Badge>
-              )}
+              
             </div>
           </div>
 

@@ -204,12 +204,15 @@ export function OptimizedImage({
   lazy = true,
   style
 }: OptimizedImageProps) {
-  const [imageSrc, setImageSrc] = React.useState(src);
+  const [imageSrc, setImageSrc] = React.useState(lazy ? fallback : src);
   const [isLoading, setIsLoading] = React.useState(true);
   const [, setHasError] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     if (lazy) {
+      const target = containerRef.current;
+      if (!target) return;
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
@@ -219,10 +222,7 @@ export function OptimizedImage({
         },
         { threshold: 0.1 }
       );
-
-      const img = document.createElement('img');
-      observer.observe(img);
-
+      observer.observe(target);
       return () => observer.disconnect();
     } else {
       setImageSrc(src);
@@ -240,7 +240,7 @@ export function OptimizedImage({
     setImageSrc(fallback);
   };
 
-  return React.createElement('div', { className: `relative ${className}` }, [
+  return React.createElement('div', { ref: containerRef, className: `relative ${className}` }, [
     isLoading && React.createElement('div', { 
       key: 'loading',
       className: 'absolute inset-0 bg-muted animate-pulse rounded' 

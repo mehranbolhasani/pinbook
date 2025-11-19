@@ -44,7 +44,6 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
     description: '',
     extended: '',
     tags: [] as string[],
-    isRead: false,
     isShared: false
   });
   const [tagInput, setTagInput] = useState('');
@@ -74,7 +73,6 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
         description: formData.title || formData.description,
         extended: formData.extended,
         tags: formData.tags.join(' '),
-        toread: formData.isRead ? 'no' : 'yes',
         shared: formData.isShared ? 'yes' : 'no'
       });
 
@@ -91,7 +89,6 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
         description: '',
         extended: '',
         tags: [],
-        isRead: false,
         isShared: false
       });
       setTagInput('');
@@ -238,15 +235,6 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isRead"
-                checked={formData.isRead}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isRead: checked }))}
-              />
-              <Label htmlFor="isRead">Mark as read</Label>
-            </div>
-            
             <div className="flex items-center space-x-2">
               <Switch
                 id="isShared"

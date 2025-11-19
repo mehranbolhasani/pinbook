@@ -13,8 +13,6 @@ import {
   ExternalLink, 
   Edit, 
   Trash2, 
-  Eye, 
-  EyeOff, 
   Share, 
   Share2, 
   Copy,
@@ -36,28 +34,7 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
   const { apiToken } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleToggleRead = async () => {
-    const newReadStatus = !bookmark.isRead;
-    
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isRead: newReadStatus });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkReadStatus(bookmark.hash, newReadStatus);
-          console.log(`Bookmark "${bookmark.title}" marked as ${newReadStatus ? 'read' : 'unread'}.`);
-        }
-      } catch (error) {
-        console.error('Failed to update bookmark read status:', error);
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isRead: !newReadStatus });
-      }
-    }
-    setIsOpen(false);
-  };
+  
 
   const handleToggleShared = async () => {
     const newSharedStatus = !bookmark.isShared;
@@ -130,20 +107,6 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />
-        
-        <DropdownMenuItem onClick={handleToggleRead}>
-          {bookmark.isRead ? (
-            <>
-              <EyeOff className="h-4 w-4 mr-2" />
-              Mark as Unread
-            </>
-          ) : (
-            <>
-              <Eye className="h-4 w-4 mr-2" />
-              Mark as Read
-            </>
-          )}
-        </DropdownMenuItem>
         
         <DropdownMenuItem onClick={handleToggleShared}>
           {bookmark.isShared ? (

@@ -32,7 +32,6 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
     description: '',
     extended: '',
     tags: [] as string[],
-    isRead: true,
     isShared: false
   });
   const [tagInput, setTagInput] = useState('');
@@ -45,7 +44,6 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
         description: bookmark.description,
         extended: bookmark.extended,
         tags: bookmark.tags,
-        isRead: bookmark.isRead,
         isShared: bookmark.isShared
       });
     }
@@ -175,14 +173,6 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isRead"
-                checked={formData.isRead}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isRead: checked }))}
-              />
-              <Label htmlFor="isRead">Mark as read</Label>
-            </div>
             
             <div className="flex items-center space-x-2">
               <Switch

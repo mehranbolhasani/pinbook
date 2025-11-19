@@ -13,8 +13,6 @@ import {
   ExternalLink, 
   Edit, 
   Trash2, 
-  Eye, 
-  EyeOff, 
   Share, 
   Share2, 
   Copy
@@ -42,35 +40,7 @@ export function RightClickContextMenu({
   const toast = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleToggleRead = async () => {
-    if (isProcessing) return;
-    
-    setIsProcessing(true);
-    const newReadStatus = !bookmark.isRead;
-
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isRead: newReadStatus });
-
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkReadStatus(bookmark.hash, newReadStatus);
-          toast.showSuccess(
-            newReadStatus ? 'Marked as read' : 'Marked as unread',
-            `"${bookmark.title}"`
-          );
-        }
-      } catch (error) {
-        console.error('Failed to update read status:', error);
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isRead: bookmark.isRead });
-        toast.showError('Failed to update bookmark', 'Please try again');
-      }
-    }
-    setIsProcessing(false);
-  };
+  
 
   const handleToggleShared = async () => {
     if (isProcessing) return;
@@ -146,19 +116,7 @@ export function RightClickContextMenu({
           Edit Bookmark
         </ContextMenuItem>
         
-        <ContextMenuItem onClick={handleToggleRead}>
-          {bookmark.isRead ? (
-            <>
-              <EyeOff className="mr-2 h-4 w-4" />
-              Mark as Unread
-            </>
-          ) : (
-            <>
-              <Eye className="mr-2 h-4 w-4" />
-              Mark as Read
-            </>
-          )}
-        </ContextMenuItem>
+        
         
         <ContextMenuItem onClick={handleToggleShared}>
           {bookmark.isShared ? (

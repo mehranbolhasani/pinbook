@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
+import { ThemePaletteApplier } from "@/components/theme/theme-palette-applier";
 
-const inter = Inter({ subsets: ["latin"] });
+// Geist fonts provide pre-defined CSS variables and class names; no function call needed
 
 export const metadata: Metadata = {
   title: "Pinbook - Your Personal Pinboard Client",
@@ -20,13 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          <ThemePaletteApplier />
           {children}
           <ToastProvider />
           <Analytics />

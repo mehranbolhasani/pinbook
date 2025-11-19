@@ -124,7 +124,7 @@ export class PerformanceMonitor {
     }
 
     // Log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_PERF === '1') {
       console.log(`📊 Performance: ${metric.name} = ${metric.value}ms`);
     }
   }
@@ -255,9 +255,18 @@ export class PerformanceMonitor {
 
   // Export metrics for analysis
   exportMetrics(): string {
+    type UAData = { brands?: { brand: string; version: string }[]; platform?: string };
+    const uaData = typeof navigator !== 'undefined' 
+      ? (navigator as unknown as { userAgentData?: UAData }).userAgentData 
+      : undefined;
+    const userAgent = uaData && uaData.brands 
+      ? uaData.brands.map((b) => `${b.brand}/${b.version}`).join(' ') 
+      : typeof navigator !== 'undefined' 
+        ? navigator.userAgent 
+        : '';
     return JSON.stringify({
       timestamp: Date.now(),
-      userAgent: navigator.userAgent,
+      userAgent,
       metrics: this.metrics,
       coreWebVitals: this.getCoreWebVitals(),
     }, null, 2);

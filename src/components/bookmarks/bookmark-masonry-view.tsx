@@ -3,14 +3,12 @@
 import { Bookmark } from '@/types/pinboard';
 // import { BookmarkCard } from './bookmark-card';
 import { format } from 'date-fns';
-import { ExternalLink, Eye, EyeOff, Share, Trash2, Edit, Copy } from 'lucide-react';
+import { ExternalLink, Share, Trash2, Edit, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
-import { useAuthStore } from '@/lib/stores/auth';
+ 
 
 interface BookmarkMasonryViewProps {
   bookmarks: Bookmark[];
@@ -19,30 +17,7 @@ interface BookmarkMasonryViewProps {
 }
 
 export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMasonryViewProps) {
-  const { updateBookmark, selectedBookmarks, isSelectionMode, toggleBookmarkSelection } = useBookmarkStore();
-  const { apiToken } = useAuthStore();
-
-  const handleToggleRead = async (bookmark: Bookmark) => {
-    const newReadStatus = !bookmark.isRead;
-    
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isRead: newReadStatus });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkReadStatus(bookmark.hash, newReadStatus);
-          console.log('Successfully updated read status to:', newReadStatus);
-        }
-      } catch (error) {
-        console.error('Failed to update read status:', error);
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isRead: bookmark.isRead });
-      }
-    }
-  };
+  const { } = useBookmarkStore();
 
   // const handleToggleShared = async (bookmark: Bookmark) => {
   //   const newSharedStatus = !bookmark.isShared;
@@ -74,20 +49,12 @@ export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMas
   };
 
   return (
-    <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+    <div className="columns-1 md:columns-2 lg:columns-4 gap-2 space-y-4"> 
       {bookmarks.map((bookmark) => (
         <Card key={bookmark.id} className="break-inside-avoid mb-4 hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
-              {isSelectionMode && (
-                <div className="flex items-center mr-2">
-                  <Checkbox
-                    checked={selectedBookmarks.has(bookmark.id)}
-                    onCheckedChange={() => toggleBookmarkSelection(bookmark.id)}
-                    className="mt-1"
-                  />
-                </div>
-              )}
+              
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-sm leading-tight line-clamp-2 mb-1">
                   {bookmark.title}
@@ -98,11 +65,9 @@ export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMas
               </div>
               
               <div className="flex items-center space-x-1 ml-2">
-                {!bookmark.isRead && (
-                  <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
-                )}
+                
                 {bookmark.isShared && (
-                  <Share className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                  <Share className="h-3 w-3 text-muted-foreground shrink-0" />
                 )}
               </div>
             </div>
@@ -133,19 +98,7 @@ export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMas
                   <Copy className="h-3 w-3" />
                 </Button>
                 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleToggleRead(bookmark)}
-                  className="h-6 w-6 p-0"
-                  title={bookmark.isRead ? "Mark as Unread" : "Mark as Read"}
-                >
-                  {bookmark.isRead ? (
-                    <EyeOff className="h-3 w-3" />
-                  ) : (
-                    <Eye className="h-3 w-3" />
-                  )}
-                </Button>
+                
                 
                 {onEdit && (
                   <Button

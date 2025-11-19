@@ -60,10 +60,10 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center space-x-4 mb-8">
-          <Link href="/">
+        <div className="flex items-start space-x-4 mb-8 flex-col">
+          <Link href="/" className="mr-0! mb-4">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4" />
               Back to Bookmarks
             </Button>
           </Link>
@@ -75,7 +75,7 @@ export default function SettingsPage() {
 
         <SettingsErrorBoundary>
           <Tabs defaultValue="pinboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-fit grid-cols-2">
             <TabsTrigger value="pinboard" className="flex items-center space-x-2">
               <User className="h-4 w-4" />
               <span>Pinboard</span>

@@ -2,10 +2,7 @@
 
 import { useState } from 'react';
 import { 
-  Home, 
-  Clock, 
-  Tag, 
-  Star, 
+  User, 
   Plus, 
   Filter,
   ChevronDown,
@@ -14,6 +11,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useBookmarkStore } from '@/lib/stores/bookmarks';
+import { Settings, LogOut, Paperclip as BookmarkIcon } from 'lucide-react';
+import Link from 'next/link';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { useAuthStore } from '@/lib/stores/auth';
 
 interface SidebarProps {
   onAddBookmark: () => void;
@@ -27,15 +28,10 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
     bookmarks,
     clearFilters 
   } = useBookmarkStore();
+  const { isAuthenticated, username, logout } = useAuthStore();
   
-  const [isTagsExpanded, setIsTagsExpanded] = useState(true);
-
-  const unreadCount = bookmarks.filter(b => !b.isRead).length;
-  const recentCount = bookmarks.filter(b => {
-    const dayAgo = new Date();
-    dayAgo.setDate(dayAgo.getDate() - 1);
-    return b.createdAt > dayAgo;
-  }).length;
+  const [isTagsExpanded, setIsTagsExpanded] = useState(false);
+  
 
   const handleTagClick = (tag: string) => {
     if (selectedTags.includes(tag)) {
@@ -50,73 +46,51 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
   };
 
   return (
-    <aside className="w-64 border-r bg-background/50 p-4">
-      <div className="space-y-4">
-        {/* Add Bookmark Button */}
+    <aside className="w-64 bg-primary/5 dark:bg-primary/5 h-[calc(100vh-64px)] sticky top-0 flex flex-col justify-between rounded-3xl min-h-full overflow-hidden">
+      <div className="space-y-4 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-1">
+            <BookmarkIcon className="h-6 w-6 text-primary" />
+            <span className="font-medium text-xl tracking-tight">Pinbook</span>
+          </div>
+          <ThemeToggle />
+        </div>
+
+        
         <Button 
           onClick={onAddBookmark} 
-          className="w-full justify-start"
+          className="w-full justify-start cursor-pointer mt-8"
           size="sm"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-6 w-6 mr-0" />
           Add Bookmark
         </Button>
 
-        {/* Navigation */}
         <nav className="space-y-2">
           <Button 
             variant="ghost" 
             className="w-full justify-start"
             onClick={handleClearFilters}
           >
-            <Home className="h-4 w-4 mr-2" />
-            All Bookmarks
-            <Badge variant="secondary" className="ml-auto">
+            <span className="flex items-center gap-2">
+              All Bookmarks
+            </span>
+            <Badge variant="outline" className="ml-auto">
               {bookmarks.length}
             </Badge>
           </Button>
 
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start"
-            onClick={() => setSelectedTags(['unread'])}
-          >
-            <Clock className="h-4 w-4 mr-2" />
-            Unread
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="ml-auto">
-                {unreadCount}
-              </Badge>
-            )}
-          </Button>
-
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start"
-            onClick={() => setSelectedTags(['recent'])}
-          >
-            <Star className="h-4 w-4 mr-2" />
-            Recent
-            {recentCount > 0 && (
-              <Badge variant="secondary" className="ml-auto">
-                {recentCount}
-              </Badge>
-            )}
-          </Button>
-        </nav>
-
-        {/* Tags Section */}
+          
         {tags.length > 0 && (
-          <div className="space-y-2">
+          <div>
             <Button
               variant="ghost"
               className="w-full justify-between"
               onClick={() => setIsTagsExpanded(!isTagsExpanded)}
             >
-              <div className="flex items-center">
-                <Tag className="h-4 w-4 mr-2" />
+              <span className="flex items-center gap-2">
                 Tags
-              </div>
+              </span>
               {isTagsExpanded ? (
                 <ChevronDown className="h-4 w-4" />
               ) : (
@@ -146,8 +120,9 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
             )}
           </div>
         )}
+        </nav>
 
-        {/* Clear Filters */}
+
         {(selectedTags.length > 0) && (
           <Button
             variant="outline"
@@ -159,6 +134,28 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
             Clear Filters
           </Button>
         )}
+      </div>
+
+      <div className="space-y-2 p-4">
+        {isAuthenticated ? (
+          <div className="flex items-start justify-between w-full flex-col">
+            <div className="text-base text-forground w-full font-normal dark:text-neutral-400 flex flex-col border-b border-muted-foreground/20 dark:border-neutral-700 pb-2 mb-2">
+              <User className="h-6 w-6 mb-2" />
+              <span className="text-lg">{username}</span>
+            </div>
+            <div className="flex items-start w-full justify-start gap-2">
+              <Link href="/settings">
+                <Button variant="ghost" size="sm">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </Link>
+
+              <Button variant="ghost" size="sm" onClick={() => logout()}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </aside>
   );

@@ -8,8 +8,8 @@ import { BookmarkCard } from './bookmark-card';
 import { MobileBookmarkCard } from './mobile-bookmark-card';
 import { VirtualizedBookmarkList, useVirtualizationThreshold } from './virtualized-bookmark-list';
 import { BookmarkToolbar } from './bookmark-toolbar';
-import { SelectionModeToggle } from './selection-mode-toggle';
-import { BulkActionsToolbar } from './bulk-actions-toolbar';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-container';
 import { Bookmark } from '@/types/pinboard';
@@ -31,10 +31,8 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
     sortOrder,
     layout,
     isLoading,
-    selectedBookmarks,
     setSearchQuery,
     setSelectedTags,
-    toggleSelectionMode
   } = useBookmarkStore();
 
   // Check if we should use virtualization (moved to component level)
@@ -56,20 +54,9 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
 
     // Filter by tags
     if (selectedTags.length > 0) {
-      filtered = filtered.filter(bookmark => {
-        // Special handling for 'unread' and 'recent' filters
-        if (selectedTags.includes('unread')) {
-          return !bookmark.isRead;
-        }
-        if (selectedTags.includes('recent')) {
-          const dayAgo = new Date();
-          dayAgo.setDate(dayAgo.getDate() - 1);
-          return bookmark.createdAt > dayAgo;
-        }
-        
-        // Regular tag filtering
-        return selectedTags.some(tag => bookmark.tags.includes(tag));
-      });
+      filtered = filtered.filter(bookmark => 
+        selectedTags.some(tag => bookmark.tags.includes(tag))
+      );
     }
 
     // Sort bookmarks
@@ -214,7 +201,7 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
       case 'card':
       default:
         return (
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+          <div className="columns-1 md:columns-2 lg:columns-2 gap-4 space-y-4">
             {filteredAndSortedBookmarks.map((bookmark) => (
               <motion.div
                 key={bookmark.id}
@@ -242,7 +229,15 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-4">
         <BookmarkToolbar />
-        <SelectionModeToggle />
+        <div className="relative w-full max-w-xs">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search bookmarks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
       </div>
       
       {/* Results counter */}
@@ -257,11 +252,7 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
       {/* Bookmarks */}
       {renderBookmarks()}
       
-      {/* Bulk Actions Toolbar */}
-      <BulkActionsToolbar 
-        selectedCount={selectedBookmarks.size}
-        onClose={() => toggleSelectionMode()}
-      />
+      {/* Selection mode removed */}
     </div>
   );
 }

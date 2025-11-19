@@ -1,12 +1,13 @@
 import { 
   PinboardBookmark, 
   PinboardBookmarksResponse, 
-  PinboardTagsResponse,
   AddBookmarkParams,
   SearchParams,
   Bookmark 
 } from '@/types/pinboard';
 import { retry, retryConfigs } from '@/lib/utils/retry';
+import { rateLimitedQueues } from '@/lib/utils/rate-limiter';
+import { offlineQueue } from '@/lib/utils/offline-queue';
 
 // Enhanced error types
 export class PinboardAPIError extends Error {
@@ -144,9 +145,9 @@ export class PinboardAPI {
     
     try {
       const response = await retry(
-        () => this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams, { 
+        () => rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams, { 
           timeout: 15000
-        }),
+        })),
         retryConfigs.network
       );
       
@@ -165,7 +166,7 @@ export class PinboardAPI {
 
   // Get recent bookmarks
   async getRecentBookmarks(count: number = 10): Promise<Bookmark[]> {
-    const response = await this.makeRequest<PinboardBookmarksResponse>('/posts/recent', { count });
+    const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmarksResponse>('/posts/recent', { count }));
     
     if (!response.posts) {
       return [];
@@ -177,14 +178,22 @@ export class PinboardAPI {
 
   // Delete a bookmark
   async deleteBookmark(url: string): Promise<boolean> {
-    const response = await this.makeRequest<{ status: string }>('/posts/delete', { url });
-    return response.status === 'ok';
+    try {
+      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/delete', { url }));
+      return response.result_code === 'done';
+    } catch (error) {
+      if (error instanceof OfflineError) {
+        offlineQueue.addAction('delete', { url });
+        return true;
+      }
+      throw error;
+    }
   }
 
   // Get all tags
   async getTags(): Promise<Record<string, number>> {
-    const response = await this.makeRequest<PinboardTagsResponse>('/tags/get');
-    return response.tags || {};
+    const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<Record<string, number>>('/tags/get'));
+    return response || {};
   }
 
   // Search bookmarks
@@ -195,7 +204,7 @@ export class PinboardAPI {
       Object.entries(searchParams).filter(([, value]) => value !== undefined)
     ) as Record<string, string | number | boolean>;
     
-    const response = await this.makeRequest<PinboardBookmarksResponse>('/posts/search', filteredParams);
+    const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmarksResponse>('/posts/search', filteredParams));
     
     if (!response.posts) {
       return [];
@@ -249,30 +258,53 @@ export class PinboardAPI {
       }).filter(([, value]) => value !== undefined)
     ) as Record<string, string | number | boolean>;
     
-    const response = await this.makeRequest<{ result_code: string }>('/posts/add', requestParams);
+    try {
+      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/add', requestParams));
 
-    if (response.result_code !== 'done') {
-      throw new Error('Failed to add bookmark');
+      if (response.result_code !== 'done') {
+        throw new Error('Failed to add bookmark');
+      }
+
+      return {
+        id: `temp-${Date.now()}`,
+        title: params.description,
+        url: params.url,
+        description: params.description,
+        extended: params.extended || '',
+        tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
+        createdAt: new Date(),
+        isRead: params.toread === 'no',
+        isShared: params.shared === 'yes',
+        domain: new URL(params.url).hostname,
+        hash: `temp-${Date.now()}`,
+        meta: '',
+        href: params.url,
+        shared: params.shared || 'no',
+        toread: params.toread || 'no'
+      };
+    } catch (error) {
+      if (error instanceof OfflineError) {
+        offlineQueue.addAction('add', params);
+        return {
+          id: `temp-${Date.now()}`,
+          title: params.description,
+          url: params.url,
+          description: params.description,
+          extended: params.extended || '',
+          tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
+          createdAt: new Date(),
+          isRead: params.toread === 'no',
+          isShared: params.shared === 'yes',
+          domain: new URL(params.url).hostname,
+          hash: `temp-${Date.now()}`,
+          meta: '',
+          href: params.url,
+          shared: params.shared || 'no',
+          toread: params.toread || 'no'
+        };
+      }
+      throw error;
     }
-
-    // Return a basic bookmark object - in a real app you might want to fetch the full bookmark
-    return {
-      id: `temp-${Date.now()}`,
-      title: params.description,
-      url: params.url,
-      description: params.description,
-      extended: params.extended || '',
-      tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
-      createdAt: new Date(),
-      isRead: params.toread === 'no',
-      isShared: params.shared === 'yes',
-      domain: new URL(params.url).hostname,
-      hash: `temp-${Date.now()}`,
-      meta: '',
-      href: params.url,
-      shared: params.shared || 'no',
-      toread: params.toread || 'no'
-    };
   }
 
   // Update bookmark read status
@@ -288,7 +320,8 @@ export class PinboardAPI {
       throw new Error('Bookmark not found');
     }
 
-    const response = await this.makeRequest<{ result_code: string }>('/posts/add', {
+    try {
+      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/add', {
       url: bookmark.url,
       description: bookmark.title,
       extended: bookmark.extended,
@@ -296,10 +329,17 @@ export class PinboardAPI {
       toread: isRead ? 'no' : 'yes',
       shared: bookmark.isShared ? 'yes' : 'no',
       replace: 'yes'
-    });
+    }));
 
-    if (response.result_code !== 'done') {
-      throw new Error('Failed to update bookmark');
+      if (response.result_code !== 'done') {
+        throw new Error('Failed to update bookmark');
+      }
+    } catch (error) {
+      if (error instanceof OfflineError) {
+        offlineQueue.addAction('mark_read', { hash, isRead, bookmarkData: bookmark });
+        return;
+      }
+      throw error;
     }
   }
 
@@ -316,7 +356,8 @@ export class PinboardAPI {
       throw new Error('Bookmark not found');
     }
 
-    const response = await this.makeRequest<{ result_code: string }>('/posts/add', {
+    try {
+      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/add', {
       url: bookmark.url,
       description: bookmark.title,
       extended: bookmark.extended,
@@ -324,22 +365,26 @@ export class PinboardAPI {
       toread: bookmark.isRead ? 'no' : 'yes',
       shared: isShared ? 'yes' : 'no',
       replace: 'yes'
-    });
+    }));
 
-    if (response.result_code !== 'done') {
-      throw new Error('Failed to update bookmark');
+      if (response.result_code !== 'done') {
+        throw new Error('Failed to update bookmark');
+      }
+    } catch (error) {
+      if (error instanceof OfflineError) {
+        offlineQueue.addAction('mark_shared', { hash, isShared, bookmarkData: bookmark });
+        return;
+      }
+      throw error;
     }
   }
 
   // Validate API token
   async validateToken(): Promise<boolean> {
     try {
-      // Use a simple endpoint that requires authentication
-      const response = await this.makeRequest<{ user?: string; posts?: unknown[] }>('/posts/recent', { count: 1 });
-      // If we get a response with user field, the token is valid
-      return !!response.user;
-    } catch (error) {
-      console.error('Token validation failed:', error);
+      await rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmarksResponse>('/posts/recent', { count: 1 }));
+      return true;
+    } catch {
       return false;
     }
   }

@@ -38,13 +38,22 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     }
 
     // Log error details for debugging
+    type UAData = { brands?: { brand: string; version: string }[]; platform?: string };
+    const uaData = typeof navigator !== 'undefined' 
+      ? (navigator as unknown as { userAgentData?: UAData }).userAgentData 
+      : undefined;
+    const userAgent = uaData && uaData.brands 
+      ? uaData.brands.map((b) => `${b.brand}/${b.version}`).join(' ') 
+      : typeof navigator !== 'undefined' 
+        ? navigator.userAgent 
+        : '';
     const errorDetails = {
       message: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
       errorId: this.state.errorId,
       timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
+      userAgent,
       url: window.location.href,
     };
 
@@ -149,13 +158,22 @@ export function useErrorHandler() {
     
     // Store error for debugging
     try {
+      type UAData = { brands?: { brand: string; version: string }[]; platform?: string };
+      const uaData = typeof navigator !== 'undefined' 
+        ? (navigator as unknown as { userAgentData?: UAData }).userAgentData 
+        : undefined;
+      const userAgent = uaData && uaData.brands 
+        ? uaData.brands.map((b) => `${b.brand}/${b.version}`).join(' ') 
+        : typeof navigator !== 'undefined' 
+          ? navigator.userAgent 
+          : '';
       const errors = JSON.parse(localStorage.getItem('pinbook-errors') || '[]');
       errors.push({
         message: error.message,
         stack: error.stack,
         componentStack: errorInfo?.componentStack,
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
+        userAgent,
         url: window.location.href,
       });
       

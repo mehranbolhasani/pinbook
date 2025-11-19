@@ -52,15 +52,14 @@ export function BookmarkToolbar() {
   };
 
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
         {/* Sort Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               {getSortIcon()}
-              <span className="ml-2">Sort by {sortBy}</span>
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <span className="ml-1">Sort by {sortBy}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
@@ -92,7 +91,7 @@ export function BookmarkToolbar() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               {getLayoutIcon()}
-              <span className="ml-2">Layout</span>
+              <span className="ml-1">Layout</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Header } from '@/components/layout/header';
+ 
 import { Sidebar } from '@/components/layout/sidebar';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { BookmarkList } from '@/components/bookmarks/bookmark-list';
@@ -21,7 +21,6 @@ import { ErrorBoundary, BookmarkListErrorBoundary } from '@/components/error-bou
 export default function Home() {
   const { isAuthenticated, apiToken } = useAuthStore();
   const { 
-    searchQuery,
     setSearchQuery,
     updateBookmark,
     removeBookmark,
@@ -41,7 +40,6 @@ export default function Home() {
     bookmark: Bookmark | null;
   }>({ isOpen: false, bookmark: null });
   
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
   const isInitializedRef = useRef(false);
 
@@ -58,14 +56,18 @@ export default function Home() {
         const api = getPinboardAPI(apiToken);
         if (!api) throw new Error('Failed to initialize API');
 
-        console.log('Loading bookmarks and tags...');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Loading bookmarks and tags...');
+        }
         const [bookmarks, tags] = await Promise.all([
           api.getAllBookmarks(),
           api.getTags()
         ]);
 
-        console.log('Loaded bookmarks:', bookmarks.length);
-        console.log('Loaded tags:', Object.keys(tags).length);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Loaded bookmarks:', bookmarks.length);
+          console.log('Loaded tags:', Object.keys(tags).length);
+        }
 
         setBookmarks(bookmarks);
         setTags(Object.keys(tags));
@@ -75,7 +77,9 @@ export default function Home() {
           toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
         }
       } catch (error) {
-        console.error('Failed to load bookmarks:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to load bookmarks:', error);
+        }
         const errorMessage = error instanceof Error ? error.message : 'Failed to load bookmarks';
         setError(errorMessage);
         toast.showError('Failed to load bookmarks', errorMessage);
@@ -87,9 +91,7 @@ export default function Home() {
     loadBookmarks();
   }, [isAuthenticated, apiToken, setBookmarks, setTags, setLoading, setError, toast]);
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
+  // Sidebar search removed; bookmarks list contains its own search input.
 
   const handleAddBookmark = () => {
     setIsAddDialogOpen(true);
@@ -126,9 +128,13 @@ export default function Home() {
       const api = getPinboardAPI(apiToken);
       if (!api) throw new Error('Failed to initialize API');
 
-      await api.deleteBookmark(bookmark.url);
-      removeBookmark(bookmark.id);
-      toast.showSuccess('Bookmark deleted', `"${bookmark.title}" has been deleted`);
+      const ok = await api.deleteBookmark(bookmark.url);
+      if (ok) {
+        removeBookmark(bookmark.id);
+        toast.showSuccess('Bookmark deleted', `"${bookmark.title}" has been deleted`);
+      } else {
+        toast.showError('Failed to delete bookmark', 'Delete was not confirmed by API');
+      }
     } catch (error) {
       console.error('Failed to delete bookmark:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete bookmark';
@@ -141,8 +147,9 @@ export default function Home() {
 
   // Keyboard shortcuts handlers
   const handleFocusSearch = useCallback(() => {
-    searchInputRef.current?.focus();
-  }, []);
+    // Optionally clear query to make the list search visible
+    setSearchQuery('');
+  }, [setSearchQuery]);
 
   const handleCloseDialogs = useCallback(() => {
     setIsEditDialogOpen(false);
@@ -157,29 +164,30 @@ export default function Home() {
 
   const handleNavigate = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
     // TODO: Implement bookmark navigation
-    console.log('Navigate:', direction);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Navigate:', direction);
+    }
   }, []);
 
   const handleOpenSelected = useCallback(() => {
     if (selectedBookmarkId) {
       // TODO: Open selected bookmark
-      console.log('Open bookmark:', selectedBookmarkId);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Open bookmark:', selectedBookmarkId);
+      }
     }
   }, [selectedBookmarkId]);
 
   const handleEditSelected = useCallback(() => {
     if (selectedBookmarkId) {
       // TODO: Edit selected bookmark
-      console.log('Edit bookmark:', selectedBookmarkId);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Edit bookmark:', selectedBookmarkId);
+      }
     }
   }, [selectedBookmarkId]);
 
-  const handleToggleSelectedRead = useCallback(() => {
-    if (selectedBookmarkId) {
-      // TODO: Toggle read status of selected bookmark
-      console.log('Toggle read status:', selectedBookmarkId);
-    }
-  }, [selectedBookmarkId]);
+  
 
   // Set up keyboard shortcuts
   useKeyboardShortcuts({
@@ -189,7 +197,7 @@ export default function Home() {
     onNavigate: handleNavigate,
     onOpenSelected: handleOpenSelected,
     onEditSelected: handleEditSelected,
-    onToggleRead: handleToggleSelectedRead,
+    
     onShowHelp: handleShowShortcuts,
     isDialogOpen: isEditDialogOpen || isAddDialogOpen || isShortcutsModalOpen
   });
@@ -200,26 +208,25 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-background">
-        {/* Desktop Header */}
-        <div className="hidden lg:block">
-          <Header onSearch={handleSearch} searchQuery={searchQuery} searchRef={searchInputRef} />
-        </div>
+      <div className="max-h-screen bg-background">
+        
         
         {/* Mobile Navigation */}
         <MobileNav 
           onAddBookmark={handleAddBookmark}
         />
         
-        <div className="flex">
+        <div className="flex max-w-[1024px] mx-auto h-full items-top">
           {/* Desktop Sidebar */}
-          <div className="hidden lg:block">
-            <Sidebar onAddBookmark={handleAddBookmark} />
+          <div className="hidden lg:flex items-center h-full sticky top-8">
+            <Sidebar 
+              onAddBookmark={handleAddBookmark}
+            />
           </div>
           
           {/* Main Content */}
-          <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
-            <div className="max-w-4xl mx-auto">
+          <main className="flex-1 px-4 lg:px-6 pb-20 lg:pb-6 mt-8 min-w-0">
+            <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
                 <BookmarkList 
                   onEditBookmark={handleEditBookmark}

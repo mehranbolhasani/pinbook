@@ -34,13 +34,7 @@ export const LazyKeyboardShortcutsModal = dynamic(
   }
 );
 
-export const LazyBulkActionsToolbar = dynamic(
-  () => import('@/components/bookmarks/bulk-actions-toolbar').then(mod => ({ default: mod.BulkActionsToolbar })),
-  {
-    loading: () => React.createElement('div', { className: 'animate-pulse h-12 bg-muted rounded-lg' }),
-    ssr: false,
-  }
-);
+// Bulk actions removed
 
 // Lazy load dialogs
 export const LazyAddBookmarkDialog = dynamic(

@@ -64,7 +64,6 @@ export function AnimatedListItem({
     <motion.div
       className={className}
       variants={staggerItem}
-      layout
     >
       {children}
     </motion.div>

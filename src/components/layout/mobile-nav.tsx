@@ -3,22 +3,21 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
- 
+import { Input } from '@/components/ui/input';
 import { 
-  Menu, 
-  Bookmark, 
+  Paperclip as BookmarkIcon, 
   Plus, 
   Search, 
-  Settings,
   Filter,
   Grid3X3,
   List,
   Minus
 } from 'lucide-react';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
+import { useUIStore } from '@/lib/stores/ui';
 import { useAuthStore } from '@/lib/stores/auth';
 import { MobileSidebar } from './mobile-sidebar';
-// Enhanced mobile navigation with better touch interactions
+import { MobileAddBookmark } from '@/components/bookmarks/mobile-add-bookmark';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface MobileNavProps {
   onAddBookmark: () => void;
@@ -26,70 +25,55 @@ interface MobileNavProps {
 
 export function MobileNav({ onAddBookmark }: MobileNavProps) {
   const { isAuthenticated } = useAuthStore();
-  const { layout, setLayout } = useBookmarkStore();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { 
+    layout, 
+    setLayout,
+    searchQuery,
+    setSearchQuery
+  } = useUIStore();
+  
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isAddBookmarkOpen, setIsAddBookmarkOpen] = useState(false);
 
   if (!isAuthenticated) return null;
-
-  
 
   return (
     <div className="lg:hidden">
       {/* Top Navigation Bar */}
-      <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center justify-between px-4">
-          {/* Left: Menu & Logo */}
-          <div className="flex items-center space-x-2">
-            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <Menu className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-80 p-0">
-                <MobileSidebar onAddBookmark={onAddBookmark} onClose={() => setIsSidebarOpen(false)} />
-              </SheetContent>
-            </Sheet>
-            
-            <div className="flex items-center space-x-2">
-              <Bookmark className="h-5 w-5 text-primary" />
-              <span className="font-semibold">Pinbook</span>
-              
-            </div>
+      <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+        <div className="flex h-14 items-center justify-between px-4 gap-3">
+          {/* Left: Logo */}
+          <div className="flex items-center space-x-2 shrink-0">
+            <BookmarkIcon className="h-5 w-5 text-primary" />
+            <span className="font-semibold">Pinbook</span>
           </div>
 
-          {/* Right: Actions */}
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onAddBookmark}
-              className="h-8 w-8 p-0"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-            >
-              <Search className="h-4 w-4" />
-            </Button>
+          {/* Center: Search */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-9"
+            />
           </div>
+
+          {/* Right: Theme Toggle */}
+          <ThemeToggle />
         </div>
       </div>
 
       {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center justify-around px-4">
-          {/* Layout Toggle */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
+        <div className="flex h-14 items-center justify-between px-2">
+          {/* Layout Toggle - Left */}
           <div className="flex items-center space-x-1">
             <Button
               variant={layout === 'card' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setLayout('card')}
-              className="h-8 w-8 p-0"
+              className="h-10 w-10 p-0"
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -97,7 +81,7 @@ export function MobileNav({ onAddBookmark }: MobileNavProps) {
               variant={layout === 'list' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setLayout('list')}
-              className="h-8 w-8 p-0"
+              className="h-10 w-10 p-0"
             >
               <List className="h-4 w-4" />
             </Button>
@@ -105,31 +89,48 @@ export function MobileNav({ onAddBookmark }: MobileNavProps) {
               variant={layout === 'minimal' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setLayout('minimal')}
-              className="h-8 w-8 p-0"
+              className="h-10 w-10 p-0"
             >
               <Minus className="h-4 w-4" />
             </Button>
           </div>
 
-          {/* Filter Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-          >
-            <Filter className="h-4 w-4" />
-          </Button>
+          {/* Sort/Filter Combined - Center */}
+          <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 px-1"
+              >
+                <Filter className="h-4 w-4 mr-1" />
+                <span className="text-md">Sort/Filter</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[80vh] p-0">
+              <MobileSidebar />
+            </SheetContent>
+          </Sheet>
 
-          {/* Settings */}
+          {/* Add Bookmark - Right */}
           <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
+            variant="default"
+            size="default"
+            onClick={() => setIsAddBookmarkOpen(true)}
+            className="h-10 px-4!"
           >
-            <Settings className="h-4 w-4" />
+            <Plus className="h-4 w-4 mr-0" />
+            <span className="text-md">Add</span>
           </Button>
         </div>
       </div>
+
+      {/* Add Bookmark Sheet */}
+      <Sheet open={isAddBookmarkOpen} onOpenChange={setIsAddBookmarkOpen}>
+        <SheetContent side="bottom" className="h-[90vh] p-0">
+          <MobileAddBookmark onClose={() => setIsAddBookmarkOpen(false)} />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

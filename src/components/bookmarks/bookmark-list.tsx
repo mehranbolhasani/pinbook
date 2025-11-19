@@ -1,10 +1,9 @@
 'use client';
 
 import { useMemo } from 'react';
-// import { BookmarkCard } from './bookmark-card';
-import { BookmarkListView } from './bookmark-list-view';
-import { BookmarkMinimalView } from './bookmark-minimal-view';
-import { BookmarkCard } from './bookmark-card';
+import { BookmarkCardView } from './views/bookmark-card-view';
+import { BookmarkListView } from './views/bookmark-list-view';
+import { BookmarkMinimalView } from './views/bookmark-minimal-view';
 import { MobileBookmarkCard } from './mobile-bookmark-card';
 import { VirtualizedBookmarkList, useVirtualizationThreshold } from './virtualized-bookmark-list';
 import { BookmarkToolbar } from './bookmark-toolbar';
@@ -13,33 +12,32 @@ import { Search } from 'lucide-react';
 import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-container';
 import { Bookmark } from '@/types/pinboard';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
+import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
 
 interface BookmarkListProps {
+  bookmarks: Bookmark[];
+  isLoading: boolean;
   onEditBookmark?: (bookmark: Bookmark) => void;
   onDeleteBookmark?: (bookmark: Bookmark) => void;
 }
 
-export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListProps) {
+export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark }: BookmarkListProps) {
   const { 
-    bookmarks, 
     searchQuery, 
     selectedTags, 
     sortBy, 
     sortOrder,
     layout,
-    isLoading,
     setSearchQuery,
     setSelectedTags,
-  } = useBookmarkStore();
+  } = useUIStore();
 
   // Check if we should use virtualization (moved to component level)
   const virtualizationThreshold = useVirtualizationThreshold();
 
   const filteredAndSortedBookmarks = useMemo(() => {
-    let filtered = bookmarks;
+    let filtered = [...bookmarks];
 
     // Filter by search query
     if (searchQuery.trim()) {
@@ -164,7 +162,6 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
           onEditBookmark={onEditBookmark}
           onDeleteBookmark={onDeleteBookmark}
           layout={layout}
-          className="h-[600px]" // Set a fixed height for virtualization
         />
       );
     }
@@ -172,54 +169,28 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
     switch (layout) {
       case 'list':
         return (
-          <AnimatedList>
-            {filteredAndSortedBookmarks.map((bookmark) => (
-              <AnimatedListItem key={bookmark.id}>
-                <BookmarkListView
-                  bookmarks={[bookmark]}
-                  onEdit={onEditBookmark}
-                  onDelete={onDeleteBookmark}
-                />
-              </AnimatedListItem>
-            ))}
-          </AnimatedList>
+          <BookmarkListView
+            bookmarks={filteredAndSortedBookmarks}
+            onEdit={onEditBookmark!}
+            onDelete={onDeleteBookmark!}
+          />
         );
       case 'minimal':
         return (
-          <AnimatedList>
-            {filteredAndSortedBookmarks.map((bookmark) => (
-              <AnimatedListItem key={bookmark.id}>
-                <BookmarkMinimalView
-                  bookmarks={[bookmark]}
-                  onEdit={onEditBookmark}
-                  onDelete={onDeleteBookmark}
-                />
-              </AnimatedListItem>
-            ))}
-          </AnimatedList>
+          <BookmarkMinimalView
+            bookmarks={filteredAndSortedBookmarks}
+            onEdit={onEditBookmark!}
+            onDelete={onDeleteBookmark!}
+          />
         );
       case 'card':
       default:
         return (
-          <div className="columns-1 md:columns-2 lg:columns-2 gap-4 space-y-4">
-            {filteredAndSortedBookmarks.map((bookmark) => (
-              <motion.div
-                key={bookmark.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className="break-inside-avoid mb-4"
-              >
-                <BookmarkCard
-                  bookmark={bookmark}
-                  onEdit={onEditBookmark}
-                  onDelete={onDeleteBookmark}
-                />
-              </motion.div>
-            ))}
-          </div>
+          <BookmarkCardView
+            bookmarks={filteredAndSortedBookmarks}
+            onEdit={onEditBookmark!}
+            onDelete={onDeleteBookmark!}
+          />
         );
     }
   };
@@ -227,7 +198,7 @@ export function BookmarkList({ onEditBookmark, onDeleteBookmark }: BookmarkListP
   return (
     <div>
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="items-center justify-between mb-4 hidden lg:flex">
         <BookmarkToolbar />
         <div className="relative w-full max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

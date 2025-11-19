@@ -55,7 +55,7 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         className="group"
       >
         <Card 
-          className={`transition-all duration-200 hover:shadow-md h-fit w-full`}
+          className={`transition-all duration-200 shadow-md shadow-primary/10 hover:shadow-lg h-fit w-full`}
         >
       <CardHeader className="pb-0">
         <div className="flex items-start justify-between">
@@ -97,18 +97,17 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         )}
         
         <div className="flex items-center justify-between">
-          <div className="flex items-start space-x-2 flex-col">
+          <div className="flex items-center space-x-2 flex-row">
             <span className="text-xs text-muted-foreground">
               {formatDate(bookmark.createdAt)}
             </span>
             {bookmark.tags.length > 0 && (
               <>
-                <span className="bg-muted-foreground h-px w-12 my-4 opacity-35"></span>
+                <span className="bg-muted-foreground h-px w-8 opacity-35"></span>
                 <div className="flex items-center space-x-1">
-                  <Tag className="h-3 w-3 text-muted-foreground" />
                   <div className="flex flex-wrap gap-1 max-w-full">
                     {bookmark.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs truncate max-w-20">
+                      <Badge key={tag} variant="default" className="text-xs truncate max-w-20">
                         {tag}
                       </Badge>
                     ))}
@@ -122,15 +121,6 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
               </>
             )}
           </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.open(bookmark.url, '_blank', 'noopener,noreferrer')}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </Button>
         </div>
       </CardContent>
     </Card>

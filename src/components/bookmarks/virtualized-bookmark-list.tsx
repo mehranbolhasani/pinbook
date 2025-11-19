@@ -1,12 +1,11 @@
 'use client';
 
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useRef } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { BookmarkCard } from './bookmark-card';
 import { BookmarkMinimalView } from './bookmark-minimal-view';
 import { BookmarkListView } from './bookmark-list-view';
-// import { useBookmarkStore } from '@/lib/stores/bookmarks';
 
 interface VirtualizedBookmarkListProps {
   bookmarks: Bookmark[];
@@ -24,7 +23,6 @@ export function VirtualizedBookmarkList({
   className = ''
 }: VirtualizedBookmarkListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
-  // const { selectedBookmarks } = useBookmarkStore();
 
   // Calculate item height based on layout
   const getItemHeight = (layout: string) => {
@@ -42,17 +40,16 @@ export function VirtualizedBookmarkList({
 
   const itemHeight = getItemHeight(layout);
 
-  const virtualizer = useVirtualizer({
+  const virtualizer = useWindowVirtualizer({
     count: bookmarks.length,
-    getScrollElement: () => parentRef.current,
     estimateSize: () => itemHeight,
-    overscan: 5, // Render 5 extra items for smooth scrolling
+    overscan: 5,
+    scrollMargin: parentRef.current?.offsetTop ?? 0,
   });
 
   const items = virtualizer.getVirtualItems();
 
   const renderBookmark = (bookmark: Bookmark) => {
-    
     switch (layout) {
       case 'minimal':
         return (
@@ -89,9 +86,9 @@ export function VirtualizedBookmarkList({
   return (
     <div
       ref={parentRef}
-      className={`h-full overflow-auto ${className}`}
+      className={className}
       style={{
-        contain: 'strict', // Optimize for virtualization
+        contain: 'strict',
       }}
     >
       <div
@@ -110,7 +107,7 @@ export function VirtualizedBookmarkList({
               left: 0,
               width: '100%',
               height: `${virtualItem.size}px`,
-              transform: `translateY(${virtualItem.start}px)`,
+              transform: `translateY(${virtualItem.start - virtualizer.options.scrollMargin}px)`,
             }}
           >
             {renderBookmark(bookmarks[virtualItem.index])}

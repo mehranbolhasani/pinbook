@@ -96,49 +96,49 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
         {children}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={handleOpenLink}>
-          <ExternalLink className="h-4 w-4 mr-2" />
+        <DropdownMenuItem onClick={handleOpenLink} className="group">
+          <ExternalLink className="h-4 w-4 mr-2 text-foreground group-hover:text-accent" />
           Open Link
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={handleCopyUrl}>
-          <Copy className="h-4 w-4 mr-2" />
+        <DropdownMenuItem onClick={handleCopyUrl} className="group">
+          <Copy className="h-4 w-4 mr-2 text-foreground group-hover:text-accent" />
           Copy URL
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={handleToggleShared}>
+        <DropdownMenuItem onClick={handleToggleShared} className="group">
           {bookmark.isShared ? (
             <>
-              <Share2 className="h-4 w-4 mr-2" />
+              <Share2 className="h-4 w-4 mr-2 text-foreground group-hover:text-accent" />
               Make Private
             </>
           ) : (
             <>
-              <Share className="h-4 w-4 mr-2" />
+              <Share className="h-4 w-4 mr-2 text-foreground group-hover:text-accent" />
               Make Public
             </>
           )}
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={handleAddTag}>
-          <Tag className="h-4 w-4 mr-2" />
+        <DropdownMenuItem onClick={handleAddTag} className="group">
+          <Tag className="h-4 w-4 mr-2 text-foreground group-hover:text-accent" />
           Add Tag
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={handleEdit}>
-          <Edit className="h-4 w-4 mr-2" />
+        <DropdownMenuItem onClick={handleEdit} className="group">
+          <Edit className="h-4 w-4 mr-2 text-foreground group-hover:text-accent" />
           Edit
         </DropdownMenuItem>
         
         <DropdownMenuItem 
           onClick={handleDelete}
-          className="text-destructive focus:text-destructive"
+          className="text-destructive focus:text-accent group hover:text-accent"
         >
-          <Trash2 className="h-4 w-4 mr-2" />
+          <Trash2 className="h-4 w-4 mr-2 text-destructive group-hover:text-accent" />
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

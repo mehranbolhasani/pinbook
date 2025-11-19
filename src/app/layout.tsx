@@ -8,6 +8,8 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 import { ThemePaletteApplier } from "@/components/theme/theme-palette-applier";
 
+import QueryProvider from "@/components/query-provider";
+
 // Geist fonts provide pre-defined CSS variables and class names; no function call needed
 
 export const metadata: Metadata = {
@@ -23,18 +25,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ThemePaletteApplier />
-          {children}
-          <ToastProvider />
-          <Analytics />
-          <SpeedInsights />
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ThemePaletteApplier />
+            {children}
+            <ToastProvider />
+            <Analytics />
+            <SpeedInsights />
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

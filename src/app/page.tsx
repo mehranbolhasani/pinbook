@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
  
 import { Sidebar } from '@/components/layout/sidebar';
 import { MobileNav } from '@/components/layout/mobile-nav';
@@ -11,25 +11,22 @@ import { LoginForm } from '@/components/auth/login-form';
 import { KeyboardShortcutsModal } from '@/components/ui/keyboard-shortcuts-modal';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useAuthStore } from '@/lib/stores/auth';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
+import { useUIStore } from '@/lib/stores/ui';
 import { Bookmark } from '@/types/pinboard';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useToast } from '@/hooks/useToast';
 import { ErrorBoundary, BookmarkListErrorBoundary } from '@/components/error-boundary';
+import { useBookmarks, useDeleteBookmark, useUpdateBookmark } from '@/hooks/usePinboard';
 
 export default function Home() {
-  const { isAuthenticated, apiToken } = useAuthStore();
-  const { 
-    setSearchQuery,
-    updateBookmark,
-    removeBookmark,
-    setBookmarks,
-    setTags,
-    setLoading,
-    setError
-  } = useBookmarkStore();
+  const { isAuthenticated } = useAuthStore();
+  const { setSearchQuery } = useUIStore();
   
+  // React Query Hooks
+  const { data: bookmarks = [], isLoading: isBookmarksLoading, error: bookmarksError } = useBookmarks();
+  const { mutate: deleteBookmark } = useDeleteBookmark();
+  const { mutate: updateBookmark } = useUpdateBookmark();
+
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -41,55 +38,6 @@ export default function Home() {
   }>({ isOpen: false, bookmark: null });
   
   const toast = useToast();
-  const isInitializedRef = useRef(false);
-
-  // Load bookmarks when authenticated - simple approach
-  useEffect(() => {
-    if (!isAuthenticated || !apiToken || isInitializedRef.current) return;
-
-    const loadBookmarks = async () => {
-      isInitializedRef.current = true;
-      setLoading(true);
-      setError(null);
-
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (!api) throw new Error('Failed to initialize API');
-
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Loading bookmarks and tags...');
-        }
-        const [bookmarks, tags] = await Promise.all([
-          api.getAllBookmarks(),
-          api.getTags()
-        ]);
-
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Loaded bookmarks:', bookmarks.length);
-          console.log('Loaded tags:', Object.keys(tags).length);
-        }
-
-        setBookmarks(bookmarks);
-        setTags(Object.keys(tags));
-        
-        // Only show success toast on initial load
-        if (bookmarks.length > 0) {
-          toast.showSuccess('Bookmarks loaded successfully', `${bookmarks.length} bookmarks found`);
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Failed to load bookmarks:', error);
-        }
-        const errorMessage = error instanceof Error ? error.message : 'Failed to load bookmarks';
-        setError(errorMessage);
-        toast.showError('Failed to load bookmarks', errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadBookmarks();
-  }, [isAuthenticated, apiToken, setBookmarks, setTags, setLoading, setError, toast]);
 
   // Sidebar search removed; bookmarks list contains its own search input.
 
@@ -103,9 +51,16 @@ export default function Home() {
   };
 
   const handleSaveBookmark = (updatedBookmark: Bookmark) => {
-    updateBookmark(updatedBookmark.id, updatedBookmark);
-    setEditingBookmark(null);
-    setIsEditDialogOpen(false);
+    updateBookmark({ id: updatedBookmark.id, updates: updatedBookmark }, {
+      onSuccess: () => {
+        toast.showSuccess('Bookmark updated', `"${updatedBookmark.title}" has been updated`);
+        setEditingBookmark(null);
+        setIsEditDialogOpen(false);
+      },
+      onError: (error) => {
+        toast.showError('Failed to update bookmark', error instanceof Error ? error.message : 'Unknown error');
+      }
+    });
   };
 
   const handleCloseEditDialog = () => {
@@ -117,32 +72,19 @@ export default function Home() {
     setDeleteConfirmation({ isOpen: true, bookmark });
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     const bookmark = deleteConfirmation.bookmark;
-    if (!bookmark || !apiToken) return;
+    if (!bookmark) return;
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
-
-      const ok = await api.deleteBookmark(bookmark.url);
-      if (ok) {
-        removeBookmark(bookmark.id);
+    deleteBookmark(bookmark.url, {
+      onSuccess: () => {
         toast.showSuccess('Bookmark deleted', `"${bookmark.title}" has been deleted`);
-      } else {
-        toast.showError('Failed to delete bookmark', 'Delete was not confirmed by API');
+        setDeleteConfirmation({ isOpen: false, bookmark: null });
+      },
+      onError: (error) => {
+        toast.showError('Failed to delete bookmark', error instanceof Error ? error.message : 'Unknown error');
       }
-    } catch (error) {
-      console.error('Failed to delete bookmark:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to delete bookmark';
-      setError(errorMessage);
-      toast.showError('Failed to delete bookmark', errorMessage);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   // Keyboard shortcuts handlers
@@ -188,7 +130,6 @@ export default function Home() {
   }, [selectedBookmarkId]);
 
   
-
   // Set up keyboard shortcuts
   useKeyboardShortcuts({
     onSearch: handleFocusSearch,
@@ -206,10 +147,20 @@ export default function Home() {
     return <LoginForm />;
   }
 
+  if (bookmarksError) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold text-destructive">Error loading bookmarks</h2>
+          <p className="text-muted-foreground">{bookmarksError instanceof Error ? bookmarksError.message : 'Unknown error'}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ErrorBoundary>
-      <div className="max-h-screen bg-background">
-        
+      <div className="max-h-screen bg-primary/1 dark:bg-primary/5">
         
         {/* Mobile Navigation */}
         <MobileNav 
@@ -218,17 +169,19 @@ export default function Home() {
         
         <div className="flex max-w-[1024px] mx-auto h-full items-top">
           {/* Desktop Sidebar */}
-          <div className="hidden lg:flex items-center h-full sticky top-8">
+          <div className="hidden lg:flex items-center h-screen sticky top-2">
             <Sidebar 
               onAddBookmark={handleAddBookmark}
             />
           </div>
           
           {/* Main Content */}
-          <main className="flex-1 px-4 lg:px-6 pb-20 lg:pb-6 mt-8 min-w-0">
+          <main className="flex-1 px-4 lg:px-6 pb-20 lg:pb-6 mt-2 min-w-0">
             <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
                 <BookmarkList 
+                  bookmarks={bookmarks}
+                  isLoading={isBookmarksLoading}
                   onEditBookmark={handleEditBookmark}
                   onDeleteBookmark={handleDeleteBookmark}
                 />

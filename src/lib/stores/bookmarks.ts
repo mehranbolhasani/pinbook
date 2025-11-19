@@ -35,7 +35,7 @@ interface BookmarkStore extends AppState {
 
 export const useBookmarkStore = create<BookmarkStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       bookmarks: [],
       tags: [],
       isLoading: false,

@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw } from 'lucide-react';
+import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Grid3X3, List, ListOrdered } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeCustomizer } from '@/components/theme/theme-customizer';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
@@ -52,6 +52,17 @@ export default function SettingsPage() {
     }
   };
 
+  const layoutOptions = [
+    { value: 'card', label: 'Card View', icon: Grid3X3 },
+    { value: 'list', label: 'List View', icon: List },
+    { value: 'minimal', label: 'Minimal List', icon: ListOrdered }
+  ];
+
+  const getLayoutIcon = (layoutValue: string) => {
+    const option = layoutOptions.find(opt => opt.value === layoutValue);
+    return option ? option.icon : null;
+  };
+
   const handleLogout = () => {
     logout();
   };
@@ -75,14 +86,14 @@ export default function SettingsPage() {
 
         <SettingsErrorBoundary>
           <Tabs defaultValue="pinboard" className="w-full">
-          <TabsList className="grid w-fit grid-cols-2">
+          <TabsList className="grid w-full md:w-fit grid-cols-2 bg-card">
             <TabsTrigger value="pinboard" className="flex items-center space-x-2">
               <User className="h-4 w-4" />
-              <span>Pinboard</span>
+              <span className="text-sm md:text-base">Pinboard Account</span>
             </TabsTrigger>
             <TabsTrigger value="app" className="flex items-center space-x-2">
               <Settings className="h-4 w-4" />
-              <span>App Settings</span>
+              <span className="text-sm md:text-base">App Settings</span>
             </TabsTrigger>
           </TabsList>
 
@@ -148,15 +159,15 @@ export default function SettingsPage() {
                     </p>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-col md:flex-row items-stretch md:items-center space-y-2 md:space-y-0 md:space-x-2">
                     {!isEditing ? (
-                      <Button onClick={() => setIsEditing(true)}>
+                      <Button onClick={() => setIsEditing(true)} className="w-full md:w-auto">
                         <Settings className="h-4 w-4 mr-2" />
                         Edit Account
                       </Button>
                     ) : (
-                      <div className="flex space-x-2">
-                        <Button onClick={handleSave} disabled={isSaving}>
+                      <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                        <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto">
                           {isSaving ? (
                             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                           ) : (
@@ -164,13 +175,13 @@ export default function SettingsPage() {
                           )}
                           {isSaving ? 'Saving...' : 'Save Changes'}
                         </Button>
-                        <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        <Button variant="outline" onClick={() => setIsEditing(false)} className="w-full md:w-auto">
                           Cancel
                         </Button>
                       </div>
                     )}
                     
-                    <Button variant="destructive" onClick={handleLogout}>
+                    <Button variant="destructive" onClick={handleLogout} className="w-full md:w-auto">
                       <LogOut className="h-4 w-4 mr-2" />
                       Logout
                     </Button>
@@ -216,21 +227,29 @@ export default function SettingsPage() {
                 {/* Layout Preference */}
                 <div className="space-y-3">
                   <Label>Default Layout</Label>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                     {[
-                      { value: 'card', label: 'Masonry Cards', description: 'Pinterest-style grid' },
-                      { value: 'list', label: 'List View', description: 'Compact horizontal list' },
-                      { value: 'minimal', label: 'Minimal List', description: 'Ultra-compact view' }
+                      { value: 'card', icon: Grid3X3, label: 'Masonry Cards', description: 'Pinterest-style grid' },
+                      { value: 'list', icon: List, label: 'List View', description: 'Compact horizontal list' },
+                      { value: 'minimal', icon: ListOrdered, label: 'Minimal List', description: 'Ultra-compact view' }
                     ].map((option) => (
                       <Button
                         key={option.value}
                         variant={layout === option.value ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
-                        className="flex flex-col h-auto p-3"
+                        className="flex flex-row h-16 md:h-20 p-3 flex-1 items-center justify-start gap-3"
                       >
-                        <span className="font-medium">{option.label}</span>
-                        <span className="text-xs text-muted-foreground">{option.description}</span>
+                        <span>
+                          {(() => {
+                            const IconComponent = getLayoutIcon(option.value);
+                            return IconComponent ? <IconComponent className="h-4 w-4" /> : null;
+                          })()}
+                        </span>
+                        <span className="flex flex-col items-start">
+                          <span className="font-medium text-sm md:text-base">{option.label}</span>
+                          <span className="text-xs opacity-80 font-light">{option.description}</span>
+                        </span>
                       </Button>
                     ))}
                   </div>

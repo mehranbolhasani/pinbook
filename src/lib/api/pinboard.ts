@@ -229,7 +229,7 @@ export class PinboardAPI {
       url: pb.href,
       description: pb.description,
       extended: pb.extended,
-      tags: pb.tags ? pb.tags.split(' ').filter(tag => tag.trim()) : [],
+      tags: (pb.tags && typeof pb.tags === 'string') ? pb.tags.split(' ').filter(tag => tag.trim()) : [],
       createdAt: new Date(pb.time),
       isRead: pb.toread === 'no',
       isShared: pb.shared === 'yes',

@@ -10,7 +10,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
+import { useUIStore } from '@/lib/stores/ui';
+import { useBookmarks, useTags } from '@/hooks/usePinboard';
 import { Settings, LogOut, Paperclip as BookmarkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -22,12 +23,15 @@ interface SidebarProps {
 
 export function Sidebar({ onAddBookmark }: SidebarProps) {
   const { 
-    tags, 
     selectedTags, 
     setSelectedTags, 
-    bookmarks,
     clearFilters 
-  } = useBookmarkStore();
+  } = useUIStore();
+  
+  const { data: bookmarks = [] } = useBookmarks();
+  const { data: tagsData = {} } = useTags();
+  const tags = Object.keys(tagsData);
+
   const { isAuthenticated, username, logout } = useAuthStore();
   
   const [isTagsExpanded, setIsTagsExpanded] = useState(false);
@@ -46,7 +50,7 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
   };
 
   return (
-    <aside className="w-64 bg-primary/5 dark:bg-primary/5 h-[calc(100vh-64px)] sticky top-0 flex flex-col justify-between rounded-3xl min-h-full overflow-hidden">
+    <aside className="w-64 sticky top-0 flex flex-col justify-between min-h-screen overflow-hidden border-r border-primary/10 dark:border-primary/10">
       <div className="space-y-4 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-1">
@@ -99,20 +103,20 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
             </Button>
 
             {isTagsExpanded && (
-              <div className="space-y-1 pl-6">
+              <div className="space-y-1">
                 {tags.slice(0, 20).map((tag) => (
                   <Button
                     key={tag}
                     variant={selectedTags.includes(tag) ? "default" : "ghost"}
                     size="sm"
-                    className="w-full justify-start text-xs"
+                    className="w-full justify-start text-sm"
                     onClick={() => handleTagClick(tag)}
                   >
                     {tag}
                   </Button>
                 ))}
                 {tags.length > 20 && (
-                  <p className="text-xs text-muted-foreground pl-2">
+                  <p className="text-xs text-muted-foreground">
                     +{tags.length - 20} more tags
                   </p>
                 )}

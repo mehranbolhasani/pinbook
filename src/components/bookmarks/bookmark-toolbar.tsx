@@ -5,7 +5,6 @@ import {
   List, 
   ListOrdered, 
   LayoutGrid,
-  ArrowUpDown,
   SortAsc,
   SortDesc
 } from 'lucide-react';
@@ -18,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
+import { useUIStore } from '@/lib/stores/ui';
 
 export function BookmarkToolbar() {
   const { 
@@ -28,7 +27,7 @@ export function BookmarkToolbar() {
     setSortOrder,
     layout,
     setLayout 
-  } = useBookmarkStore();
+  } = useUIStore();
 
   const sortOptions = [
     { value: 'date', label: 'Date' },
@@ -69,18 +68,18 @@ export function BookmarkToolbar() {
               <DropdownMenuItem
                 key={option.value}
                 onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
-                className={sortBy === option.value ? 'bg-accent' : ''}
+                className={sortBy === option.value ? 'bg-primary/20 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/20 group' : 'group'}
               >
                 {option.label}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setSortOrder('asc')}>
-              <SortAsc className="mr-2 h-4 w-4" />
+              <SortAsc className="mr-2 h-4 w-4 text-foreground group-hover:text-accent" />
               Ascending
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSortOrder('desc')}>
-              <SortDesc className="mr-2 h-4 w-4" />
+              <SortDesc className="mr-2 h-4 w-4 text-foreground group-hover:text-accent" />
               Descending
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -103,9 +102,9 @@ export function BookmarkToolbar() {
                 <DropdownMenuItem
                   key={option.value}
                   onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
-                  className={layout === option.value ? 'bg-accent' : ''}
+                  className={layout === option.value ? 'bg-primary/20 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/20 group' : 'group'}
                 >
-                  <Icon className="mr-2 h-4 w-4" />
+                  <Icon className="mr-2 h-4 w-4 text-foreground group-hover:text-accent" />
                   {option.label}
                 </DropdownMenuItem>
               );

@@ -258,7 +258,7 @@ export function ThemeCustomizer() {
 
         <div className="space-y-4">
           <h4 className="text-sm font-medium">Theme Palettes</h4>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {palettes.map((palette) => (
               <Button
                 key={palette.name}

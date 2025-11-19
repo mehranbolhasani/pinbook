@@ -260,7 +260,7 @@ export default function SettingsPage() {
                 {/* Sort Preferences */}
                 <div className="space-y-3">
                   <Label>Default Sort</Label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="sortBy">Sort By</Label>
                       <div className="flex space-x-2">

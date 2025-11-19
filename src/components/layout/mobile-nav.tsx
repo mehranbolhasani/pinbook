@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,8 @@ import {
   Filter,
   Grid3X3,
   List,
-  Minus
+  Minus,
+  Settings
 } from 'lucide-react';
 import { useUIStore } from '@/lib/stores/ui';
 import { useAuthStore } from '@/lib/stores/auth';
@@ -19,11 +21,7 @@ import { MobileSidebar } from './mobile-sidebar';
 import { MobileAddBookmark } from '@/components/bookmarks/mobile-add-bookmark';
 import { ThemeToggle } from '@/components/theme-toggle';
 
-interface MobileNavProps {
-  onAddBookmark: () => void;
-}
-
-export function MobileNav({ onAddBookmark }: MobileNavProps) {
+export function MobileNav() {
   const { isAuthenticated } = useAuthStore();
   const { 
     layout, 
@@ -59,8 +57,15 @@ export function MobileNav({ onAddBookmark }: MobileNavProps) {
             />
           </div>
 
-          {/* Right: Theme Toggle */}
-          <ThemeToggle />
+          {/* Right: Settings & Theme Toggle */}
+          <div className="flex items-center space-x-1 shrink-0">
+            <Link href="/settings">
+              <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
 

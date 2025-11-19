@@ -163,9 +163,7 @@ export default function Home() {
       <div className="max-h-screen bg-primary/1 dark:bg-primary/5">
         
         {/* Mobile Navigation */}
-        <MobileNav 
-          onAddBookmark={handleAddBookmark}
-        />
+        <MobileNav />
         
         <div className="flex max-w-[1024px] mx-auto h-full items-top">
           {/* Desktop Sidebar */}

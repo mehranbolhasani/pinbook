@@ -14,6 +14,9 @@ import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-contain
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
+import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
+import { PullToRefreshIndicator } from '@/components/ui/pull-to-refresh-indicator';
+import { useBookmarks } from '@/hooks/usePinboard';
 
 interface BookmarkListProps {
   bookmarks: Bookmark[];
@@ -32,6 +35,15 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
     setSearchQuery,
     setSelectedTags,
   } = useUIStore();
+
+  // Pull-to-refresh for mobile
+  const { refetch } = useBookmarks();
+  const { bind, isRefreshing, pullDistance } = usePullToRefresh({
+    onRefresh: async () => {
+      await refetch();
+    },
+    threshold: 80,
+  });
 
   // Check if we should use virtualization (moved to component level)
   const virtualizationThreshold = useVirtualizationThreshold();
@@ -196,7 +208,16 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
   };
 
   return (
-    <div>
+    <div data-ptr-container {...bind()} className="lg:touch-auto">
+      {/* Pull-to-refresh indicator - mobile only */}
+      <div className="lg:hidden">
+        <PullToRefreshIndicator
+          pullDistance={pullDistance}
+          isRefreshing={isRefreshing}
+          threshold={80}
+        />
+      </div>
+
       {/* Toolbar */}
       <div className="items-center justify-between mb-4 hidden lg:flex">
         <BookmarkToolbar />

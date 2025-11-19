@@ -101,10 +101,9 @@ export function SwipeableBookmarkItem({
     <div className="relative overflow-hidden lg:overflow-visible" ref={containerRef}>
       {/* Left Actions (Edit, Delete) - revealed on swipe right */}
       <div
-        className="absolute left-0 top-0 bottom-0 flex items-center justify-start lg:hidden"
+        className="absolute left-0 top-0 bottom-0 flex items-center justify-start lg:hidden gap-1"
         style={{
           width: maxSwipeRight,
-          transform: `translateX(-${maxSwipeRight}px)`,
         }}
       >
         {onEdit && (
@@ -112,7 +111,7 @@ export function SwipeableBookmarkItem({
             variant="ghost"
             size="sm"
             onClick={handleEdit}
-            className="h-full w-[70px] rounded-none bg-blue-500 hover:bg-blue-600 text-white"
+            className="h-full w-[65px] rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
           >
             <Edit className="h-5 w-5" />
           </Button>
@@ -122,7 +121,7 @@ export function SwipeableBookmarkItem({
             variant="ghost"
             size="sm"
             onClick={handleDelete}
-            className="h-full w-[70px] rounded-none bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+            className="h-full w-[65px] rounded-lg bg-destructive hover:bg-destructive/90 text-white"
           >
             <Trash2 className="h-5 w-5" />
           </Button>
@@ -131,17 +130,16 @@ export function SwipeableBookmarkItem({
 
       {/* Right Actions (Open, Copy) - revealed on swipe left */}
       <div
-        className="absolute right-0 top-0 bottom-0 flex items-center justify-end lg:hidden"
+        className="absolute right-0 top-0 bottom-0 flex items-center justify-end lg:hidden gap-2"
         style={{
           width: maxSwipeLeft,
-          transform: `translateX(${maxSwipeLeft}px)`,
         }}
       >
         <Button
           variant="ghost"
           size="sm"
           onClick={handleCopyUrl}
-          className="h-full w-[70px] rounded-none bg-gray-500 hover:bg-gray-600 text-white"
+          className="h-full w-[65px] rounded-lg bg-gray-500 hover:bg-gray-600 text-white"
         >
           <Copy className="h-5 w-5" />
         </Button>
@@ -149,7 +147,7 @@ export function SwipeableBookmarkItem({
           variant="ghost"
           size="sm"
           onClick={handleOpenUrl}
-          className="h-full w-[70px] rounded-none bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="h-full w-[65px] rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <ExternalLink className="h-5 w-5" />
         </Button>
@@ -158,7 +156,7 @@ export function SwipeableBookmarkItem({
       {/* Main Content */}
       <div
         {...bind()}
-        className="relative bg-background transition-transform touch-pan-y"
+        className="relative z-10 bg-background transition-transform touch-pan-y"
         style={{
           transform: `translateX(${swipeOffset}px)`,
           transition: isRevealed ? 'transform 0.2s ease-out' : 'none',

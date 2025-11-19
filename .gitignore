@@ -42,3 +42,13 @@ next-env.d.ts
 
 # local technical notes
 dev-notes.md
+
+# AI assistant configuration (keep local/private)
+.cursorrules
+.cursor/
+.aider*
+.github/copilot/
+
+# IDE settings (optional - uncomment if you want to keep private)
+# .vscode/
+# .idea/

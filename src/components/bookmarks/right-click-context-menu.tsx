@@ -62,7 +62,7 @@ export function RightClickContextMenu({
             `"${bookmark.title}"`
           );
         }
-      } catch (error) {
+      } catch {
         // Revert local state on error
         updateBookmark(bookmark.id, { isShared: bookmark.isShared });
         toast.showError('Failed to update bookmark', 'Please try again');

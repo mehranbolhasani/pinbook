@@ -52,7 +52,7 @@ export function InlineTagEditor({ bookmark, onClose }: InlineTagEditorProps) {
             replace: 'yes'
           });
         }
-      } catch (error) {
+      } catch {
         // Revert local state on error
         updateBookmark(bookmark.id, { tags: bookmark.tags });
       }
@@ -83,7 +83,7 @@ export function InlineTagEditor({ bookmark, onClose }: InlineTagEditorProps) {
             replace: 'yes'
           });
         }
-      } catch (error) {
+      } catch {
         // Revert local state on error
         updateBookmark(bookmark.id, { tags: bookmark.tags });
       }

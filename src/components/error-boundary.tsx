@@ -65,7 +65,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           errors.splice(0, errors.length - 10);
         }
         localStorage.setItem('pinbook-errors', JSON.stringify(errors));
-      } catch (e) {
+      } catch {
         // Silently fail
       }
     }
@@ -179,7 +179,7 @@ export function useErrorHandler() {
         }
         localStorage.setItem('pinbook-errors', JSON.stringify(errors));
       }
-    } catch (e) {
+    } catch {
       // Silently fail
     }
   };

@@ -111,7 +111,7 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
             setFormData(prev => ({ ...prev, title: data.title }));
           }
         }
-      } catch (error) {
+      } catch {
         // Silently fail - user can still add bookmark manually
       }
     }

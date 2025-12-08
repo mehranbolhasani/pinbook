@@ -104,7 +104,7 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
             setFormData(prev => ({ ...prev, title: data.title }));
           }
         }
-      } catch (error) {
+      } catch {
         // Silently fail - user can still add bookmark manually
       }
     }

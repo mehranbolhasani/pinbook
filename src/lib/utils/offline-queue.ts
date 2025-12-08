@@ -98,7 +98,7 @@ export class OfflineQueue {
       try {
         await this.executeAction(action);
         processedActions.push(action.id);
-      } catch (error) {
+      } catch {
         // Increment retry count
         action.retries++;
         

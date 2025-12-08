@@ -45,7 +45,7 @@ export default function SettingsPage() {
       setUsername(newUsername);
       setApiToken(newApiToken);
       setIsEditing(false);
-    } catch (error) {
+    } catch {
       // Silently fail
     } finally {
       setIsSaving(false);

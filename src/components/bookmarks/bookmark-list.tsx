@@ -24,7 +24,7 @@ interface BookmarkListProps {
   selectedBookmarkId?: string | null;
 }
 
-export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark, selectedBookmarkId }: BookmarkListProps) {
+export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark, selectedBookmarkId: _selectedBookmarkId }: BookmarkListProps) {
   const { 
     searchQuery, 
     selectedTags, 

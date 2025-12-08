@@ -165,7 +165,7 @@ export const useBookmarkStore = create<BookmarkStore>()(
           const results = await api.searchBookmarks(query);
           performanceMonitor.measure('search-bookmarks', 'search-bookmarks-start');
           return results;
-        } catch (error) {
+        } catch {
           return [];
         }
       },
@@ -179,7 +179,7 @@ export const useBookmarkStore = create<BookmarkStore>()(
           const results = await api.searchBookmarks(tag);
           performanceMonitor.measure('get-bookmarks-by-tag', 'get-bookmarks-by-tag-start');
           return results;
-        } catch (error) {
+        } catch {
           return [];
         }
       },

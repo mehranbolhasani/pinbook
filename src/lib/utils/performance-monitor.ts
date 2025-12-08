@@ -51,7 +51,7 @@ export class PerformanceMonitor {
         });
         navObserver.observe({ entryTypes: ['navigation'] });
         this.observers.push(navObserver);
-      } catch (error) {
+      } catch {
         // Silently fail
       }
 
@@ -70,7 +70,7 @@ export class PerformanceMonitor {
         });
         paintObserver.observe({ entryTypes: ['paint'] });
         this.observers.push(paintObserver);
-      } catch (error) {
+      } catch {
         // Silently fail
       }
 
@@ -88,7 +88,7 @@ export class PerformanceMonitor {
         });
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
         this.observers.push(lcpObserver);
-      } catch (error) {
+      } catch {
         // Silently fail
       }
 
@@ -108,7 +108,7 @@ export class PerformanceMonitor {
         });
         fidObserver.observe({ entryTypes: ['first-input'] });
         this.observers.push(fidObserver);
-      } catch (error) {
+      } catch {
         // Silently fail
       }
     }
@@ -160,7 +160,7 @@ export class PerformanceMonitor {
       });
 
       return duration;
-    } catch (error) {
+    } catch {
       return 0;
     }
   }

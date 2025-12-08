@@ -49,7 +49,7 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
         if (api) {
           await api.updateBookmarkShareStatus(bookmark.hash, newSharedStatus);
         }
-      } catch (error) {
+      } catch {
         // Revert local state on error
         updateBookmark(bookmark.id, { isShared: !newSharedStatus });
       }
@@ -60,7 +60,7 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(bookmark.url);
-    } catch (error) {
+    } catch {
       // Silently fail
     }
     setIsOpen(false);

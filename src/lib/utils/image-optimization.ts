@@ -85,14 +85,14 @@ export class ImageOptimization {
             
             return favicon;
           }
-        } catch (error) {
+        } catch {
           // Try next favicon source
         }
       }
 
       // Fallback to default favicon
       return this.getDefaultFavicon();
-    } catch (error) {
+    } catch {
       return this.getDefaultFavicon();
     }
   }
@@ -130,7 +130,7 @@ export class ImageOptimization {
         if (response.ok) {
           return url;
         }
-      } catch (getError) {
+      } catch {
         // Both HEAD and GET failed
       }
     }
@@ -274,7 +274,7 @@ export function Favicon({ url, className = '', size = 16 }: FaviconProps) {
         const imageOptimization = ImageOptimization.getInstance();
         const faviconUrl = await imageOptimization.getFavicon(url);
         setFavicon(faviconUrl);
-      } catch (error) {
+      } catch {
         setFavicon('/favicon.ico');
       } finally {
         setIsLoading(false);

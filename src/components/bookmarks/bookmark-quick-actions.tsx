@@ -30,7 +30,7 @@ export function BookmarkQuickActions({
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(bookmark.url);
-    } catch (error) {
+    } catch {
       // Silently fail
     }
   };

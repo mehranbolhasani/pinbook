@@ -143,7 +143,6 @@ export class CodeSplittingMonitor {
 
   recordChunkLoad(chunkName: string, loadTime: number, size: number): void {
     this.metrics.set(chunkName, { loadTime, size });
-    console.log(`Chunk ${chunkName} loaded in ${loadTime}ms (${size} bytes)`);
   }
 
   getMetrics(): Map<string, { loadTime: number; size: number }> {
@@ -162,22 +161,7 @@ export class CodeSplittingMonitor {
 
 // Bundle analyzer integration
 export function analyzeBundleSize(): void {
-  if (process.env.NODE_ENV === 'development') {
-    const monitor = CodeSplittingMonitor.getInstance();
-    const metrics = monitor.getMetrics();
-    
-    console.group('📦 Bundle Analysis');
-    console.log(`Total chunks: ${metrics.size}`);
-    console.log(`Total size: ${(monitor.getTotalSize() / 1024).toFixed(2)} KB`);
-    console.log(`Average load time: ${monitor.getAverageLoadTime().toFixed(2)}ms`);
-    
-    console.table(Array.from(metrics.entries()).map(([name, metric]) => ({
-      chunk: name,
-      size: `${(metric.size / 1024).toFixed(2)} KB`,
-      loadTime: `${metric.loadTime}ms`,
-    })));
-    console.groupEnd();
-  }
+  // Analysis functionality removed - no console logging
 }
 
 // Preload critical chunks

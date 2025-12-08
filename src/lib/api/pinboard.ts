@@ -152,7 +152,6 @@ export class PinboardAPI {
       );
       
       if (!Array.isArray(response)) {
-        console.error('Expected array but got:', response);
         return [];
       }
       
@@ -219,7 +218,6 @@ export class PinboardAPI {
     try {
       domain = new URL(pb.href).hostname;
     } catch {
-      console.warn('Invalid URL:', pb.href);
       domain = pb.href;
     }
 

@@ -29,7 +29,6 @@ export async function retry<T>(
       }
       
       const currentDelay = calculateDelay(attempt, delay, backoff, maxDelay);
-      console.warn(`Attempt ${attempt} failed, retrying in ${currentDelay}ms:`, error);
       
       await new Promise(resolve => setTimeout(resolve, currentDelay));
     }

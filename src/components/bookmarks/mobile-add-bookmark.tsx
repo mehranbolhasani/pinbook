@@ -10,9 +10,7 @@ import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
-import { useAuthStore } from '@/lib/stores/auth';
+import { useAddBookmark } from '@/hooks/usePinboard';
 import { useToast } from '@/hooks/useToast';
 
 interface MobileAddBookmarkProps {
@@ -20,8 +18,7 @@ interface MobileAddBookmarkProps {
 }
 
 export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
-  const { apiToken } = useAuthStore();
-  const { addBookmark, setError } = useBookmarkStore();
+  const { mutate: addBookmark, isPending: isSubmitting } = useAddBookmark();
   const toast = useToast();
   
   const [formData, setFormData] = useState({
@@ -33,61 +30,41 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
     isShared: false
   });
   const [tagInput, setTagInput] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!formData.url.trim()) {
-      setError('URL is required');
+      toast.showError('Validation Error', 'URL is required');
       return;
     }
 
-    if (!apiToken) {
-      setError('Not authenticated');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
-
-      // Create the bookmark via Pinboard API
-      const newBookmark = await api.addBookmark({
-        url: formData.url,
-        description: formData.title || formData.description,
-        extended: formData.extended,
-        tags: formData.tags.join(' '),
-        shared: formData.isShared ? 'yes' : 'no'
-      });
-
-      // Add to local store
-      addBookmark(newBookmark);
-      
-      // Show success toast
-      toast.showSuccess('Bookmark added successfully', `"${newBookmark.title}" has been saved`);
-      
-      // Reset form
-      setFormData({
-        url: '',
-        title: '',
-        description: '',
-        extended: '',
-        tags: [],
-        isShared: false
-      });
-      setTagInput('');
-      
-      onClose();
-    } catch (error) {
-      console.error('Failed to add bookmark:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to add bookmark';
-      setError(errorMessage);
-      toast.showError('Failed to add bookmark', errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
+    addBookmark({
+      url: formData.url,
+      description: formData.title || formData.description,
+      extended: formData.extended,
+      tags: formData.tags.join(' '),
+      shared: formData.isShared ? 'yes' : 'no'
+    }, {
+      onSuccess: (newBookmark) => {
+        toast.showSuccess('Bookmark added successfully', `"${newBookmark.title}" has been saved`);
+        
+        // Reset form
+        setFormData({
+          url: '',
+          title: '',
+          description: '',
+          extended: '',
+          tags: [],
+          isShared: false
+        });
+        setTagInput('');
+        
+        onClose();
+      },
+      onError: (error) => {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to add bookmark';
+        toast.showError('Failed to add bookmark', errorMessage);
+      }
+    });
   };
 
   const addTag = () => {
@@ -128,7 +105,6 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
           }
         }
       } catch (error) {
-        console.log('Could not fetch title:', error);
         // Silently fail - user can still add bookmark manually
       }
     }

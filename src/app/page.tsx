@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
  
 import { Sidebar } from '@/components/layout/sidebar';
 import { MobileNav } from '@/components/layout/mobile-nav';
@@ -20,7 +20,7 @@ import { useBookmarks, useDeleteBookmark, useUpdateBookmark } from '@/hooks/useP
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
-  const { setSearchQuery } = useUIStore();
+  const { setSearchQuery, searchQuery, selectedTags, sortBy, sortOrder } = useUIStore();
   
   // React Query Hooks
   const { data: bookmarks = [], isLoading: isBookmarksLoading, error: bookmarksError } = useBookmarks();
@@ -31,13 +31,68 @@ export default function Home() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
-  const [selectedBookmarkId] = useState<string | null>(null);
+  const [selectedBookmarkIndex, setSelectedBookmarkIndex] = useState<number | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
     bookmark: Bookmark | null;
   }>({ isOpen: false, bookmark: null });
   
   const toast = useToast();
+
+  // Compute filtered and sorted bookmarks (same logic as BookmarkList)
+  const filteredAndSortedBookmarks = useMemo(() => {
+    let filtered = [...bookmarks];
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(bookmark => 
+        bookmark.title.toLowerCase().includes(query) ||
+        bookmark.description.toLowerCase().includes(query) ||
+        bookmark.url.toLowerCase().includes(query) ||
+        bookmark.extended.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by tags
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(bookmark => 
+        selectedTags.some(tag => bookmark.tags.includes(tag))
+      );
+    }
+
+    // Sort bookmarks
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'title':
+          comparison = a.title.localeCompare(b.title);
+          break;
+        case 'url':
+          comparison = a.url.localeCompare(b.url);
+          break;
+        case 'date':
+        default:
+          comparison = a.createdAt.getTime() - b.createdAt.getTime();
+          break;
+      }
+      
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+
+    return filtered;
+  }, [bookmarks, searchQuery, selectedTags, sortBy, sortOrder]);
+
+  const selectedBookmark = selectedBookmarkIndex !== null && selectedBookmarkIndex >= 0 && selectedBookmarkIndex < filteredAndSortedBookmarks.length
+    ? filteredAndSortedBookmarks[selectedBookmarkIndex]
+    : null;
+  const selectedBookmarkId = selectedBookmark?.id || null;
+
+  // Reset selected index when filters change
+  useEffect(() => {
+    setSelectedBookmarkIndex(null);
+  }, [searchQuery, selectedTags, sortBy, sortOrder]);
 
   // Sidebar search removed; bookmarks list contains its own search input.
 
@@ -105,29 +160,45 @@ export default function Home() {
   }, []);
 
   const handleNavigate = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    // TODO: Implement bookmark navigation
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Navigate:', direction);
-    }
-  }, []);
+    if (filteredAndSortedBookmarks.length === 0) return;
+
+    setSelectedBookmarkIndex((currentIndex) => {
+      // If no bookmark is selected, start at the first one
+      if (currentIndex === null) {
+        return 0;
+      }
+
+      let newIndex = currentIndex;
+
+      switch (direction) {
+        case 'up':
+          newIndex = Math.max(0, currentIndex - 1);
+          break;
+        case 'down':
+          newIndex = Math.min(filteredAndSortedBookmarks.length - 1, currentIndex + 1);
+          break;
+        case 'left':
+        case 'right':
+          // Left/right navigation not implemented for list view
+          // Could be used for grid layouts in the future
+          break;
+      }
+
+      return newIndex;
+    });
+  }, [filteredAndSortedBookmarks.length]);
 
   const handleOpenSelected = useCallback(() => {
-    if (selectedBookmarkId) {
-      // TODO: Open selected bookmark
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Open bookmark:', selectedBookmarkId);
-      }
+    if (selectedBookmark) {
+      window.open(selectedBookmark.url, '_blank', 'noopener,noreferrer');
     }
-  }, [selectedBookmarkId]);
+  }, [selectedBookmark]);
 
   const handleEditSelected = useCallback(() => {
-    if (selectedBookmarkId) {
-      // TODO: Edit selected bookmark
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Edit bookmark:', selectedBookmarkId);
-      }
+    if (selectedBookmark) {
+      handleEditBookmark(selectedBookmark);
     }
-  }, [selectedBookmarkId]);
+  }, [selectedBookmark]);
 
   
   // Set up keyboard shortcuts
@@ -182,6 +253,7 @@ export default function Home() {
                   isLoading={isBookmarksLoading}
                   onEditBookmark={handleEditBookmark}
                   onDeleteBookmark={handleDeleteBookmark}
+                  selectedBookmarkId={selectedBookmarkId}
                 />
               </BookmarkListErrorBoundary>
             </div>

@@ -4,13 +4,11 @@ import { useMemo } from 'react';
 import { BookmarkCardView } from './views/bookmark-card-view';
 import { BookmarkListView } from './views/bookmark-list-view';
 import { BookmarkMinimalView } from './views/bookmark-minimal-view';
-import { MobileBookmarkCard } from './mobile-bookmark-card';
 import { VirtualizedBookmarkList, useVirtualizationThreshold } from './virtualized-bookmark-list';
 import { BookmarkToolbar } from './bookmark-toolbar';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { BookmarkListSkeleton } from './bookmark-skeleton';
-import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-container';
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
@@ -23,9 +21,10 @@ interface BookmarkListProps {
   isLoading: boolean;
   onEditBookmark?: (bookmark: Bookmark) => void;
   onDeleteBookmark?: (bookmark: Bookmark) => void;
+  selectedBookmarkId?: string | null;
 }
 
-export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark }: BookmarkListProps) {
+export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark, selectedBookmarkId }: BookmarkListProps) {
   const { 
     searchQuery, 
     selectedTags, 
@@ -145,25 +144,6 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
   const renderBookmarks = () => {
     if (isLoading) {
       return <BookmarkListSkeleton count={6} layout={layout} />;
-    }
-
-    // Mobile-optimized layout - use CSS classes instead of JS detection
-    const isMobile = false; // We'll handle mobile via CSS classes
-    
-    if (isMobile) {
-      return (
-        <AnimatedList className="space-y-3">
-          {filteredAndSortedBookmarks.map((bookmark) => (
-            <AnimatedListItem key={bookmark.id}>
-              <MobileBookmarkCard
-                bookmark={bookmark}
-                onEdit={onEditBookmark}
-                onDelete={onDeleteBookmark}
-              />
-            </AnimatedListItem>
-          ))}
-        </AnimatedList>
-      );
     }
 
     // Use virtualization for large lists

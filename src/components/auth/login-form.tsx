@@ -36,7 +36,6 @@ export function LoginForm() {
       }
 
       // Test API connection first
-      console.log('Testing API connection...');
       const testResult = await testPinboardConnection(apiToken);
       if (!testResult.success) {
         throw new Error(`API connection failed: ${testResult.error}`);

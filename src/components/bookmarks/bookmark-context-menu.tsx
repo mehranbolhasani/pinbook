@@ -48,10 +48,8 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
         const api = getPinboardAPI(apiToken);
         if (api) {
           await api.updateBookmarkShareStatus(bookmark.hash, newSharedStatus);
-          console.log(`Bookmark "${bookmark.title}" marked as ${newSharedStatus ? 'shared' : 'private'}.`);
         }
       } catch (error) {
-        console.error('Failed to update bookmark share status:', error);
         // Revert local state on error
         updateBookmark(bookmark.id, { isShared: !newSharedStatus });
       }
@@ -62,9 +60,8 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(bookmark.url);
-      console.log('URL copied to clipboard');
     } catch (error) {
-      console.error('Failed to copy URL:', error);
+      // Silently fail
     }
     setIsOpen(false);
   };
@@ -86,7 +83,6 @@ export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: Bo
 
   const handleAddTag = () => {
     // TODO: Implement inline tag editing
-    console.log('Add tag to bookmark:', bookmark.id);
     setIsOpen(false);
   };
 

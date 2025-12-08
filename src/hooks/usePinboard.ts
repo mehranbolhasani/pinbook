@@ -62,6 +62,27 @@ export function useAddBookmark() {
   });
 }
 
+// Helper function to map Bookmark fields to AddBookmarkParams
+function mapBookmarkToAddParams(bookmark: Partial<Bookmark>): AddBookmarkParams {
+  if (!bookmark.url) {
+    throw new Error('URL is required to update a bookmark');
+  }
+  if (!bookmark.description && !bookmark.title) {
+    throw new Error('Description or title is required to update a bookmark');
+  }
+
+  return {
+    url: bookmark.url,
+    description: bookmark.description || bookmark.title || '',
+    extended: bookmark.extended || '',
+    tags: bookmark.tags ? bookmark.tags.join(' ') : undefined,
+    shared: bookmark.isShared !== undefined ? (bookmark.isShared ? 'yes' : 'no') : undefined,
+    toread: bookmark.isRead !== undefined ? (bookmark.isRead ? 'no' : 'yes') : undefined,
+    dt: bookmark.createdAt ? bookmark.createdAt.toISOString() : undefined,
+    replace: 'yes'
+  };
+}
+
 export function useUpdateBookmark() {
   const queryClient = useQueryClient();
   const { apiToken } = useAuthStore();
@@ -72,11 +93,8 @@ export function useUpdateBookmark() {
       const api = getPinboardAPI(apiToken);
       if (!api) throw new Error('Failed to initialize API');
       
-      // Map Partial<Bookmark> to AddBookmarkParams
-      // We need to ensure we have the required fields. 
-      // For this refactor, we assume the caller provides valid updates compatible with 'add'.
-      // We cast to unknown first to avoid the explicit-any error, then to the expected type.
-      return api.addBookmark({ ...updates, replace: 'yes' } as unknown as AddBookmarkParams);
+      const params = mapBookmarkToAddParams(updates);
+      return api.addBookmark(params);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks });

@@ -99,14 +99,11 @@ export class OfflineQueue {
         await this.executeAction(action);
         processedActions.push(action.id);
       } catch (error) {
-        console.error(`Failed to process action ${action.id}:`, error);
-        
         // Increment retry count
         action.retries++;
         
         // Remove action if it has failed too many times
         if (action.retries >= 3) {
-          console.warn(`Removing action ${action.id} after ${action.retries} failures`);
           processedActions.push(action.id);
         }
       }

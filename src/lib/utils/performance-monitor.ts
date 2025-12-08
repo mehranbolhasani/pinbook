@@ -52,7 +52,7 @@ export class PerformanceMonitor {
         navObserver.observe({ entryTypes: ['navigation'] });
         this.observers.push(navObserver);
       } catch (error) {
-        console.warn('Failed to initialize navigation observer:', error);
+        // Silently fail
       }
 
       // Observe paint timing
@@ -71,7 +71,7 @@ export class PerformanceMonitor {
         paintObserver.observe({ entryTypes: ['paint'] });
         this.observers.push(paintObserver);
       } catch (error) {
-        console.warn('Failed to initialize paint observer:', error);
+        // Silently fail
       }
 
       // Observe largest contentful paint
@@ -89,7 +89,7 @@ export class PerformanceMonitor {
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
         this.observers.push(lcpObserver);
       } catch (error) {
-        console.warn('Failed to initialize LCP observer:', error);
+        // Silently fail
       }
 
       // Observe first input delay
@@ -109,7 +109,7 @@ export class PerformanceMonitor {
         fidObserver.observe({ entryTypes: ['first-input'] });
         this.observers.push(fidObserver);
       } catch (error) {
-        console.warn('Failed to initialize FID observer:', error);
+        // Silently fail
       }
     }
   }
@@ -123,10 +123,6 @@ export class PerformanceMonitor {
       this.metrics = this.metrics.slice(-1000);
     }
 
-    // Log in development
-    if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_PERF === '1') {
-      console.log(`📊 Performance: ${metric.name} = ${metric.value}ms`);
-    }
   }
 
   // Mark a performance milestone
@@ -165,7 +161,6 @@ export class PerformanceMonitor {
 
       return duration;
     } catch (error) {
-      console.warn(`Failed to measure ${name}:`, error);
       return 0;
     }
   }

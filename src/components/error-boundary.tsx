@@ -30,8 +30,6 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
     // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
@@ -54,22 +52,22 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       errorId: this.state.errorId,
       timestamp: new Date().toISOString(),
       userAgent,
-      url: window.location.href,
+      url: typeof window !== 'undefined' ? window.location.href : '',
     };
 
-    console.error('Error details:', errorDetails);
-    
-    // Store error in localStorage for debugging
-    try {
-      const errors = JSON.parse(localStorage.getItem('pinbook-errors') || '[]');
-      errors.push(errorDetails);
-      // Keep only last 10 errors
-      if (errors.length > 10) {
-        errors.splice(0, errors.length - 10);
+    // Store error in localStorage for debugging (only in browser)
+    if (typeof window !== 'undefined') {
+      try {
+        const errors = JSON.parse(localStorage.getItem('pinbook-errors') || '[]');
+        errors.push(errorDetails);
+        // Keep only last 10 errors
+        if (errors.length > 10) {
+          errors.splice(0, errors.length - 10);
+        }
+        localStorage.setItem('pinbook-errors', JSON.stringify(errors));
+      } catch (e) {
+        // Silently fail
       }
-      localStorage.setItem('pinbook-errors', JSON.stringify(errors));
-    } catch (e) {
-      console.error('Failed to store error details:', e);
     }
   }
 
@@ -154,8 +152,6 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 // Hook version for functional components
 export function useErrorHandler() {
   return (error: Error, errorInfo?: React.ErrorInfo) => {
-    console.error('Error caught by useErrorHandler:', error, errorInfo);
-    
     // Store error for debugging
     try {
       type UAData = { brands?: { brand: string; version: string }[]; platform?: string };
@@ -167,22 +163,24 @@ export function useErrorHandler() {
         : typeof navigator !== 'undefined' 
           ? navigator.userAgent 
           : '';
-      const errors = JSON.parse(localStorage.getItem('pinbook-errors') || '[]');
-      errors.push({
-        message: error.message,
-        stack: error.stack,
-        componentStack: errorInfo?.componentStack,
-        timestamp: new Date().toISOString(),
-        userAgent,
-        url: window.location.href,
-      });
-      
-      if (errors.length > 10) {
-        errors.splice(0, errors.length - 10);
+      if (typeof window !== 'undefined') {
+        const errors = JSON.parse(localStorage.getItem('pinbook-errors') || '[]');
+        errors.push({
+          message: error.message,
+          stack: error.stack,
+          componentStack: errorInfo?.componentStack,
+          timestamp: new Date().toISOString(),
+          userAgent,
+          url: window.location.href,
+        });
+        
+        if (errors.length > 10) {
+          errors.splice(0, errors.length - 10);
+        }
+        localStorage.setItem('pinbook-errors', JSON.stringify(errors));
       }
-      localStorage.setItem('pinbook-errors', JSON.stringify(errors));
     } catch (e) {
-      console.error('Failed to store error details:', e);
+      // Silently fail
     }
   };
 }

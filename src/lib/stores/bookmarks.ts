@@ -149,7 +149,6 @@ export const useBookmarkStore = create<BookmarkStore>()(
           
           performanceMonitor.measure('load-bookmarks', 'load-bookmarks-start');
         } catch (error) {
-          console.error('Failed to load bookmarks from cache:', error);
           set({ 
             error: error instanceof Error ? error.message : 'Failed to load bookmarks',
             isLoading: false 
@@ -167,7 +166,6 @@ export const useBookmarkStore = create<BookmarkStore>()(
           performanceMonitor.measure('search-bookmarks', 'search-bookmarks-start');
           return results;
         } catch (error) {
-          console.error('Failed to search bookmarks:', error);
           return [];
         }
       },
@@ -182,7 +180,6 @@ export const useBookmarkStore = create<BookmarkStore>()(
           performanceMonitor.measure('get-bookmarks-by-tag', 'get-bookmarks-by-tag-start');
           return results;
         } catch (error) {
-          console.error('Failed to get bookmarks by tag:', error);
           return [];
         }
       },

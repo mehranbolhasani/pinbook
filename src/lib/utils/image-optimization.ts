@@ -86,14 +86,13 @@ export class ImageOptimization {
             return favicon;
           }
         } catch (error) {
-          console.warn(`Failed to load favicon from ${faviconUrl}:`, error);
+          // Try next favicon source
         }
       }
 
       // Fallback to default favicon
       return this.getDefaultFavicon();
     } catch (error) {
-      console.error('Failed to load favicon:', error);
       return this.getDefaultFavicon();
     }
   }
@@ -132,7 +131,7 @@ export class ImageOptimization {
           return url;
         }
       } catch (getError) {
-        console.warn('GET request also failed:', getError);
+        // Both HEAD and GET failed
       }
     }
 
@@ -276,7 +275,6 @@ export function Favicon({ url, className = '', size = 16 }: FaviconProps) {
         const faviconUrl = await imageOptimization.getFavicon(url);
         setFavicon(faviconUrl);
       } catch (error) {
-        console.error('Failed to load favicon:', error);
         setFavicon('/favicon.ico');
       } finally {
         setIsLoading(false);

@@ -46,7 +46,7 @@ export default function SettingsPage() {
       setApiToken(newApiToken);
       setIsEditing(false);
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      // Silently fail
     } finally {
       setIsSaving(false);
     }

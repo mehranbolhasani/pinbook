@@ -51,10 +51,8 @@ export function InlineTagEditor({ bookmark, onClose }: InlineTagEditorProps) {
             shared: bookmark.isShared ? 'yes' : 'no',
             replace: 'yes'
           });
-          console.log(`Tag "${tagToAdd}" added to bookmark "${bookmark.title}".`);
         }
       } catch (error) {
-        console.error('Failed to add tag:', error);
         // Revert local state on error
         updateBookmark(bookmark.id, { tags: bookmark.tags });
       }
@@ -84,10 +82,8 @@ export function InlineTagEditor({ bookmark, onClose }: InlineTagEditorProps) {
             shared: bookmark.isShared ? 'yes' : 'no',
             replace: 'yes'
           });
-          console.log(`Tag "${tagToRemove}" removed from bookmark "${bookmark.title}".`);
         }
       } catch (error) {
-        console.error('Failed to remove tag:', error);
         // Revert local state on error
         updateBookmark(bookmark.id, { tags: bookmark.tags });
       }

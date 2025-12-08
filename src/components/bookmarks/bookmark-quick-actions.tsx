@@ -30,9 +30,8 @@ export function BookmarkQuickActions({
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(bookmark.url);
-      console.log('URL copied to clipboard');
     } catch (error) {
-      console.error('Failed to copy URL:', error);
+      // Silently fail
     }
   };
 

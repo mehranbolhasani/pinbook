@@ -17,10 +17,11 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useToast } from '@/hooks/useToast';
 import { ErrorBoundary, BookmarkListErrorBoundary } from '@/components/error-boundary';
 import { useBookmarks, useDeleteBookmark, useUpdateBookmark } from '@/hooks/usePinboard';
+import { Header } from '@/components/layout/header';
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
-  const { setSearchQuery, searchQuery, selectedTags, sortBy, sortOrder } = useUIStore();
+  const { setSearchQuery, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder } = useUIStore();
   
   // React Query Hooks
   const { data: bookmarks = [], isLoading: isBookmarksLoading, error: bookmarksError } = useBookmarks();
@@ -42,6 +43,11 @@ export default function Home() {
   // Compute filtered and sorted bookmarks (same logic as BookmarkList)
   const filteredAndSortedBookmarks = useMemo(() => {
     let filtered = [...bookmarks];
+
+    // Filter by folder
+    if (selectedFolderId !== null) {
+      filtered = filtered.filter(bookmark => bookmark.folderId === selectedFolderId);
+    }
 
     // Filter by search query
     if (searchQuery.trim()) {
@@ -82,7 +88,7 @@ export default function Home() {
     });
 
     return filtered;
-  }, [bookmarks, searchQuery, selectedTags, sortBy, sortOrder]);
+  }, [bookmarks, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder]);
 
   const selectedBookmark = selectedBookmarkIndex !== null && selectedBookmarkIndex >= 0 && selectedBookmarkIndex < filteredAndSortedBookmarks.length
     ? filteredAndSortedBookmarks[selectedBookmarkIndex]
@@ -92,7 +98,7 @@ export default function Home() {
   // Reset selected index when filters change
   useEffect(() => {
     setSelectedBookmarkIndex(null);
-  }, [searchQuery, selectedTags, sortBy, sortOrder]);
+  }, [searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder]);
 
   // Sidebar search removed; bookmarks list contains its own search input.
 
@@ -231,21 +237,31 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-      <div className="max-h-screen bg-primary/1 dark:bg-primary/5">
+      <div className="max-h-screen">
+
+        <div className="bg-primary/5 dark:bg-primary/5 h-screen w-screen fixed top-0 left-0 -z-10"></div>
+
+        <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[1024px] h-screen">
+          <span className="absolute top-0 left-0 w-px h-full bg-primary/15"></span>
+          <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
+        </div>
         
         {/* Mobile Navigation */}
         <MobileNav />
         
-        <div className="flex max-w-[1024px] mx-auto h-full items-top">
+        {/* Desktop Header */}
+        <Header onSearch={setSearchQuery} searchQuery={searchQuery} searchRef={undefined} onAddBookmark={handleAddBookmark} />
+        
+        <div className="flex w-full max-w-[1024px] mx-auto h-full items-start px-4 gap-4">
           {/* Desktop Sidebar */}
-          <div className="hidden lg:flex items-center h-screen sticky top-2">
+          <div className="hidden lg:flex items-start h-screen">
             <Sidebar 
               onAddBookmark={handleAddBookmark}
             />
           </div>
           
           {/* Main Content */}
-          <main className="flex-1 px-4 lg:px-6 pb-20 lg:pb-6 mt-2 min-w-0">
+          <main className="flex-1 min-w-0 py-6">
             <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
                 <BookmarkList 

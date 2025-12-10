@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
+import { useBookmarkFolderStore } from '@/lib/stores/bookmark-folders';
 import { Bookmark, AddBookmarkParams } from '@/types/pinboard';
 
 // Query Keys
@@ -21,7 +22,14 @@ export function useBookmarks() {
       if (!apiToken) throw new Error('No API token');
       const api = getPinboardAPI(apiToken);
       if (!api) throw new Error('Failed to initialize API');
-      return api.getAllBookmarks();
+      const bookmarks = await api.getAllBookmarks();
+      
+      // Inject folderId from local store
+      const { bookmarkFolders } = useBookmarkFolderStore.getState();
+      return bookmarks.map(bookmark => ({
+        ...bookmark,
+        folderId: bookmarkFolders[bookmark.url]
+      }));
     },
     enabled: !!apiToken,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -106,6 +114,7 @@ export function useUpdateBookmark() {
 export function useDeleteBookmark() {
   const queryClient = useQueryClient();
   const { apiToken } = useAuthStore();
+  const { removeBookmarkFromFolder } = useBookmarkFolderStore();
 
   return useMutation({
     mutationFn: async (url: string) => {
@@ -114,7 +123,9 @@ export function useDeleteBookmark() {
       if (!api) throw new Error('Failed to initialize API');
       return api.deleteBookmark(url);
     },
-    onSuccess: () => {
+    onSuccess: (_, url) => {
+      // Remove bookmark from folder mapping
+      removeBookmarkFromFolder(url);
       queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks });
       queryClient.invalidateQueries({ queryKey: queryKeys.tags });
     },

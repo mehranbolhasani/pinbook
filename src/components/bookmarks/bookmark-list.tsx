@@ -27,7 +27,8 @@ interface BookmarkListProps {
 export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark, selectedBookmarkId: _selectedBookmarkId }: BookmarkListProps) {
   const { 
     searchQuery, 
-    selectedTags, 
+    selectedTags,
+    selectedFolderId,
     sortBy, 
     sortOrder,
     layout,
@@ -49,6 +50,11 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
 
   const filteredAndSortedBookmarks = useMemo(() => {
     let filtered = [...bookmarks];
+
+    // Filter by folder
+    if (selectedFolderId !== null) {
+      filtered = filtered.filter(bookmark => bookmark.folderId === selectedFolderId);
+    }
 
     // Filter by search query
     if (searchQuery.trim()) {
@@ -89,7 +95,7 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
     });
 
     return filtered;
-  }, [bookmarks, searchQuery, selectedTags, sortBy, sortOrder]);
+  }, [bookmarks, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder]);
 
   if (isLoading) {
     return (
@@ -199,17 +205,8 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
       </div>
 
       {/* Toolbar */}
-      <div className="items-center justify-between mb-4 hidden lg:flex">
+      <div className="items-center justify-end mb-4 hidden lg:flex">
         <BookmarkToolbar />
-        <div className="relative w-full max-w-xs">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search bookmarks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
       </div>
       
       {/* Results counter */}

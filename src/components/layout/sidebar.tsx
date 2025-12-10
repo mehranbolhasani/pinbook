@@ -26,7 +26,6 @@ import { useBookmarkFolders } from '@/hooks/useBookmarkFolders';
 import { useFolderStore } from '@/lib/stores/folders';
 import type { Folder } from '@/lib/stores/folders';
 import { useBookmarkFolderStore } from '@/lib/stores/bookmark-folders';
-import { useAuthStore } from '@/lib/stores/auth';
 import { FolderDialog } from '@/components/bookmarks/folder-dialog';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
@@ -35,6 +34,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ onAddBookmark: _onAddBookmark }: SidebarProps) {
+  // onAddBookmark is kept for interface compatibility but currently unused
+  void _onAddBookmark;
   const { 
     selectedTags, 
     setSelectedTags, 

@@ -81,15 +81,24 @@ export const useFolderStore = create<FolderState>()(
           return parsed;
         },
         setItem: (name, value) => {
-          // Convert Date objects to ISO strings
+          // Convert Date objects to ISO strings for localStorage
           if (value?.state?.folders) {
-            value.state.folders = value.state.folders.map((folder: Folder) => ({
-              ...folder,
-              createdAt: folder.createdAt.toISOString(),
-              updatedAt: folder.updatedAt.toISOString(),
-            }));
+            const serializedValue = {
+              ...value,
+              state: {
+                ...value.state,
+                folders: value.state.folders.map((folder: Folder) => ({
+                  id: folder.id,
+                  name: folder.name,
+                  createdAt: folder.createdAt.toISOString(),
+                  updatedAt: folder.updatedAt.toISOString(),
+                })),
+              },
+            };
+            localStorage.setItem(name, JSON.stringify(serializedValue));
+          } else {
+            localStorage.setItem(name, JSON.stringify(value));
           }
-          localStorage.setItem(name, JSON.stringify(value));
         },
         removeItem: (name) => localStorage.removeItem(name),
       },

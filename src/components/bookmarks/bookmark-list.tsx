@@ -23,6 +23,8 @@ interface BookmarkListProps {
 }
 
 export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark, selectedBookmarkId: _selectedBookmarkId }: BookmarkListProps) {
+  // selectedBookmarkId is kept for future use but currently unused
+  void _selectedBookmarkId;
   const { 
     searchQuery, 
     selectedTags,

@@ -26,8 +26,6 @@ import { useBookmarkFolders } from '@/hooks/useBookmarkFolders';
 import { useFolderStore } from '@/lib/stores/folders';
 import type { Folder } from '@/lib/stores/folders';
 import { useBookmarkFolderStore } from '@/lib/stores/bookmark-folders';
-import { Settings, LogOut, User } from 'lucide-react';
-import Link from 'next/link';
 import { useAuthStore } from '@/lib/stores/auth';
 import { FolderDialog } from '@/components/bookmarks/folder-dialog';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
@@ -36,7 +34,7 @@ interface SidebarProps {
   onAddBookmark: () => void;
 }
 
-export function Sidebar({ onAddBookmark }: SidebarProps) {
+export function Sidebar({ onAddBookmark: _onAddBookmark }: SidebarProps) {
   const { 
     selectedTags, 
     setSelectedTags, 
@@ -50,11 +48,9 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
   const tags = Object.keys(tagsData);
   const { getFoldersWithCounts } = useBookmarkFolders();
   const { deleteFolder } = useFolderStore();
-
-  const { isAuthenticated, username, logout } = useAuthStore();
   
   const [isTagsExpanded, setIsTagsExpanded] = useState(false);
-  const [isFoldersExpanded, setIsFoldersExpanded] = useState(true);
+  const [isFoldersExpanded] = useState(true);
   const [folderDialog, setFolderDialog] = useState<{
     isOpen: boolean;
     folder: Folder | null;
@@ -65,7 +61,6 @@ export function Sidebar({ onAddBookmark }: SidebarProps) {
   }>({ isOpen: false, folder: null });
 
   const foldersWithCounts = getFoldersWithCounts(bookmarks);
-  const unfolderedCount = bookmarks.filter(b => !b.folderId).length;
 
   const handleTagClick = (tag: string) => {
     if (selectedTags.includes(tag)) {

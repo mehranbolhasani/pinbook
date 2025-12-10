@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { useFolderStore } from '@/lib/stores/folders';
 

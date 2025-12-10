@@ -6,8 +6,6 @@ import { BookmarkListView } from './views/bookmark-list-view';
 import { BookmarkMinimalView } from './views/bookmark-minimal-view';
 import { VirtualizedBookmarkList, useVirtualizationThreshold } from './virtualized-bookmark-list';
 import { BookmarkToolbar } from './bookmark-toolbar';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
 import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';

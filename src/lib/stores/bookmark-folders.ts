@@ -20,12 +20,13 @@ interface BookmarkFolderState {
 
 export const useBookmarkFolderStore = create<BookmarkFolderState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       bookmarkFolders: {},
 
       assignBookmarkToFolder: (bookmarkUrl: string, folderId: string | null) => {
         set((state) => {
           if (folderId === null) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [bookmarkUrl]: _, ...rest } = state.bookmarkFolders;
             return { bookmarkFolders: rest };
           }
@@ -39,11 +40,12 @@ export const useBookmarkFolderStore = create<BookmarkFolderState>()(
       },
 
       getBookmarkFolder: (bookmarkUrl: string) => {
-        return useBookmarkFolderStore.getState().bookmarkFolders[bookmarkUrl];
+        return get().bookmarkFolders[bookmarkUrl];
       },
 
       removeBookmarkFromFolder: (bookmarkUrl: string) => {
         set((state) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [bookmarkUrl]: _, ...rest } = state.bookmarkFolders;
           return { bookmarkFolders: rest };
         });

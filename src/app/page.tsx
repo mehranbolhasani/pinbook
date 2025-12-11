@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
  
-import { Sidebar } from '@/components/layout/sidebar';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { BookmarkList } from '@/components/bookmarks/bookmark-list';
 import { EditBookmarkDialog } from '@/components/bookmarks/edit-bookmark-dialog';
@@ -239,9 +238,9 @@ export default function Home() {
     <ErrorBoundary>
       <div className="max-h-screen">
 
-        <div className="bg-primary/5 dark:bg-primary/5 h-screen w-screen fixed top-0 left-0 -z-10"></div>
+        <div className="bg-background dark:bg-background h-screen w-screen fixed top-0 left-0 -z-10"></div>
 
-        <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[1024px] h-screen">
+        <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-screen -z-10">
           <span className="absolute top-0 left-0 w-px h-full bg-primary/15"></span>
           <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
         </div>
@@ -252,16 +251,9 @@ export default function Home() {
         {/* Desktop Header */}
         <Header onSearch={setSearchQuery} searchQuery={searchQuery} searchRef={undefined} onAddBookmark={handleAddBookmark} />
         
-        <div className="flex w-full max-w-[1024px] mx-auto h-full items-start px-4 gap-4">
-          {/* Desktop Sidebar */}
-          <div className="hidden lg:flex items-start h-screen">
-            <Sidebar 
-              onAddBookmark={handleAddBookmark}
-            />
-          </div>
-          
+        <div className="flex w-full max-w-[720px] mx-auto h-full items-start px-4 gap-4">
           {/* Main Content */}
-          <main className="flex-1 min-w-0 py-6">
+          <main className="flex-1 min-w-0 py-6 w-full">
             <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
                 <BookmarkList 

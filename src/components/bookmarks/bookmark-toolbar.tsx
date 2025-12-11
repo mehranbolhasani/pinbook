@@ -4,20 +4,12 @@ import {
   Grid3X3, 
   List, 
   ListOrdered, 
-  LayoutGrid,
   SortAsc,
   SortDesc
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useUIStore } from '@/lib/stores/ui';
+import { cn } from '@/lib/utils';
 
 export function BookmarkToolbar() {
   const { 
@@ -36,81 +28,65 @@ export function BookmarkToolbar() {
   ];
 
   const layoutOptions = [
-    { value: 'card', label: 'Card View', icon: Grid3X3 },
-    { value: 'list', label: 'List View', icon: List },
-    { value: 'minimal', label: 'Minimal List', icon: ListOrdered }
+    { value: 'card', label: 'Card', icon: Grid3X3 },
+    { value: 'list', label: 'List', icon: List },
+    { value: 'minimal', label: 'Minimal', icon: ListOrdered }
   ];
 
-  const getSortIcon = () => {
-    return sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />;
-  };
-
-  const getLayoutIcon = () => {
-    const option = layoutOptions.find(opt => opt.value === layout);
-    return option ? <option.icon className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />;
-  };
-
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-2">
-        {/* Sort Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              {getSortIcon()}
-              <span className="ml-1">Sort by {sortBy}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {sortOptions.map((option) => (
-              <DropdownMenuItem
-                key={option.value}
-                onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
-                className={sortBy === option.value ? 'bg-primary/20 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/20 group' : 'group'}
-              >
-                {option.label}
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setSortOrder('asc')}>
-              <SortAsc className="mr-2 h-4 w-4 text-foreground group-hover:text-accent" />
-              Ascending
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSortOrder('desc')}>
-              <SortDesc className="mr-2 h-4 w-4 text-foreground group-hover:text-accent" />
-              Descending
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+    <div className="flex items-center gap-2">
+      {/* Sort Button Group */}
+      <div className="flex items-center gap-1 border rounded-lg p-1 bg-background">
+        {sortOptions.map((option) => (
+          <Button
+            key={option.value}
+            variant={sortBy === option.value ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
+            className={cn(
+              'h-8 px-3',
+              sortBy === option.value && 'bg-primary text-primary-foreground'
+            )}
+          >
+            {option.label}
+          </Button>
+        ))}
+        <div className="w-px h-4 bg-border mx-1" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+          className="h-8 px-2"
+          title={`Sort ${sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
+        >
+          {sortOrder === 'asc' ? (
+            <SortAsc className="h-4 w-4" />
+          ) : (
+            <SortDesc className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
 
-        {/* Layout Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              {getLayoutIcon()}
-              <span className="ml-1">Layout</span>
+      {/* Layout Button Group */}
+      <div className="flex items-center gap-1 border rounded-lg p-1 bg-background">
+        {layoutOptions.map((option) => {
+          const Icon = option.icon;
+          return (
+            <Button
+              key={option.value}
+              variant={layout === option.value ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
+              className={cn(
+                'h-8 px-3',
+                layout === option.value && 'bg-primary text-primary-foreground'
+              )}
+              title={option.label}
+            >
+              <Icon className="h-4 w-4" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>View Layout</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {layoutOptions.map((option) => {
-              const Icon = option.icon;
-              return (
-                <DropdownMenuItem
-                  key={option.value}
-                  onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
-                  className={layout === option.value ? 'bg-primary/20 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/20 group' : 'group'}
-                >
-                  <Icon className="mr-2 h-4 w-4 text-foreground group-hover:text-accent" />
-                  {option.label}
-                </DropdownMenuItem>
-              );
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          );
+        })}
       </div>
     </div>
   );

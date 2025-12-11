@@ -194,7 +194,7 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
   };
 
   return (
-    <div data-ptr-container {...bind()} className="lg:touch-auto">
+    <div data-ptr-container {...bind()} className="lg:touch-auto mb-32">
       {/* Pull-to-refresh indicator - mobile only */}
       <div className="lg:hidden">
         <PullToRefreshIndicator

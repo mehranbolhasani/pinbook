@@ -53,12 +53,12 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         className="group"
       >
         <Card 
-          className={`transition-all duration-200 shadow-md shadow-primary/10 hover:shadow-lg h-fit w-full`}
+          className={`bg-card dark:bg-card transition-all duration-200 shadow-md shadow-primary/10 hover:shadow-lg h-fit w-full`}
         >
       <CardHeader className="pb-0">
         <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0 pr-2">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1 wrap-break-words">
+          <div className="flex-1 min-w-0 pr-2 word-break-words">
+            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1 break-all">
               {bookmark.title}
             </h3>
             <p className="text-sm text-muted-foreground line-clamp-1 break-all">

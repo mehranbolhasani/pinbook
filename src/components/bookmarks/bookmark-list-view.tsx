@@ -39,7 +39,7 @@ export function BookmarkListView({ bookmarks, onEdit, onDelete }: BookmarkListVi
           onDelete={onDelete}
         >
           <div
-            className="flex items-center justify-between p-4 hover:bg-muted/80 transition-colors rounded-xl dark:hover:bg-neutral-800/50 mb-2 shadow-md shadow-primary/20"
+            className="flex bg-card items-center justify-between p-4 transition-all duration-200 rounded-xl mb-2 shadow-md shadow-primary/20 border border-transparent hover:border-primary/40 hover:shadow-lg hover:px-5"
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">

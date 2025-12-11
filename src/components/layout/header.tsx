@@ -216,14 +216,14 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
                           <>
                             <DropdownMenuItem onClick={() => handleEditFolder(selectedFolder)}>
                               <Edit className="h-4 w-4 mr-2" />
-                              Rename "{selectedFolder.name}"
+                              Rename &quot;{selectedFolder.name}&quot;
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               onClick={() => handleDeleteFolder(selectedFolder)}
                               className="text-destructive"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
-                              Delete "{selectedFolder.name}"
+                              Delete &quot;{selectedFolder.name}&quot;
                             </DropdownMenuItem>
                           </>
                         );

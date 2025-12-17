@@ -201,7 +201,7 @@ export default function Home() {
           <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
         </div>
 
-        <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 z-10 blur-3xl">
+        <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 -z-10 blur-3xl">
           <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -right-12"></span>
           <span className="relative w-full h-full bg-primary/35 aspect-square rounded-full blur-2xl"></span>
           <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -left-12"></span>

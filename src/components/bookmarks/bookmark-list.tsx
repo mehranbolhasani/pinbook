@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { BookmarkCardView } from './views/bookmark-card-view';
 import { BookmarkListView } from './views/bookmark-list-view';
 import { BookmarkMinimalView } from './views/bookmark-minimal-view';
@@ -14,23 +13,19 @@ import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { PullToRefreshIndicator } from '@/components/ui/pull-to-refresh-indicator';
 import { useBookmarks } from '@/hooks/usePinboard';
 
+import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
+
 interface BookmarkListProps {
   bookmarks: Bookmark[];
   isLoading: boolean;
   onEditBookmark?: (bookmark: Bookmark) => void;
   onDeleteBookmark?: (bookmark: Bookmark) => void;
-  selectedBookmarkId?: string | null;
 }
 
-export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark, selectedBookmarkId: _selectedBookmarkId }: BookmarkListProps) {
-  // selectedBookmarkId is kept for future use but currently unused
-  void _selectedBookmarkId;
+export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark }: BookmarkListProps) {
   const { 
     searchQuery, 
     selectedTags,
-    selectedFolderId,
-    sortBy, 
-    sortOrder,
     layout,
     setSearchQuery,
     setSelectedTags,
@@ -48,65 +43,11 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
   // Check if we should use virtualization (moved to component level)
   const virtualizationThreshold = useVirtualizationThreshold();
 
-  const filteredAndSortedBookmarks = useMemo(() => {
-    let filtered = [...bookmarks];
+  const filteredAndSortedBookmarks = useFilteredBookmarks(bookmarks);
 
-    // Filter by folder
-    if (selectedFolderId !== null) {
-      filtered = filtered.filter(bookmark => bookmark.folderId === selectedFolderId);
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(bookmark => 
-        bookmark.title.toLowerCase().includes(query) ||
-        bookmark.description.toLowerCase().includes(query) ||
-        bookmark.url.toLowerCase().includes(query) ||
-        bookmark.extended.toLowerCase().includes(query)
-      );
-    }
-
-    // Filter by tags
-    if (selectedTags.length > 0) {
-      filtered = filtered.filter(bookmark => 
-        selectedTags.some(tag => bookmark.tags.includes(tag))
-      );
-    }
-
-    // Sort bookmarks
-    filtered.sort((a, b) => {
-      let comparison = 0;
-      
-      switch (sortBy) {
-        case 'title':
-          comparison = a.title.localeCompare(b.title);
-          break;
-        case 'url':
-          comparison = a.url.localeCompare(b.url);
-          break;
-        case 'date':
-        default:
-          comparison = a.createdAt.getTime() - b.createdAt.getTime();
-          break;
-      }
-      
-      return sortOrder === 'desc' ? -comparison : comparison;
-    });
-
-    return filtered;
-  }, [bookmarks, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder]);
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="h-32 bg-muted rounded-lg"></div>
-          </div>
-        ))}
-      </div>
-    );
+    return <BookmarkListSkeleton count={6} layout={layout} />;
   }
 
   if (filteredAndSortedBookmarks.length === 0) {

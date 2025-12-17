@@ -4,8 +4,8 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useRef } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { BookmarkCard } from './bookmark-card';
-import { BookmarkMinimalView } from './bookmark-minimal-view';
-import { BookmarkListView } from './bookmark-list-view';
+import { BookmarkMinimalItem } from './bookmark-minimal-item';
+import { BookmarkListItem } from './bookmark-list-item';
 
 interface VirtualizedBookmarkListProps {
   bookmarks: Bookmark[];
@@ -53,18 +53,18 @@ export function VirtualizedBookmarkList({
     switch (layout) {
       case 'minimal':
         return (
-          <BookmarkMinimalView
+          <BookmarkMinimalItem
             key={bookmark.id}
-            bookmarks={[bookmark]}
+            bookmark={bookmark}
             onEdit={onEditBookmark}
             onDelete={onDeleteBookmark}
           />
         );
       case 'list':
         return (
-          <BookmarkListView
+          <BookmarkListItem
             key={bookmark.id}
-            bookmarks={[bookmark]}
+            bookmark={bookmark}
             onEdit={onEditBookmark}
             onDelete={onDeleteBookmark}
           />

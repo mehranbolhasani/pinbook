@@ -5,12 +5,14 @@ import { useDrag } from '@use-gesture/react';
 import { Bookmark } from '@/types/pinboard';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Copy, Edit, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SwipeableBookmarkItemProps {
   bookmark: Bookmark;
   onEdit?: (bookmark: Bookmark) => void;
   onDelete?: (bookmark: Bookmark) => void;
   children: React.ReactNode;
+  className?: string;
 }
 
 export function SwipeableBookmarkItem({
@@ -18,6 +20,7 @@ export function SwipeableBookmarkItem({
   onEdit,
   onDelete,
   children,
+  className = "mb-0",
 }: SwipeableBookmarkItemProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
@@ -98,10 +101,13 @@ export function SwipeableBookmarkItem({
   );
 
   return (
-    <div className="relative overflow-hidden lg:overflow-visible" ref={containerRef}>
+    <div className={cn("relative overflow-hidden lg:overflow-visible rounded-xl", className)} ref={containerRef}>
+      {/* Action background for rounded corners visibility */}
+      <div className="absolute inset-0 bg-background rounded-xl lg:hidden" />
+      
       {/* Left Actions (Edit, Delete) - revealed on swipe right */}
       <div
-        className="absolute left-0 top-0 bottom-0 flex items-center justify-start lg:hidden gap-1"
+        className="absolute left-0 top-0 bottom-0 flex items-center justify-start lg:hidden px-2 gap-2"
         style={{
           width: maxSwipeRight,
         }}
@@ -111,7 +117,7 @@ export function SwipeableBookmarkItem({
             variant="ghost"
             size="sm"
             onClick={handleEdit}
-            className="h-full w-[65px] rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
+            className="h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
           >
             <Edit className="h-5 w-5" />
           </Button>
@@ -121,7 +127,7 @@ export function SwipeableBookmarkItem({
             variant="ghost"
             size="sm"
             onClick={handleDelete}
-            className="h-full w-[65px] rounded-lg bg-destructive hover:bg-destructive/90 text-white"
+            className="h-10 w-10 rounded-full bg-destructive hover:bg-destructive/90 text-white shadow-lg"
           >
             <Trash2 className="h-5 w-5" />
           </Button>
@@ -130,7 +136,7 @@ export function SwipeableBookmarkItem({
 
       {/* Right Actions (Open, Copy) - revealed on swipe left */}
       <div
-        className="absolute right-0 top-0 bottom-0 flex items-center justify-end lg:hidden gap-2"
+        className="absolute right-0 top-0 bottom-0 flex items-center justify-end lg:hidden px-2 gap-2"
         style={{
           width: maxSwipeLeft,
         }}
@@ -139,7 +145,7 @@ export function SwipeableBookmarkItem({
           variant="ghost"
           size="sm"
           onClick={handleCopyUrl}
-          className="h-full w-[65px] rounded-lg bg-gray-500 hover:bg-gray-600 text-white"
+          className="h-10 w-10 rounded-full bg-gray-500 hover:bg-gray-600 text-white shadow-lg"
         >
           <Copy className="h-5 w-5" />
         </Button>
@@ -147,7 +153,7 @@ export function SwipeableBookmarkItem({
           variant="ghost"
           size="sm"
           onClick={handleOpenUrl}
-          className="h-full w-[65px] rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
         >
           <ExternalLink className="h-5 w-5" />
         </Button>

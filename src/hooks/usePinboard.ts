@@ -63,7 +63,50 @@ export function useAddBookmark() {
       if (!api) throw new Error('Failed to initialize API');
       return api.addBookmark(params);
     },
-    onSuccess: () => {
+    // Optimistic Update
+    onMutate: async (newBookmarkParams) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: queryKeys.bookmarks });
+
+      // Snapshot the previous value
+      const previousBookmarks = queryClient.getQueryData<Bookmark[]>(queryKeys.bookmarks);
+
+      // Optimistically update to the new value
+      if (previousBookmarks) {
+        const optimisticBookmark: Bookmark = {
+          id: `temp-${Date.now()}`,
+          title: newBookmarkParams.description,
+          url: newBookmarkParams.url,
+          description: newBookmarkParams.description,
+          extended: newBookmarkParams.extended || '',
+          tags: newBookmarkParams.tags ? newBookmarkParams.tags.split(' ').filter(tag => tag.trim()) : [],
+          createdAt: new Date(),
+          isRead: newBookmarkParams.toread === 'no',
+          isShared: newBookmarkParams.shared === 'yes',
+          domain: new URL(newBookmarkParams.url).hostname,
+          hash: `temp-${Date.now()}`,
+          meta: '',
+          href: newBookmarkParams.url,
+          shared: newBookmarkParams.shared || 'no',
+          toread: newBookmarkParams.toread || 'no'
+        };
+
+        queryClient.setQueryData<Bookmark[]>(queryKeys.bookmarks, [
+          optimisticBookmark,
+          ...previousBookmarks,
+        ]);
+      }
+
+      return { previousBookmarks };
+    },
+    // If the mutation fails, use the context returned from onMutate to roll back
+    onError: (err, newBookmark, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(queryKeys.bookmarks, context.previousBookmarks);
+      }
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks });
       queryClient.invalidateQueries({ queryKey: queryKeys.tags });
     },
@@ -75,13 +118,10 @@ function mapBookmarkToAddParams(bookmark: Partial<Bookmark>): AddBookmarkParams 
   if (!bookmark.url) {
     throw new Error('URL is required to update a bookmark');
   }
-  if (!bookmark.description && !bookmark.title) {
-    throw new Error('Description or title is required to update a bookmark');
-  }
-
+  // Pinboard uses 'description' for title and 'extended' for description
   return {
     url: bookmark.url,
-    description: bookmark.description || bookmark.title || '',
+    description: bookmark.title || bookmark.description || '',
     extended: bookmark.extended || '',
     tags: bookmark.tags ? bookmark.tags.join(' ') : undefined,
     shared: bookmark.isShared !== undefined ? (bookmark.isShared ? 'yes' : 'no') : undefined,
@@ -104,7 +144,25 @@ export function useUpdateBookmark() {
       const params = mapBookmarkToAddParams(updates);
       return api.addBookmark(params);
     },
-    onSuccess: () => {
+    // Optimistic Update
+    onMutate: async ({ id, updates }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.bookmarks });
+      const previousBookmarks = queryClient.getQueryData<Bookmark[]>(queryKeys.bookmarks);
+
+      if (previousBookmarks) {
+        queryClient.setQueryData<Bookmark[]>(queryKeys.bookmarks, 
+          previousBookmarks.map(b => b.id === id ? { ...b, ...updates } : b)
+        );
+      }
+
+      return { previousBookmarks };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(queryKeys.bookmarks, context.previousBookmarks);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks });
       queryClient.invalidateQueries({ queryKey: queryKeys.tags });
     },
@@ -123,11 +181,32 @@ export function useDeleteBookmark() {
       if (!api) throw new Error('Failed to initialize API');
       return api.deleteBookmark(url);
     },
+    // Optimistic Update
+    onMutate: async (url) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.bookmarks });
+      const previousBookmarks = queryClient.getQueryData<Bookmark[]>(queryKeys.bookmarks);
+
+      if (previousBookmarks) {
+        queryClient.setQueryData<Bookmark[]>(queryKeys.bookmarks, 
+          previousBookmarks.filter(b => b.url !== url)
+        );
+      }
+
+      return { previousBookmarks };
+    },
+    onError: (err, url, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(queryKeys.bookmarks, context.previousBookmarks);
+      }
+    },
     onSuccess: (_, url) => {
       // Remove bookmark from folder mapping
       removeBookmarkFromFolder(url);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks });
       queryClient.invalidateQueries({ queryKey: queryKeys.tags });
     },
   });
 }
+

@@ -1,7 +1,6 @@
 'use client';
 
-// import { useState } from 'react';
-import { format } from 'date-fns';
+import { cn, formatDate } from '@/lib/utils';
 import { 
   MoreHorizontal
 } from 'lucide-react';
@@ -24,18 +23,6 @@ interface BookmarkCardProps {
 export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
   const {} = useBookmarkStore();
 
-
-  const formatDate = (date: Date) => {
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-    
-    return format(date, 'MMM d, yyyy');
-  };
-
   return (
     <RightClickContextMenu
       bookmark={bookmark}
@@ -55,74 +42,73 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
         <Card 
           className={`bg-card dark:bg-card transition-all duration-200 shadow-md shadow-primary/10 hover:shadow-lg h-fit w-full`}
         >
-      <CardHeader className="pb-0">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0 pr-2 word-break-words">
-            <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1 break-all">
-              {bookmark.title}
-            </h3>
-            <p className="text-sm text-muted-foreground line-clamp-1 break-all">
-              {bookmark.domain}
-            </p>
-          </div>
+          <CardHeader className="pb-0">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0 pr-2 word-break-words">
+                <h3 className="font-semibold text-lg leading-tight line-clamp-2 mb-1 break-all">
+                  {bookmark.title}
+                </h3>
+                <p className="text-sm text-muted-foreground line-clamp-1 break-all">
+                  {bookmark.domain}
+                </p>
+              </div>
+              
+              <div className="flex items-center space-x-2 ml-4">
+                {bookmark.isShared && (
+                  <Badge variant="outline" className="text-xs">
+                    Shared
+                  </Badge>
+                )}
+                
+                <BookmarkContextMenu 
+                  bookmark={bookmark} 
+                  onEdit={onEdit} 
+                  onDelete={onDelete}
+                >
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </BookmarkContextMenu>
+              </div>
+            </div>
+          </CardHeader>
           
-          <div className="flex items-center space-x-2 ml-4">
-            
-            {bookmark.isShared && (
-              <Badge variant="outline" className="text-xs">
-                Shared
-              </Badge>
+          <CardContent className="pt-0">
+            {bookmark.extended && (
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-2 wrap-break-word">
+                {bookmark.extended}
+              </p>
             )}
             
-            <BookmarkContextMenu 
-              bookmark={bookmark} 
-              onEdit={onEdit} 
-              onDelete={onDelete}
-            >
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </BookmarkContextMenu>
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="pt-0">
-        {bookmark.extended && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2 break-words">
-            {bookmark.extended}
-          </p>
-        )}
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 flex-row">
-            <span className="text-xs text-muted-foreground">
-              {formatDate(bookmark.createdAt)}
-            </span>
-            {bookmark.tags.length > 0 && (
-              <>
-                <span className="bg-muted-foreground h-px w-8 opacity-35"></span>
-                <div className="flex items-center space-x-1">
-                  <div className="flex flex-wrap gap-1 max-w-full">
-                    {bookmark.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="default" className="text-xs truncate max-w-20">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {bookmark.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{bookmark.tags.length - 3}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-    </motion.div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 flex-row">
+                <span className="text-xs text-muted-foreground">
+                  {formatDate(bookmark.createdAt)}
+                </span>
+                {bookmark.tags.length > 0 && (
+                  <>
+                    <span className="bg-muted-foreground h-px w-8 opacity-35"></span>
+                    <div className="flex items-center space-x-1">
+                      <div className="flex flex-wrap gap-1 max-w-full">
+                        {bookmark.tags.slice(0, 3).map((tag) => (
+                          <Badge key={tag} variant="default" className="text-xs truncate max-w-20">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {bookmark.tags.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{bookmark.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </RightClickContextMenu>
   );
 }

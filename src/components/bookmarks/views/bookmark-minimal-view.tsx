@@ -1,7 +1,7 @@
 'use client';
 
 import { Bookmark } from '@/types/pinboard';
-import { BookmarkMinimalView as BookmarkMinimalItem } from '../bookmark-minimal-view';
+import { BookmarkMinimalItem } from '../bookmark-minimal-item';
 import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-container';
 
 interface BookmarkMinimalViewProps {
@@ -12,11 +12,11 @@ interface BookmarkMinimalViewProps {
 
 export function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMinimalViewProps) {
   return (
-    <AnimatedList key={`minimal-${bookmarks.length}`}>
+    <AnimatedList key={`minimal-${bookmarks.length}`} className="space-y-1">
       {bookmarks.map((bookmark) => (
         <AnimatedListItem key={bookmark.id}>
           <BookmarkMinimalItem
-            bookmarks={[bookmark]}
+            bookmark={bookmark}
             onEdit={onEdit}
             onDelete={onDelete}
           />

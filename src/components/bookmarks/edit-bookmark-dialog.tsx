@@ -111,129 +111,147 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Edit Bookmark</DialogTitle>
-          <DialogDescription>
-            Update the bookmark details below.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Bookmark title"
-            />
-          </div>
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSave();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Edit Bookmark</DialogTitle>
+            <DialogDescription>
+              Update the bookmark details below.
+            </DialogDescription>
+          </DialogHeader>
           
-          <div className="space-y-2">
-            <Label htmlFor="url">URL</Label>
-            <Input
-              id="url"
-              value={formData.url}
-              onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-              placeholder="https://example.com"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Brief description"
-              rows={2}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="extended">Extended Notes</Label>
-            <Textarea
-              id="extended"
-              value={formData.extended}
-              onChange={(e) => setFormData(prev => ({ ...prev, extended: e.target.value }))}
-              placeholder="Additional notes"
-              rows={3}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
-            <div className="flex space-x-2">
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
               <Input
-                id="tags"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Add a tag"
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Bookmark title"
+                autoComplete="off"
               />
-              <Button type="button" onClick={addTag} size="sm">
-                Add
-              </Button>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                  {tag}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeTag(tag)}
-                    className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="folder">Folder</Label>
-            <Select
-              value={formData.folderId || 'none'}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, folderId: value === 'none' ? undefined : value }))}
-            >
-              <SelectTrigger id="folder">
-                <SelectValue placeholder="Select a folder" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No Folder</SelectItem>
-                {folders.map((folder) => (
-                  <SelectItem key={folder.id} value={folder.id}>
-                    {folder.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex items-center space-x-4">
             
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isShared"
-                checked={formData.isShared}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isShared: checked }))}
+            <div className="space-y-2">
+              <Label htmlFor="url">URL</Label>
+              <Input
+                id="url"
+                value={formData.url}
+                onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+                placeholder="https://example.com"
+                type="url"
+                required
+                autoComplete="off"
               />
-              <Label htmlFor="isShared">Share publicly</Label>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Brief description"
+                rows={2}
+                autoComplete="off"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="extended">Extended Notes</Label>
+              <Textarea
+                id="extended"
+                value={formData.extended}
+                onChange={(e) => setFormData(prev => ({ ...prev, extended: e.target.value }))}
+                placeholder="Additional notes"
+                rows={3}
+                autoComplete="off"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="tags">Tags</Label>
+              <div className="flex space-x-2">
+                <Input
+                  id="tags"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addTag();
+                    }
+                  }}
+                  placeholder="Add a tag"
+                  autoComplete="off"
+                />
+                <Button type="button" onClick={addTag} size="sm">
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {formData.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                    {tag}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeTag(tag)}
+                      className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="folder">Folder</Label>
+              <Select
+                value={formData.folderId || 'none'}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, folderId: value === 'none' ? undefined : value }))}
+              >
+                <SelectTrigger id="folder">
+                  <SelectValue placeholder="Select a folder" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No Folder</SelectItem>
+                  {folders.map((folder) => (
+                    <SelectItem key={folder.id} value={folder.id}>
+                      {folder.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="isShared"
+                  checked={formData.isShared}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isShared: checked }))}
+                />
+                <Label htmlFor="isShared">Share publicly</Label>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>
-            Save Changes
-          </Button>
-        </DialogFooter>
+          
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

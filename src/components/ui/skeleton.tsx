@@ -8,11 +8,11 @@ function Skeleton({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("relative overflow-hidden rounded-md bg-muted", className)}
+      className={cn("relative overflow-hidden rounded-md bg-muted/50 dark:bg-muted/30", className)}
       {...props}
     >
       <motion.div
-        className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-foreground/5 to-transparent"
         variants={shimmer}
         animate="animate"
       />

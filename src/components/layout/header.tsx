@@ -125,11 +125,11 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
 
   return (
     <>
-      <header className="fixed bottom-0 left-1/2 -translate-x-1/2 max-w-5xl mx-auto h-36 flex items-center z-50">
+      <header className="hidden fixed bottom-0 left-1/2 -translate-x-1/2 max-w-5xl mx-auto h-36 sm:flex items-center z-50">
         <div className="fake-shadow absolute rounded-full w-full h-18">
           <div className="absolute rounded-full w-full h-full bg-primary/15 -top-2 left-1/2 -translate-x-1/2 blur-3xl"></div>
         </div>
-        <div className="container flex h-fit min-h-[66px] items-center justify-between px-4 py-2 bg-white/90 dark:bg-primary/5 rounded-full border border-white backdrop-blur-lg shadow-xl">
+        <div className="container flex h-fit min-h-[66px] items-center justify-between px-4 py-2 bg-white/90 dark:bg-primary/15 rounded-full border border-white dark:border-primary/10 backdrop-blur-lg shadow-xl">
           {/* Logo and Title */}
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-1">
@@ -294,7 +294,7 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
                 variant="default"
                 size="sm"
                 onClick={onAddBookmark}
-                className="flex items-center space-x-1 rounded-full px-4! h-full py-3! bg-primary text-white"
+                className="flex items-center space-x-1 rounded-full px-4! h-full py-3! bg-primary text-white dark:bg-primary/30 dark:text-primary hover:bg-primary/90 dark:hover:bg-primary/50"
               >
                 <Plus className="h-4 w-4 text-white m-0!" />
                 <span>Add</span>
@@ -353,7 +353,7 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
           </div>
         </div>
 
-        <div className="container flex w-48 h-fit min-h-[66px] items-center justify-between px-2 py-2 bg-white/90 dark:bg-primary/5 rounded-full border border-white backdrop-blur-lg shadow-xl ml-2 focus-within:ring-2 focus-within:ring-primary focus-within:w-72 transition-all duration-200">
+        <div className="container flex w-48 h-fit min-h-[66px] items-center justify-between px-2 py-2 bg-white/90 dark:bg-primary/15 rounded-full border border-white dark:border-primary/10 backdrop-blur-lg shadow-xl ml-2 ring-1 ring-transparent focus-within:ring-1 focus-within:ring-primary focus-within:w-72 transition-all duration-200">
           {/* Search Bar */}
           {isAuthenticated && (
             <div className="flex-1 max-w-full">
@@ -361,7 +361,7 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   ref={searchRef || ref}
-                  placeholder="Search bookmarks..."
+                  placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => onSearch(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}

@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/lib/stores/auth';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { testPinboardConnection } from '@/lib/api/test-connection';
+import { Paperclip } from 'lucide-react';
 
 export function LoginForm() {
   const [apiToken, setApiToken] = useState('');
@@ -63,77 +63,89 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome to Pinbook</CardTitle>
-          <CardDescription>
+    <div className="min-h-svh h-svh flex items-center justify-center bg-background">
+      <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-screen z-10">
+        <span className="absolute top-0 left-0 w-px h-full bg-primary/15"></span>
+        <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
+      </div>
+
+      <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 z-10 blur-3xl opacity-70">
+        <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -right-12"></span>
+        <span className="relative w-full h-full bg-primary/35 aspect-square rounded-full blur-2xl"></span>
+        <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -left-12"></span>
+      </div>
+        
+      <div className="w-full max-w-md z-20 h-screen flex flex-col items-center justify-between py-20">
+        <div className="text-center">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Paperclip className="h-8 w-8 text-primary" />
+            <h2 className="text-3xl font-bold tracking-tighter">Pinbook</h2>
+          </div>
+          <p className="text-muted-foreground w-2/4 mx-auto mt-4">
             Enter your Pinboard API credentials to get started
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Your Pinboard username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                onFocus={() => setError('')}
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="apiToken">API Token</Label>
-              <Input
-                id="apiToken"
-                type="password"
-                placeholder="Your Pinboard API token"
-                value={apiToken}
-                onChange={(e) => setApiToken(e.target.value)}
-                onFocus={() => setError('')}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                You can find your API token in your Pinboard settings. 
-                <br />
-                Format: <code className="bg-muted px-1 rounded">username:token</code>
-              </p>
-            </div>
-
-            {error && (
-              <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-                {error}
-              </div>
-            )}
-
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading}
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              Don&apos;t have a Pinboard account?{' '}
-              <a 
-                href="https://pinboard.in/signup/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Sign up for Pinboard
-              </a>
+          </p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4 w-full px-8 sm:px-0">
+          <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              type="text"
+              placeholder="Your Pinboard username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onFocus={() => setError('')}
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="apiToken">API Token</Label>
+            <Input
+              id="apiToken"
+              type="password"
+              placeholder="Your Pinboard API token"
+              value={apiToken}
+              onChange={(e) => setApiToken(e.target.value)}
+              onFocus={() => setError('')}
+              required
+            />
+            <p className="text-xs text-muted-foreground">
+              You can find your API token in your Pinboard settings. 
+              <br />
+              Format: <code className="bg-muted px-1 rounded">username:token</code>
             </p>
           </div>
-        </CardContent>
-      </Card>
+
+          {error && (
+            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+              {error}
+            </div>
+          )}
+
+          <Button 
+            type="submit" 
+            className="w-1/2 mx-auto mt-4" 
+            disabled={isLoading}
+          >
+            {isLoading ? 'Signing in...' : 'Sign In'}
+          </Button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-muted-foreground flex flex-col items-center justify-center">
+            <span>Don&apos;t have a Pinboard account?{' '}</span>
+            <a 
+              href="https://pinboard.in/signup/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Sign up for Pinboard
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

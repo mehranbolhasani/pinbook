@@ -111,9 +111,15 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-background">
+    <form 
+      className="flex h-full flex-col bg-background"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSave();
+      }}
+    >
       {/* Header */}
-      <SheetHeader>
+      <SheetHeader className="p-4 pb-0">
         <SheetTitle>Add New Bookmark</SheetTitle>
       </SheetHeader>
 
@@ -127,6 +133,8 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
             onChange={(e) => handleUrlChange(e.target.value)}
             placeholder="https://example.com"
             type="url"
+            required
+            autoComplete="off"
           />
         </div>
         
@@ -137,6 +145,7 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
             value={formData.title}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
             placeholder="Bookmark title (optional)"
+            autoComplete="off"
           />
         </div>
         
@@ -148,6 +157,7 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
             placeholder="Brief description"
             rows={2}
+            autoComplete="off"
           />
         </div>
         
@@ -159,6 +169,7 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
             onChange={(e) => setFormData(prev => ({ ...prev, extended: e.target.value }))}
             placeholder="Additional notes"
             rows={3}
+            autoComplete="off"
           />
         </div>
         
@@ -169,8 +180,14 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
               id="tags"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addTag();
+                }
+              }}
               placeholder="Add a tag"
+              autoComplete="off"
             />
             <Button type="button" onClick={addTag} size="sm">
               <Plus className="h-4 w-4" />
@@ -209,6 +226,7 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
       {/* Actions */}
       <div className="p-4 flex gap-2">
         <Button 
+          type="button"
           variant="outline" 
           onClick={onClose} 
           disabled={isSubmitting}
@@ -217,13 +235,13 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
           Cancel
         </Button>
         <Button 
-          onClick={handleSave} 
+          type="submit"
           disabled={isSubmitting || !formData.url.trim()}
           className="flex-1"
         >
           {isSubmitting ? 'Adding...' : 'Add Bookmark'}
         </Button>
       </div>
-    </div>
+    </form>
   );
 }

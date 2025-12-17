@@ -34,7 +34,7 @@ export function BookmarkToolbar() {
   ];
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between w-full">
       {/* Sort Button Group */}
       <div className="flex items-center gap-1 border rounded-lg p-1 bg-background">
         {sortOptions.map((option) => (
@@ -44,8 +44,8 @@ export function BookmarkToolbar() {
             size="sm"
             onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
             className={cn(
-              'h-8 px-3',
-              sortBy === option.value && 'bg-primary text-primary-foreground'
+              'h-8 px-3 hover:bg-primary/90 hover:text-primary-foreground dark:hover:bg-primary/50 dark:hover:text-primary!',
+              sortBy === option.value && 'bg-primary text-primary-foreground dark:bg-primary/30 dark:text-primary hover:bg-primary/90 dark:hover:bg-primary/50'
             )}
           >
             {option.label}
@@ -56,7 +56,7 @@ export function BookmarkToolbar() {
           variant="ghost"
           size="sm"
           onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-          className="h-8 px-2"
+          className="h-8 px-2 hover:bg-primary/90 hover:text-primary-foreground dark:hover:bg-primary/50 dark:hover:text-primary!"
           title={`Sort ${sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
         >
           {sortOrder === 'asc' ? (
@@ -78,8 +78,8 @@ export function BookmarkToolbar() {
               size="sm"
               onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
               className={cn(
-                'h-8 px-3',
-                layout === option.value && 'bg-primary text-primary-foreground'
+                'h-8 px-3 hover:bg-primary/90 hover:text-primary-foreground dark:hover:bg-primary/50 dark:hover:text-primary!',
+                layout === option.value && 'bg-primary text-primary-foreground dark:bg-primary/30 dark:text-primary hover:bg-primary/90 dark:hover:bg-primary/50'
               )}
               title={option.label}
             >

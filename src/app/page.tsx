@@ -18,6 +18,8 @@ import { ErrorBoundary, BookmarkListErrorBoundary } from '@/components/error-bou
 import { useBookmarks, useDeleteBookmark, useUpdateBookmark } from '@/hooks/usePinboard';
 import { Header } from '@/components/layout/header';
 
+import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
+
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
   const { setSearchQuery, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder } = useUIStore();
@@ -39,59 +41,13 @@ export default function Home() {
   
   const toast = useToast();
 
-  // Compute filtered and sorted bookmarks (same logic as BookmarkList)
-  const filteredAndSortedBookmarks = useMemo(() => {
-    let filtered = [...bookmarks];
-
-    // Filter by folder
-    if (selectedFolderId !== null) {
-      filtered = filtered.filter(bookmark => bookmark.folderId === selectedFolderId);
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(bookmark => 
-        bookmark.title.toLowerCase().includes(query) ||
-        bookmark.description.toLowerCase().includes(query) ||
-        bookmark.url.toLowerCase().includes(query) ||
-        bookmark.extended.toLowerCase().includes(query)
-      );
-    }
-
-    // Filter by tags
-    if (selectedTags.length > 0) {
-      filtered = filtered.filter(bookmark => 
-        selectedTags.some(tag => bookmark.tags.includes(tag))
-      );
-    }
-
-    // Sort bookmarks
-    filtered.sort((a, b) => {
-      let comparison = 0;
-      
-      switch (sortBy) {
-        case 'title':
-          comparison = a.title.localeCompare(b.title);
-          break;
-        case 'url':
-          comparison = a.url.localeCompare(b.url);
-          break;
-        case 'date':
-        default:
-          comparison = a.createdAt.getTime() - b.createdAt.getTime();
-          break;
-      }
-      
-      return sortOrder === 'desc' ? -comparison : comparison;
-    });
-
-    return filtered;
-  }, [bookmarks, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder]);
+  // Compute filtered and sorted bookmarks using shared hook
+  const filteredAndSortedBookmarks = useFilteredBookmarks(bookmarks);
 
   const selectedBookmark = selectedBookmarkIndex !== null && selectedBookmarkIndex >= 0 && selectedBookmarkIndex < filteredAndSortedBookmarks.length
     ? filteredAndSortedBookmarks[selectedBookmarkIndex]
     : null;
+
   const selectedBookmarkId = selectedBookmark?.id || null;
 
   // Reset selected index when filters change
@@ -244,6 +200,12 @@ export default function Home() {
           <span className="absolute top-0 left-0 w-px h-full bg-primary/15"></span>
           <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
         </div>
+
+        <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 z-10 blur-3xl">
+          <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -right-12"></span>
+          <span className="relative w-full h-full bg-primary/35 aspect-square rounded-full blur-2xl"></span>
+          <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -left-12"></span>
+        </div>
         
         {/* Mobile Navigation */}
         <MobileNav />
@@ -256,13 +218,12 @@ export default function Home() {
           <main className="flex-1 min-w-0 py-6 w-full">
             <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
-                <BookmarkList 
-                  bookmarks={bookmarks}
-                  isLoading={isBookmarksLoading}
-                  onEditBookmark={handleEditBookmark}
-                  onDeleteBookmark={handleDeleteBookmark}
-                  selectedBookmarkId={selectedBookmarkId}
-                />
+              <BookmarkList 
+                bookmarks={bookmarks}
+                isLoading={isBookmarksLoading}
+                onEditBookmark={handleEditBookmark}
+                onDeleteBookmark={handleDeleteBookmark}
+              />
               </BookmarkListErrorBoundary>
             </div>
           </main>

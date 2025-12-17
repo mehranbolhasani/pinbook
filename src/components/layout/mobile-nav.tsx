@@ -43,11 +43,11 @@ export function MobileNav() {
           {/* Left: Logo */}
           <div className="flex items-center space-x-2 shrink-0">
             <BookmarkIcon className="h-5 w-5 text-primary" />
-            <span className="font-semibold">Pinbook</span>
+            <span className="font-semibold hidden min-[380px]:inline">Pinbook</span>
           </div>
 
           {/* Center: Search */}
-          <div className="relative flex-1 max-w-md">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search..."
@@ -106,10 +106,11 @@ export function MobileNav() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-10 px-1"
+                className="h-10 px-2"
               >
-                <Filter className="h-4 w-4 mr-1" />
-                <span className="text-md">Sort/Filter</span>
+                <Filter className="h-4 w-4 min-[380px]:mr-2" />
+                <span className="text-md hidden min-[380px]:inline">Sort/Filter</span>
+                <span className="text-md inline min-[380px]:hidden">Filter</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[80vh] p-0">
@@ -122,9 +123,9 @@ export function MobileNav() {
             variant="default"
             size="default"
             onClick={() => setIsAddBookmarkOpen(true)}
-            className="h-10 px-4!"
+            className="h-10 px-3 min-[380px]:px-4!"
           >
-            <Plus className="h-4 w-4 mr-0" />
+            <Plus className="h-4 w-4 min-[380px]:mr-1" />
             <span className="text-md">Add</span>
           </Button>
         </div>

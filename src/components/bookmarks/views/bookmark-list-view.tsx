@@ -1,7 +1,7 @@
 'use client';
 
 import { Bookmark } from '@/types/pinboard';
-import { BookmarkListView as BookmarkListItem } from '../bookmark-list-view';
+import { BookmarkListItem } from '../bookmark-list-item';
 import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-container';
 
 interface BookmarkListViewProps {
@@ -12,11 +12,11 @@ interface BookmarkListViewProps {
 
 export function BookmarkListView({ bookmarks, onEdit, onDelete }: BookmarkListViewProps) {
   return (
-    <AnimatedList key={`list-${bookmarks.length}`}>
+    <AnimatedList key={`list-${bookmarks.length}`} className="space-y-2">
       {bookmarks.map((bookmark) => (
         <AnimatedListItem key={bookmark.id}>
           <BookmarkListItem
-            bookmarks={[bookmark]}
+            bookmark={bookmark}
             onEdit={onEdit}
             onDelete={onDelete}
           />

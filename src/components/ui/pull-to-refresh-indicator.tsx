@@ -23,7 +23,7 @@ export function PullToRefreshIndicator({
 
   return (
     <div
-      className="flex items-center justify-center py-4 transition-opacity"
+      className="flex items-center justify-center py-4"
       style={{
         opacity,
         transform: `translateY(${Math.min(pullDistance, threshold)}px)`,

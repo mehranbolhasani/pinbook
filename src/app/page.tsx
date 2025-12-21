@@ -2,13 +2,42 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
  
-import { MobileNav } from '@/components/layout/mobile-nav';
+import dynamic from 'next/dynamic';
 import { BookmarkList } from '@/components/bookmarks/bookmark-list';
-import { EditBookmarkDialog } from '@/components/bookmarks/edit-bookmark-dialog';
-import { AddBookmarkDialog } from '@/components/bookmarks/add-bookmark-dialog';
 import { LoginForm } from '@/components/auth/login-form';
-import { KeyboardShortcutsModal } from '@/components/ui/keyboard-shortcuts-modal';
-import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+
+// Lazy load dialogs and modals
+const EditBookmarkDialog = dynamic(
+  () => import('@/components/bookmarks/edit-bookmark-dialog').then(mod => ({ default: mod.EditBookmarkDialog })),
+  { ssr: false }
+);
+
+const AddBookmarkDialog = dynamic(
+  () => import('@/components/bookmarks/add-bookmark-dialog').then(mod => ({ default: mod.AddBookmarkDialog })),
+  { ssr: false }
+);
+
+const KeyboardShortcutsModal = dynamic(
+  () => import('@/components/ui/keyboard-shortcuts-modal').then(mod => ({ default: mod.KeyboardShortcutsModal })),
+  { ssr: false }
+);
+
+// Lazy load layout components
+const MobileNav = dynamic(
+  () => import('@/components/layout/mobile-nav').then(mod => ({ default: mod.MobileNav })),
+  { ssr: false }
+);
+
+const Header = dynamic(
+  () => import('@/components/layout/header').then(mod => ({ default: mod.Header })),
+  { ssr: false }
+);
+
+const ConfirmationDialog = dynamic(
+  () => import('@/components/ui/confirmation-dialog').then(mod => ({ default: mod.ConfirmationDialog })),
+  { ssr: false }
+);
+
 import { useAuthStore } from '@/lib/stores/auth';
 import { useUIStore } from '@/lib/stores/ui';
 import { Bookmark } from '@/types/pinboard';
@@ -16,7 +45,6 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useToast } from '@/hooks/useToast';
 import { ErrorBoundary, BookmarkListErrorBoundary } from '@/components/error-boundary';
 import { useBookmarks, useDeleteBookmark, useUpdateBookmark } from '@/hooks/usePinboard';
-import { Header } from '@/components/layout/header';
 
 import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
 
@@ -44,9 +72,12 @@ export default function Home() {
   // Compute filtered and sorted bookmarks using shared hook
   const filteredAndSortedBookmarks = useFilteredBookmarks(bookmarks);
 
-  const selectedBookmark = selectedBookmarkIndex !== null && selectedBookmarkIndex >= 0 && selectedBookmarkIndex < filteredAndSortedBookmarks.length
-    ? filteredAndSortedBookmarks[selectedBookmarkIndex]
-    : null;
+  const selectedBookmark = useMemo(() => {
+    if (selectedBookmarkIndex === null || selectedBookmarkIndex < 0 || selectedBookmarkIndex >= filteredAndSortedBookmarks.length) {
+      return null;
+    }
+    return filteredAndSortedBookmarks[selectedBookmarkIndex];
+  }, [selectedBookmarkIndex, filteredAndSortedBookmarks]);
 
   const selectedBookmarkId = selectedBookmark?.id || null;
 
@@ -161,6 +192,15 @@ export default function Home() {
     }
   }, [selectedBookmark]);
 
+  const handleEditBookmarkMemo = useCallback((bookmark: Bookmark) => {
+    setEditingBookmark(bookmark);
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const handleDeleteBookmarkMemo = useCallback((bookmark: Bookmark) => {
+    setDeleteConfirmation({ isOpen: true, bookmark });
+  }, []);
+
   
   // Set up keyboard shortcuts
   useKeyboardShortcuts({
@@ -201,7 +241,7 @@ export default function Home() {
           <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
         </div>
 
-        <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 -z-10 blur-3xl">
+        <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 -z-10 blur-3xl opacity-30">
           <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -right-12"></span>
           <span className="relative w-full h-full bg-primary/35 aspect-square rounded-full blur-2xl"></span>
           <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -left-12"></span>
@@ -221,8 +261,8 @@ export default function Home() {
               <BookmarkList 
                 bookmarks={bookmarks}
                 isLoading={isBookmarksLoading}
-                onEditBookmark={handleEditBookmark}
-                onDeleteBookmark={handleDeleteBookmark}
+                onEditBookmark={handleEditBookmarkMemo}
+                onDeleteBookmark={handleDeleteBookmarkMemo}
               />
               </BookmarkListErrorBoundary>
             </div>

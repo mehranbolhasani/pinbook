@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Analytics } from "@vercel/analytics/react";
@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   description: "A modern, minimal Pinboard client for managing your bookmarks",
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,6 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://api.pinboard.in" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api.pinboard.in" />
+      </head>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}>
         <QueryProvider>
           <ThemeProvider

@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { formatDate } from '@/lib/utils';
 import { ExternalLink, Share, Trash2, Edit, Copy } from 'lucide-react';
@@ -12,7 +13,7 @@ interface BookmarkMinimalItemProps {
   onDelete?: (bookmark: Bookmark) => void;
 }
 
-export function BookmarkMinimalItem({ bookmark, onEdit, onDelete }: BookmarkMinimalItemProps) {
+export const BookmarkMinimalItem = memo(function BookmarkMinimalItem({ bookmark, onEdit, onDelete }: BookmarkMinimalItemProps) {
   const handleOpenUrl = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -29,12 +30,12 @@ export function BookmarkMinimalItem({ bookmark, onEdit, onDelete }: BookmarkMini
       className="mb-0"
     >
       <div
-        className="flex items-center justify-between py-2 px-3 hover:bg-primary/30 transition-colors rounded group/item"
+        className="flex items-center justify-between py-2 px-3 hover:bg-primary/30 rounded group/item"
       >
         <div className="flex-1 min-w-0 flex items-center space-x-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
-              <h3 className="font-medium text-sm truncate">
+              <h3 className="font-semibold text-md truncate">
                 {bookmark.title}
               </h3>
               {bookmark.isShared && (
@@ -47,7 +48,7 @@ export function BookmarkMinimalItem({ bookmark, onEdit, onDelete }: BookmarkMini
           </div>
         </div>
         
-        <div className="hidden lg:flex items-center space-x-1 invisible group-hover/item:visible transition-opacity duration-50 bg-white p-2 rounded-md border border-muted-foreground/20 dark:bg-neutral-800 dark:border-neutral-700">
+        <div className="hidden lg:flex items-center space-x-1 invisible group-hover/item:visible bg-white p-2 rounded-md border border-muted-foreground/20 dark:bg-neutral-800 dark:border-neutral-700">
           <span className="text-xs text-muted-foreground dark:text-neutral-400">
             {formatDate(bookmark.createdAt)}
           </span>
@@ -99,4 +100,4 @@ export function BookmarkMinimalItem({ bookmark, onEdit, onDelete }: BookmarkMini
       </div>
     </SwipeableBookmarkItem>
   );
-}
+});

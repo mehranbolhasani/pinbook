@@ -76,7 +76,7 @@ export function BookmarkSkeleton({ layout = 'card' }: BookmarkSkeletonProps) {
 
   // Default card layout
   return (
-    <Card className="transition-all duration-200">
+    <Card>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">

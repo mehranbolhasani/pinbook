@@ -7,8 +7,6 @@ import { ExternalLink, Share, Trash2, Edit, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
- 
 
 interface BookmarkMasonryViewProps {
   bookmarks: Bookmark[];
@@ -17,7 +15,6 @@ interface BookmarkMasonryViewProps {
 }
 
 export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMasonryViewProps) {
-  const { } = useBookmarkStore();
 
   // const handleToggleShared = async (bookmark: Bookmark) => {
   //   const newSharedStatus = !bookmark.isShared;
@@ -51,7 +48,7 @@ export function BookmarkMasonryView({ bookmarks, onEdit, onDelete }: BookmarkMas
   return (
     <div className="columns-1 md:columns-2 lg:columns-4 gap-2 space-y-4"> 
       {bookmarks.map((bookmark) => (
-        <Card key={bookmark.id} className="break-inside-avoid mb-4 hover:shadow-md transition-shadow">
+        <Card key={bookmark.id} className="break-inside-avoid mb-4 hover:shadow-md">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               

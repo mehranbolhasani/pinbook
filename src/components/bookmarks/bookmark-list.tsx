@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useCallback } from 'react';
 import { BookmarkCardView } from './views/bookmark-card-view';
 import { BookmarkListView } from './views/bookmark-list-view';
 import { BookmarkMinimalView } from './views/bookmark-minimal-view';
@@ -22,7 +23,7 @@ interface BookmarkListProps {
   onDeleteBookmark?: (bookmark: Bookmark) => void;
 }
 
-export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark }: BookmarkListProps) {
+export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark }: BookmarkListProps) {
   const { 
     searchQuery, 
     selectedTags,
@@ -165,4 +166,4 @@ export function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBoo
       {/* Selection mode removed */}
     </div>
   );
-}
+});

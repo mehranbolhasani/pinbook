@@ -1,8 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { useDrag } from '@use-gesture/react';
-import { motion, useSpring, useTransform } from 'framer-motion';
 import {
   MoreHorizontal,
   Tag,
@@ -13,11 +10,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bookmark } from '@/types/pinboard';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { BookmarkContextMenu } from './bookmark-context-menu';
 import { BookmarkQuickActions } from './bookmark-quick-actions';
 import { RightClickContextMenu } from './right-click-context-menu';
-import { cn, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 
 interface MobileBookmarkCardProps {
   bookmark: Bookmark;
@@ -26,32 +22,6 @@ interface MobileBookmarkCardProps {
 }
 
 export function MobileBookmarkCard({ bookmark, onEdit, onDelete }: MobileBookmarkCardProps) {
-  const { } = useBookmarkStore();
-  const [isDragging, setIsDragging] = useState(false);
-
-  const x = useSpring(0, { stiffness: 300, damping: 30 });
-  const opacity = useTransform(x, [-100, 0, 100], [0.5, 1, 0.5]);
-
-  const bind = useDrag(
-    ({ down, movement: [mx], direction: [xDir], velocity: [vx] }) => {
-      const trigger = vx > 0.5;
-      const dir = xDir < 0 ? -1 : 1;
-
-      if (!down && trigger) {
-        if (dir === 1) {
-          window.open(bookmark.url, '_blank', 'noopener,noreferrer');
-        }
-      }
-
-      x.set(down ? mx : 0);
-      setIsDragging(down);
-    },
-    {
-      axis: 'x',
-      bounds: { left: -100, right: 100 },
-      rubberband: true
-    }
-  );
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
@@ -63,17 +33,8 @@ export function MobileBookmarkCard({ bookmark, onEdit, onDelete }: MobileBookmar
       onEdit={onEdit}
       onDelete={onDelete}
     >
-      <motion.div
-        {...(bind() as Record<string, unknown>)}
-        style={{ x, opacity }}
-        className="relative"
-      >
-        <Card
-          className={cn(
-            "transition-all duration-200",
-            isDragging ? "shadow-lg" : "hover:shadow-md"
-          )}
-        >
+      <div className="relative">
+        <Card className="hover:shadow-md">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
@@ -168,7 +129,7 @@ export function MobileBookmarkCard({ bookmark, onEdit, onDelete }: MobileBookmar
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </RightClickContextMenu>
   );
 }

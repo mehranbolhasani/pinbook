@@ -1,6 +1,7 @@
 'use client';
 
-import { cn, formatDate } from '@/lib/utils';
+import { memo } from 'react';
+import { formatDate } from '@/lib/utils';
 import { 
   MoreHorizontal
 } from 'lucide-react';
@@ -8,11 +9,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bookmark } from '@/types/pinboard';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
 import { BookmarkContextMenu } from './bookmark-context-menu';
 import { RightClickContextMenu } from './right-click-context-menu';
-import { motion } from 'framer-motion';
-import { fadeInUpStagger } from '@/lib/animations';
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -20,8 +18,7 @@ interface BookmarkCardProps {
   onDelete?: (bookmark: Bookmark) => void;
 }
 
-export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
-  const {} = useBookmarkStore();
+export const BookmarkCard = memo(function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) {
 
   return (
     <RightClickContextMenu
@@ -29,18 +26,9 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
       onEdit={onEdit}
       onDelete={onDelete}
     >
-      <motion.div
-        layout
-        variants={fadeInUpStagger}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        whileHover="hover"
-        whileTap="tap"
-        className="group"
-      >
+      <div className="group">
         <Card 
-          className={`bg-card dark:bg-card transition-all duration-200 shadow-md shadow-primary/10 hover:shadow-lg h-fit w-full`}
+          className={`bg-card dark:bg-card shadow-md shadow-primary/10 hover:shadow-lg h-fit w-full`}
         >
           <CardHeader className="pb-0">
             <div className="flex items-start justify-between">
@@ -108,7 +96,7 @@ export function BookmarkCard({ bookmark, onEdit, onDelete }: BookmarkCardProps) 
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </RightClickContextMenu>
   );
-}
+});

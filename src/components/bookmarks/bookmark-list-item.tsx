@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { formatDate } from '@/lib/utils';
 import { ExternalLink, Trash2, Edit, Copy } from 'lucide-react';
@@ -13,7 +14,7 @@ interface BookmarkListItemProps {
   onDelete?: (bookmark: Bookmark) => void;
 }
 
-export function BookmarkListItem({ bookmark, onEdit, onDelete }: BookmarkListItemProps) {
+export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdit, onDelete }: BookmarkListItemProps) {
   const handleOpenUrl = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -29,7 +30,7 @@ export function BookmarkListItem({ bookmark, onEdit, onDelete }: BookmarkListIte
       onDelete={onDelete}
     >
       <div
-        className="flex bg-card items-center justify-between p-3 min-[380px]:p-4 transition-all duration-200 rounded-xl shadow-md shadow-primary/20 border border-transparent hover:border-primary/40 hover:shadow-lg hover:px-5 group/item"
+        className="flex bg-card items-center justify-between p-3 min-[380px]:p-4 rounded-xl shadow-md shadow-primary/20 border border-transparent hover:border-primary/40 hover:shadow-lg hover:px-5 group/item"
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
@@ -67,7 +68,7 @@ export function BookmarkListItem({ bookmark, onEdit, onDelete }: BookmarkListIte
           </div>
         </div>
         
-        <div className="hidden lg:flex items-center space-x-1 invisible group-hover/item:visible transition-opacity duration-50 bg-white p-2 rounded-md border border-muted-foreground/20 dark:bg-neutral-800 dark:border-neutral-700">
+        <div className="hidden lg:flex items-center space-x-1 invisible group-hover/item:visible bg-white p-2 rounded-md border border-muted-foreground/20 dark:bg-neutral-800 dark:border-neutral-700">
           <Button
             variant="ghost"
             size="sm"
@@ -115,4 +116,4 @@ export function BookmarkListItem({ bookmark, onEdit, onDelete }: BookmarkListIte
       </div>
     </SwipeableBookmarkItem>
   );
-}
+});

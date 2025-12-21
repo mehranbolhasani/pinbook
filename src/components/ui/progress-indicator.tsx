@@ -1,8 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { fadeInUpStagger } from '@/lib/animations';
 
 interface ProgressIndicatorProps {
   progress: number; // 0-100
@@ -18,12 +16,7 @@ export function ProgressIndicator({
   showPercentage = true 
 }: ProgressIndicatorProps) {
   return (
-    <motion.div
-      variants={fadeInUpStagger}
-      initial="initial"
-      animate="animate"
-      className={cn("w-full", className)}
-    >
+    <div className={cn("w-full", className)}>
       {label && (
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-foreground">{label}</span>
@@ -34,17 +27,12 @@ export function ProgressIndicator({
       )}
       
       <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-        <motion.div
+        <div
           className="h-full bg-primary rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{
-            duration: 0.3,
-            ease: [0.4, 0, 0.2, 1]
-          }}
+          style={{ width: `${progress}%` }}
         />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -61,17 +49,9 @@ export function LoadingSpinner({ size = 'md', className }: LoadingSpinnerProps) 
   };
 
   return (
-    <motion.div
-      className={cn("inline-block", sizeClasses[size], className)}
-      animate={{ rotate: 360 }}
-      transition={{
-        duration: 1,
-        repeat: Infinity,
-        ease: "linear"
-      }}
-    >
+    <div className={cn("inline-block", sizeClasses[size], className)}>
       <svg
-        className="w-full h-full"
+        className="w-full h-full animate-spin"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -81,6 +61,6 @@ export function LoadingSpinner({ size = 'md', className }: LoadingSpinnerProps) 
       >
         <path d="M21 12a9 9 0 11-6.219-8.56" />
       </svg>
-    </motion.div>
+    </div>
   );
 }

@@ -119,7 +119,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
                   .map((shortcut, index) => (
                     <div
                       key={`${category}-${index}`}
-                      className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                      className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50"
                     >
                       <div className="flex items-center gap-3">
                         {shortcut.icon && (

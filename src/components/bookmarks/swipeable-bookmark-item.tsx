@@ -162,10 +162,9 @@ export function SwipeableBookmarkItem({
       {/* Main Content */}
       <div
         {...bind()}
-        className="relative z-10 bg-background transition-transform touch-pan-y"
+        className="relative z-10 bg-background touch-pan-y"
         style={{
           transform: `translateX(${swipeOffset}px)`,
-          transition: isRevealed ? 'transform 0.2s ease-out' : 'none',
         }}
         onClick={(e) => {
           if (isRevealed) {

@@ -79,14 +79,6 @@ export const LazyProgressIndicator = dynamic(
   }
 );
 
-export const LazyOptimizedMotion = dynamic(
-  () => import('@/components/ui/optimized-motion').then(mod => ({ default: mod.OptimizedMotion })),
-  {
-    loading: () => React.createElement('div'),
-    ssr: false,
-  }
-);
-
 // Route-based code splitting
 export const LazySettingsPage = dynamic(
   () => import('@/app/settings/page'),

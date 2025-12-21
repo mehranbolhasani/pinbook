@@ -353,7 +353,7 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
           </div>
         </div>
 
-        <div className="container flex w-48 h-fit min-h-[66px] items-center justify-between px-2 py-2 bg-white/90 dark:bg-primary/15 rounded-full border border-white dark:border-primary/10 backdrop-blur-lg shadow-xl ml-2 ring-1 ring-transparent focus-within:ring-1 focus-within:ring-primary focus-within:w-72 transition-all duration-200">
+        <div className="container flex w-48 h-fit min-h-[66px] items-center justify-between px-2 py-2 bg-white/90 dark:bg-primary/15 rounded-full border border-white dark:border-primary/10 backdrop-blur-lg shadow-xl ml-2 ring-1 ring-transparent focus-within:ring-1 focus-within:ring-primary focus-within:w-72">
           {/* Search Bar */}
           {isAuthenticated && (
             <div className="flex-1 max-w-full">
@@ -366,7 +366,7 @@ export const Header = forwardRef<HTMLInputElement, HeaderProps>(({ onSearch, sea
                   onChange={(e) => onSearch(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  className={`pl-10 transition-all duration-200 w-full border-none ${isSearchFocused ? 'ring-0!' : ''
+                  className={`pl-10 w-full border-none ${isSearchFocused ? 'ring-0!' : ''
                     }`}
                 />
               </div>

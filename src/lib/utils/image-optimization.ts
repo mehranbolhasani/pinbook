@@ -250,7 +250,7 @@ export function OptimizedImage({
       alt: alt,
       onLoad: handleLoad,
       onError: handleError,
-      className: `${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200`,
+      className: `${className} ${isLoading ? 'opacity-0' : 'opacity-100'}`,
       loading: lazy ? 'lazy' : 'eager',
       style: style
     })

@@ -30,9 +30,9 @@ export const BookmarkMinimalItem = memo(function BookmarkMinimalItem({ bookmark,
       className="mb-0"
     >
       <div
-        className="flex items-center justify-between py-2 px-3 hover:bg-primary/30 rounded group/item"
+        className="flex items-stretch justify-between px-3 hover:bg-primary/5 group/item border-b border-primary/15"
       >
-        <div className="flex-1 min-w-0 flex items-center space-x-3">
+        <div className="flex-1 min-w-0 flex items-center space-x-3 py-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
               <h3 className="font-semibold text-md truncate">
@@ -48,7 +48,7 @@ export const BookmarkMinimalItem = memo(function BookmarkMinimalItem({ bookmark,
           </div>
         </div>
         
-        <div className="hidden lg:flex items-center space-x-1 invisible group-hover/item:visible bg-white p-2 rounded-md border border-muted-foreground/20 dark:bg-neutral-800 dark:border-neutral-700">
+        <div className="hidden lg:flex items-center space-x-1 invisible group-hover/item:visible border-l border-primary/30 pl-3">
           <span className="text-xs text-muted-foreground dark:text-neutral-400">
             {formatDate(bookmark.createdAt)}
           </span>
@@ -57,7 +57,7 @@ export const BookmarkMinimalItem = memo(function BookmarkMinimalItem({ bookmark,
             variant="ghost"
             size="sm"
             onClick={() => handleOpenUrl(bookmark.url)}
-            className="h-6 w-6 p-0 cursor-pointer scale-75"
+            className="h-6 w-6 p-0 cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
             title="Open Link"
           >
             <ExternalLink className="h-3 w-3" />
@@ -67,7 +67,7 @@ export const BookmarkMinimalItem = memo(function BookmarkMinimalItem({ bookmark,
             variant="ghost"
             size="sm"
             onClick={() => handleCopyUrl(bookmark.url)}
-            className="h-6 w-6 p-0 cursor-pointer scale-75"
+            className="h-6 w-6 p-0 cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
             title="Copy URL"
           >
             <Copy className="h-3 w-3" />
@@ -78,7 +78,7 @@ export const BookmarkMinimalItem = memo(function BookmarkMinimalItem({ bookmark,
               variant="ghost"
               size="sm"
               onClick={() => onEdit(bookmark)}
-              className="h-6 w-6 p-0 cursor-pointer scale-75"
+              className="h-6 w-6 p-0 cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
               title="Edit Bookmark"
             >
               <Edit className="h-3 w-3" />
@@ -90,7 +90,7 @@ export const BookmarkMinimalItem = memo(function BookmarkMinimalItem({ bookmark,
               variant="ghost"
               size="sm"
               onClick={() => onDelete(bookmark)}
-              className="h-6 w-6 p-0 text-destructive hover:text-destructive cursor-pointer scale-75"
+              className="h-6 w-6 p-0 text-destructive cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
               title="Delete Bookmark"
             >
               <Trash2 className="h-3 w-3" />

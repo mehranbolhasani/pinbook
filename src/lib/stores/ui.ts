@@ -7,7 +7,6 @@ interface UIState {
   // Search & Filter
   searchQuery: string;
   selectedTags: string[];
-  selectedFolderId: string | null;
   
   // Sorting
   sortBy: 'date' | 'title' | 'url';
@@ -23,7 +22,6 @@ interface UIState {
   // Actions
   setSearchQuery: (query: string) => void;
   setSelectedTags: (tags: string[]) => void;
-  setSelectedFolderId: (folderId: string | null) => void;
   setSortBy: (sortBy: 'date' | 'title' | 'url') => void;
   setSortOrder: (order: 'asc' | 'desc') => void;
   setLayout: (layout: 'card' | 'list' | 'minimal') => void;
@@ -41,7 +39,6 @@ export const useUIStore = create<UIState>()(
     (set) => ({
       searchQuery: '',
       selectedTags: [],
-      selectedFolderId: null,
       sortBy: 'date',
       sortOrder: 'desc',
       layout: 'list',
@@ -50,7 +47,6 @@ export const useUIStore = create<UIState>()(
 
       setSearchQuery: (searchQuery) => set({ searchQuery }),
       setSelectedTags: (selectedTags) => set({ selectedTags }),
-      setSelectedFolderId: (selectedFolderId) => set({ selectedFolderId }),
       setSortBy: (sortBy) => set({ sortBy }),
       setSortOrder: (sortOrder) => set({ sortOrder }),
       setLayout: (layout) => set({ layout }),
@@ -78,8 +74,7 @@ export const useUIStore = create<UIState>()(
 
       clearFilters: () => set({ 
         searchQuery: '', 
-        selectedTags: [],
-        selectedFolderId: null
+        selectedTags: []
       }),
     }),
     {

@@ -14,7 +14,7 @@ export const BookmarkCardView = memo(function BookmarkCardView({ bookmarks, onEd
   return (
     <div 
       key={`card-${bookmarks.length}`} 
-      className="columns-1 md:columns-2 lg:columns-2 gap-4 space-y-4"
+      className="columns-1 md:columns-2 lg:columns-2 gap-4 p-4"
     >
       {bookmarks.map((bookmark) => (
         <div key={bookmark.id} className="break-inside-avoid mb-4">

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -17,9 +18,19 @@ import {
 } from 'lucide-react';
 import { useUIStore } from '@/lib/stores/ui';
 import { useAuthStore } from '@/lib/stores/auth';
-import { MobileSidebar } from './mobile-sidebar';
-import { MobileAddBookmark } from '@/components/bookmarks/mobile-add-bookmark';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { debounce } from '@/lib/utils/debounce';
+
+// Lazy load heavy sheet components
+const MobileSidebar = dynamic(
+  () => import('./mobile-sidebar').then(m => ({ default: m.MobileSidebar })),
+  { ssr: false }
+);
+
+const MobileAddBookmark = dynamic(
+  () => import('@/components/bookmarks/mobile-add-bookmark').then(m => ({ default: m.MobileAddBookmark })),
+  { ssr: false }
+);
 
 export function MobileNav() {
   const { isAuthenticated } = useAuthStore();
@@ -32,6 +43,23 @@ export function MobileNav() {
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAddBookmarkOpen, setIsAddBookmarkOpen] = useState(false);
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+
+  // Debounced search callback
+  const debouncedSearch = useMemo(
+    () => debounce((query: string) => setSearchQuery(query), 300),
+    [setSearchQuery]
+  );
+
+  // Sync local state when external searchQuery changes (e.g., cleared by filters)
+  useEffect(() => {
+    setLocalSearchQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleSearchChange = (value: string) => {
+    setLocalSearchQuery(value);
+    debouncedSearch(value);
+  };
 
   if (!isAuthenticated) return null;
 
@@ -51,8 +79,8 @@ export function MobileNav() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={localSearchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10 h-9"
             />
           </div>

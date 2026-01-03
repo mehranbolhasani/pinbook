@@ -18,9 +18,7 @@ import {
   Copy,
   Tag
 } from 'lucide-react';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
-import { useAuthStore } from '@/lib/stores/auth';
+import { useUpdateBookmark } from '@/hooks/usePinboard';
 
 interface BookmarkContextMenuProps {
   bookmark: Bookmark;
@@ -30,30 +28,26 @@ interface BookmarkContextMenuProps {
 }
 
 export function BookmarkContextMenu({ bookmark, onEdit, onDelete, children }: BookmarkContextMenuProps) {
-  const { updateBookmark } = useBookmarkStore();
-  const { apiToken } = useAuthStore();
+  const updateBookmarkMutation = useUpdateBookmark();
   const [isOpen, setIsOpen] = useState(false);
-
-  
 
   const handleToggleShared = async () => {
     const newSharedStatus = !bookmark.isShared;
     
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isShared: newSharedStatus });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkShareStatus(bookmark.hash, newSharedStatus);
-        }
-      } catch {
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isShared: !newSharedStatus });
+    // Mutation handles optimistic updates and rollback on error
+    updateBookmarkMutation.mutate({
+      id: bookmark.id,
+      updates: {
+        url: bookmark.url,
+        title: bookmark.title,
+        extended: bookmark.extended,
+        tags: bookmark.tags,
+        isRead: bookmark.isRead,
+        isShared: newSharedStatus,
+        createdAt: bookmark.createdAt,
       }
-    }
+    });
+    
     setIsOpen(false);
   };
 

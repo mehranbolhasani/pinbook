@@ -58,7 +58,6 @@ export interface Bookmark extends Omit<PinboardBookmark, 'time' | 'tags'> {
   isRead: boolean;
   isShared: boolean;
   domain: string;
-  folderId?: string; // Optional folder ID for local folder organization
 }
 
 export interface AuthState {

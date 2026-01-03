@@ -34,9 +34,9 @@ export function BookmarkToolbar() {
   ];
 
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex items-center justify-between w-full border-b border-primary/15 pb-4 px-4">
       {/* Sort Button Group */}
-      <div className="flex items-center gap-1 border rounded-lg p-1 bg-background">
+      <div className="flex items-center gap-1 border rounded-full p-1 bg-background border-primary/30">
         {sortOptions.map((option) => (
           <Button
             key={option.value}
@@ -45,7 +45,7 @@ export function BookmarkToolbar() {
             onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
             className={cn(
               'h-8 px-3 hover:bg-primary/90 hover:text-primary-foreground dark:hover:bg-primary/50 dark:hover:text-primary!',
-              sortBy === option.value && 'bg-primary text-primary-foreground dark:bg-primary/30 dark:text-primary hover:bg-primary/90 dark:hover:bg-primary/50'
+              sortBy === option.value && 'bg-primary/15 text-primary hover:bg-primary/90 dark:hover:bg-primary/50'
             )}
           >
             {option.label}
@@ -68,7 +68,7 @@ export function BookmarkToolbar() {
       </div>
 
       {/* Layout Button Group */}
-      <div className="flex items-center gap-1 border rounded-lg p-1 bg-background">
+      <div className="flex items-center gap-1 border rounded-full p-1 bg-background border-primary/30">
         {layoutOptions.map((option) => {
           const Icon = option.icon;
           return (
@@ -79,7 +79,7 @@ export function BookmarkToolbar() {
               onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
               className={cn(
                 'h-8 px-3 hover:bg-primary/90 hover:text-primary-foreground dark:hover:bg-primary/50 dark:hover:text-primary!',
-                layout === option.value && 'bg-primary text-primary-foreground dark:bg-primary/30 dark:text-primary hover:bg-primary/90 dark:hover:bg-primary/50'
+                layout === option.value && 'bg-primary/15 text-primary hover:bg-primary/90 dark:hover:bg-primary/50'
               )}
               title={option.label}
             >

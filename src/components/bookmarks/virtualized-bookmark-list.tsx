@@ -122,30 +122,3 @@ export function VirtualizedBookmarkList({
 export function useVirtualizationThreshold() {
   return 100; // Use virtualization when more than 100 bookmarks
 }
-
-// Performance monitoring hook
-export function useVirtualizationPerformance() {
-  const [metrics, setMetrics] = React.useState({
-    renderTime: 0,
-    itemCount: 0,
-    visibleItems: 0,
-  });
-
-  const measurePerformance = useCallback((itemCount: number, visibleItems: number) => {
-    const start = performance.now();
-    
-    // Use requestAnimationFrame to measure actual render time
-    requestAnimationFrame(() => {
-      const end = performance.now();
-      setMetrics({
-        renderTime: end - start,
-        itemCount,
-        visibleItems,
-      });
-    });
-  }, []);
-
-  return { metrics, measurePerformance };
-}
-
-import React, { useCallback } from 'react';

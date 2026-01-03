@@ -50,7 +50,7 @@ import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
-  const { setSearchQuery, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder } = useUIStore();
+  const { setSearchQuery, searchQuery, selectedTags, sortBy, sortOrder } = useUIStore();
   
   // React Query Hooks
   const { data: bookmarks = [], isLoading: isBookmarksLoading, error: bookmarksError } = useBookmarks();
@@ -84,7 +84,7 @@ export default function Home() {
   // Reset selected index when filters change
   useEffect(() => {
     setSelectedBookmarkIndex(null);
-  }, [searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder]);
+  }, [searchQuery, selectedTags, sortBy, sortOrder]);
 
   // Sidebar search removed; bookmarks list contains its own search input.
 
@@ -232,30 +232,22 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-      <div className="max-h-screen">
+      <div className="max-h-full">
 
-        <div className="bg-background dark:bg-background h-screen w-screen fixed top-0 left-0 -z-10"></div>
-
-        <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-screen -z-10">
+        <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[722px] h-screen -z-10">
           <span className="absolute top-0 left-0 w-px h-full bg-primary/15"></span>
           <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
-        </div>
-
-        <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 -z-10 blur-3xl opacity-30">
-          <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -right-12"></span>
-          <span className="relative w-full h-full bg-primary/35 aspect-square rounded-full blur-2xl"></span>
-          <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -left-12"></span>
         </div>
         
         {/* Mobile Navigation */}
         <MobileNav />
         
         {/* Desktop Header */}
-        <Header onSearch={setSearchQuery} searchQuery={searchQuery} searchRef={undefined} onAddBookmark={handleAddBookmark} />
+        <Header onSearch={setSearchQuery} searchQuery={searchQuery} onAddBookmark={handleAddBookmark} />
         
-        <div className="flex w-full max-w-[720px] mx-auto h-full items-start px-4 gap-4">
+        <div className="flex w-full max-w-[720px] mx-auto h-full items-start gap-4">
           {/* Main Content */}
-          <main className="flex-1 min-w-0 py-6 w-full">
+          <main className="flex-1 min-w-0 w-full">
             <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
               <BookmarkList 

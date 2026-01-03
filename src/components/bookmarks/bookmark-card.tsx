@@ -28,7 +28,7 @@ export const BookmarkCard = memo(function BookmarkCard({ bookmark, onEdit, onDel
     >
       <div className="group">
         <Card 
-          className={`bg-card dark:bg-card shadow-md shadow-primary/10 hover:shadow-lg h-fit w-full`}
+          className={`bg-card dark:bg-card shadow-lg shadow-primary/5 h-fit w-full`}
         >
           <CardHeader className="pb-0">
             <div className="flex items-start justify-between">

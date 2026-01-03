@@ -30,7 +30,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdi
       onDelete={onDelete}
     >
       <div
-        className="flex bg-card items-center justify-between p-3 min-[380px]:p-4 rounded-xl shadow-md shadow-primary/20 border border-transparent hover:border-primary/40 hover:shadow-lg hover:px-5 group/item"
+        className="flex bg-card items-center justify-between p-3 min-[380px]:p-4 rounded-xl shadow-lg shadow-primary/5 border border-transparent hover:border-primary/40 group/item mb-4"
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
@@ -73,7 +73,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdi
             variant="ghost"
             size="sm"
             onClick={() => handleOpenUrl(bookmark.url)}
-            className="h-8 w-8 p-0 cursor-pointer"
+            className="h-8 w-8 p-0 cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
             title="Open Link"
           >
             <ExternalLink className="h-3 w-3" />
@@ -83,7 +83,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdi
             variant="ghost"
             size="sm"
             onClick={() => handleCopyUrl(bookmark.url)}
-            className="h-8 w-8 p-0 cursor-pointer"
+            className="h-8 w-8 p-0 cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
             title="Copy URL"
           >
             <Copy className="h-3 w-3" />
@@ -94,7 +94,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdi
               variant="ghost"
               size="sm"
               onClick={() => onEdit(bookmark)}
-              className="h-8 w-8 p-0 cursor-pointer"
+              className="h-8 w-8 p-0 cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
               title="Edit Bookmark"
             >
               <Edit className="h-3 w-3" />
@@ -106,7 +106,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdi
               variant="ghost"
               size="sm"
               onClick={() => onDelete(bookmark)}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive cursor-pointer"
+              className="h-8 w-8 p-0 text-destructive cursor-pointer hover:bg-transparent! hover:text-accent! scale-90"
               title="Delete Bookmark"
             >
               <Trash2 className="h-3 w-3" />

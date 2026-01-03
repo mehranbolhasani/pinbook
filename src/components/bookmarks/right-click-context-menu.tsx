@@ -17,9 +17,7 @@ import {
   Share2, 
   Copy
 } from 'lucide-react';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
-import { useAuthStore } from '@/lib/stores/auth';
+import { useUpdateBookmark } from '@/hooks/usePinboard';
 import { useToast } from '@/hooks/useToast';
 
 interface RightClickContextMenuProps {
@@ -35,12 +33,9 @@ export function RightClickContextMenu({
   onEdit, 
   onDelete 
 }: RightClickContextMenuProps) {
-  const { updateBookmark } = useBookmarkStore();
-  const { apiToken } = useAuthStore();
+  const updateBookmarkMutation = useUpdateBookmark();
   const toast = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-
-  
 
   const handleToggleShared = async () => {
     if (isProcessing) return;
@@ -48,27 +43,34 @@ export function RightClickContextMenu({
     setIsProcessing(true);
     const newSharedStatus = !bookmark.isShared;
 
-    // Update local state immediately for responsive UI
-    updateBookmark(bookmark.id, { isShared: newSharedStatus });
-
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.updateBookmarkShareStatus(bookmark.hash, newSharedStatus);
+    // Mutation handles optimistic updates and rollback on error
+    updateBookmarkMutation.mutate(
+      {
+        id: bookmark.id,
+        updates: {
+          url: bookmark.url,
+          title: bookmark.title,
+          extended: bookmark.extended,
+          tags: bookmark.tags,
+          isRead: bookmark.isRead,
+          isShared: newSharedStatus,
+          createdAt: bookmark.createdAt,
+        }
+      },
+      {
+        onSuccess: () => {
           toast.showSuccess(
             newSharedStatus ? 'Made public' : 'Made private',
             `"${bookmark.title}"`
           );
+          setIsProcessing(false);
+        },
+        onError: () => {
+          toast.showError('Failed to update bookmark', 'Please try again');
+          setIsProcessing(false);
         }
-      } catch {
-        // Revert local state on error
-        updateBookmark(bookmark.id, { isShared: bookmark.isShared });
-        toast.showError('Failed to update bookmark', 'Please try again');
       }
-    }
-    setIsProcessing(false);
+    );
   };
 
   const handleOpenUrl = () => {

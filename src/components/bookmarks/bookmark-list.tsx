@@ -147,7 +147,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
       </div>
 
       {/* Toolbar */}
-      <div className="items-center justify-end mb-4 hidden lg:flex">
+      <div className="items-center justify-end hidden lg:flex">
         <BookmarkToolbar />
       </div>
       

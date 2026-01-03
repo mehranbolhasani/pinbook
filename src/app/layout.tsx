@@ -6,7 +6,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
-import { ThemePaletteApplier } from "@/components/theme/theme-palette-applier";
 
 import QueryProvider from "@/components/query-provider";
 
@@ -42,7 +41,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ThemePaletteApplier />
             {children}
             <ToastProvider />
             <Analytics />

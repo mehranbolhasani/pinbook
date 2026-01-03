@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/lib/stores/auth';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
+import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Grid3X3, List, ListOrdered } from 'lucide-react';
 import Link from 'next/link';
-import { ThemeCustomizer } from '@/components/theme/theme-customizer';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
 
 export default function SettingsPage() {
@@ -31,7 +30,7 @@ export default function SettingsPage() {
     setSortBy, 
     sortOrder, 
     setSortOrder 
-  } = useBookmarkStore();
+  } = useUIStore();
 
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(username || '');
@@ -303,9 +302,6 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Theme Customization */}
-            <ThemeCustomizer />
           </TabsContent>
         </Tabs>
         </SettingsErrorBoundary>

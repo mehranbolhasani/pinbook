@@ -15,18 +15,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { X, Plus } from 'lucide-react';
 import { useAddBookmark } from '@/hooks/usePinboard';
 import { useToast } from '@/hooks/useToast';
-import { useBookmarkFolders } from '@/hooks/useBookmarkFolders';
-import { useBookmarkFolderStore } from '@/lib/stores/bookmark-folders';
 
 interface AddBookmarkDialogProps {
   isOpen: boolean;
@@ -36,8 +27,6 @@ interface AddBookmarkDialogProps {
 export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
   const { mutate: addBookmark, isPending: isSubmitting } = useAddBookmark();
   const toast = useToast();
-  const { folders } = useBookmarkFolders();
-  const { assignBookmarkToFolder } = useBookmarkFolderStore();
   
   const [formData, setFormData] = useState({
     url: '',
@@ -45,8 +34,7 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
     description: '',
     extended: '',
     tags: [] as string[],
-    isShared: false,
-    folderId: '' as string | undefined
+    isShared: false
   });
   const [tagInput, setTagInput] = useState('');
 
@@ -64,11 +52,6 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
       shared: formData.isShared ? 'yes' : 'no'
     }, {
       onSuccess: (newBookmark) => {
-        // Assign folder to bookmark locally
-        if (formData.folderId) {
-          assignBookmarkToFolder(newBookmark.url, formData.folderId);
-        }
-        
         toast.showSuccess('Bookmark added successfully', `"${newBookmark.title}" has been saved`);
         
         // Reset form
@@ -78,8 +61,7 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
           description: '',
           extended: '',
           tags: [],
-          isShared: false,
-          folderId: undefined
+          isShared: false
         });
         setTagInput('');
         
@@ -219,26 +201,6 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
                 </Badge>
               ))}
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="folder">Folder</Label>
-            <Select
-              value={formData.folderId || 'none'}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, folderId: value === 'none' ? undefined : value }))}
-            >
-              <SelectTrigger id="folder">
-                <SelectValue placeholder="Select a folder" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No Folder</SelectItem>
-                {folders.map((folder) => (
-                  <SelectItem key={folder.id} value={folder.id}>
-                    {folder.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
           
           <div className="flex items-center space-x-4">

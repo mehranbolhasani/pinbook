@@ -12,7 +12,7 @@ interface BookmarkMinimalViewProps {
 
 export const BookmarkMinimalView = memo(function BookmarkMinimalView({ bookmarks, onEdit, onDelete }: BookmarkMinimalViewProps) {
   return (
-    <div key={`minimal-${bookmarks.length}`} className="space-y-1">
+    <div key={`minimal-${bookmarks.length}`}>
       {bookmarks.map((bookmark) => (
         <div key={bookmark.id}>
           <BookmarkMinimalItem

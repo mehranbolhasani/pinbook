@@ -16,16 +16,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { X } from 'lucide-react';
-import { useBookmarkFolders } from '@/hooks/useBookmarkFolders';
-import { useBookmarkFolderStore } from '@/lib/stores/bookmark-folders';
 
 interface EditBookmarkDialogProps {
   bookmark: Bookmark | null;
@@ -35,47 +26,35 @@ interface EditBookmarkDialogProps {
 }
 
 export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBookmarkDialogProps) {
-  const { folders } = useBookmarkFolders();
-  const { assignBookmarkToFolder, getBookmarkFolder } = useBookmarkFolderStore();
-  
   const [formData, setFormData] = useState({
     title: '',
     url: '',
     description: '',
     extended: '',
     tags: [] as string[],
-    isShared: false,
-    folderId: '' as string | undefined
+    isShared: false
   });
   const [tagInput, setTagInput] = useState('');
 
   useEffect(() => {
     if (bookmark) {
-      const folderId = bookmark.folderId || getBookmarkFolder(bookmark.url);
       setFormData({
         title: bookmark.title,
         url: bookmark.url,
         description: bookmark.description,
         extended: bookmark.extended,
         tags: bookmark.tags,
-        isShared: bookmark.isShared,
-        folderId: folderId
+        isShared: bookmark.isShared
       });
     }
-  }, [bookmark, getBookmarkFolder]);
+  }, [bookmark]);
 
   const handleSave = () => {
     if (!bookmark) return;
     
-    // Update folder assignment
-    if (formData.folderId !== (bookmark.folderId || getBookmarkFolder(bookmark.url))) {
-      assignBookmarkToFolder(bookmark.url, formData.folderId || null);
-    }
-    
     const updatedBookmark: Bookmark = {
       ...bookmark,
-      ...formData,
-      folderId: formData.folderId
+      ...formData
     };
     
     onSave(updatedBookmark);
@@ -97,13 +76,6 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
       ...prev,
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag();
-    }
   };
 
   if (!bookmark) return null;
@@ -209,26 +181,6 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                   </Badge>
                 ))}
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="folder">Folder</Label>
-              <Select
-                value={formData.folderId || 'none'}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, folderId: value === 'none' ? undefined : value }))}
-              >
-                <SelectTrigger id="folder">
-                  <SelectValue placeholder="Select a folder" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No Folder</SelectItem>
-                  {folders.map((folder) => (
-                    <SelectItem key={folder.id} value={folder.id}>
-                      {folder.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
             
             <div className="flex items-center space-x-4">

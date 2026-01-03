@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
-import { useBookmarkStore } from '@/lib/stores/bookmarks';
-import { getPinboardAPI } from '@/lib/api/pinboard';
-import { useAuthStore } from '@/lib/stores/auth';
+import { useUpdateBookmark } from '@/hooks/usePinboard';
 
 interface InlineTagEditorProps {
   bookmark: Bookmark;
@@ -16,8 +14,7 @@ interface InlineTagEditorProps {
 }
 
 export function InlineTagEditor({ bookmark, onClose }: InlineTagEditorProps) {
-  const { updateBookmark } = useBookmarkStore();
-  const { apiToken } = useAuthStore();
+  const updateBookmarkMutation = useUpdateBookmark();
   const [newTag, setNewTag] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,29 +31,19 @@ export function InlineTagEditor({ bookmark, onClose }: InlineTagEditorProps) {
     const tagToAdd = newTag.trim().toLowerCase();
     const updatedTags = [...bookmark.tags, tagToAdd];
     
-    // Update local state immediately
-    updateBookmark(bookmark.id, { tags: updatedTags });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.addBookmark({
-            url: bookmark.url,
-            description: bookmark.title,
-            extended: bookmark.extended,
-            tags: updatedTags.join(' '),
-            toread: bookmark.isRead ? 'no' : 'yes',
-            shared: bookmark.isShared ? 'yes' : 'no',
-            replace: 'yes'
-          });
-        }
-      } catch {
-        // Revert local state on error
-        updateBookmark(bookmark.id, { tags: bookmark.tags });
+    // Mutation handles optimistic updates and rollback on error
+    updateBookmarkMutation.mutate({
+      id: bookmark.id,
+      updates: {
+        url: bookmark.url,
+        title: bookmark.title,
+        extended: bookmark.extended,
+        tags: updatedTags,
+        isRead: bookmark.isRead,
+        isShared: bookmark.isShared,
+        createdAt: bookmark.createdAt,
       }
-    }
+    });
     
     setNewTag('');
     setIsEditing(false);
@@ -65,29 +52,19 @@ export function InlineTagEditor({ bookmark, onClose }: InlineTagEditorProps) {
   const handleRemoveTag = async (tagToRemove: string) => {
     const updatedTags = bookmark.tags.filter(tag => tag !== tagToRemove);
     
-    // Update local state immediately
-    updateBookmark(bookmark.id, { tags: updatedTags });
-    
-    // Sync with Pinboard API
-    if (apiToken) {
-      try {
-        const api = getPinboardAPI(apiToken);
-        if (api) {
-          await api.addBookmark({
-            url: bookmark.url,
-            description: bookmark.title,
-            extended: bookmark.extended,
-            tags: updatedTags.join(' '),
-            toread: bookmark.isRead ? 'no' : 'yes',
-            shared: bookmark.isShared ? 'yes' : 'no',
-            replace: 'yes'
-          });
-        }
-      } catch {
-        // Revert local state on error
-        updateBookmark(bookmark.id, { tags: bookmark.tags });
+    // Mutation handles optimistic updates and rollback on error
+    updateBookmarkMutation.mutate({
+      id: bookmark.id,
+      updates: {
+        url: bookmark.url,
+        title: bookmark.title,
+        extended: bookmark.extended,
+        tags: updatedTags,
+        isRead: bookmark.isRead,
+        isShared: bookmark.isShared,
+        createdAt: bookmark.createdAt,
       }
-    }
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

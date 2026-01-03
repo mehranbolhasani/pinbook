@@ -5,7 +5,7 @@ import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 
 export function useFilteredBookmarks(bookmarks: Bookmark[]) {
-  const { searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder } = useUIStore();
+  const { searchQuery, selectedTags, sortBy, sortOrder } = useUIStore();
 
   const filteredAndSortedBookmarks = useMemo(() => {
     // Early return if no bookmarks
@@ -15,16 +15,7 @@ export function useFilteredBookmarks(bookmarks: Bookmark[]) {
 
     let filtered = [...bookmarks];
 
-    // Filter by folder first (most selective)
-    if (selectedFolderId !== null) {
-      filtered = filtered.filter(bookmark => bookmark.folderId === selectedFolderId);
-      // Early return if folder filter results in empty array
-      if (filtered.length === 0) {
-        return [];
-      }
-    }
-
-    // Filter by tags (more selective than search)
+    // Filter by tags
     if (selectedTags.length > 0) {
       filtered = filtered.filter(bookmark => 
         selectedTags.some(tag => bookmark.tags.includes(tag))
@@ -35,7 +26,7 @@ export function useFilteredBookmarks(bookmarks: Bookmark[]) {
       }
     }
 
-    // Filter by search query (least selective, most expensive)
+    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(bookmark => 
@@ -69,7 +60,7 @@ export function useFilteredBookmarks(bookmarks: Bookmark[]) {
     }
 
     return filtered;
-  }, [bookmarks, searchQuery, selectedTags, selectedFolderId, sortBy, sortOrder]);
+  }, [bookmarks, searchQuery, selectedTags, sortBy, sortOrder]);
 
   return filteredAndSortedBookmarks;
 }

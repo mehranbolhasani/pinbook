@@ -101,9 +101,9 @@ export function SwipeableBookmarkItem({
   );
 
   return (
-    <div className={cn("relative overflow-hidden lg:overflow-visible rounded-xl", className)} ref={containerRef}>
+    <div className={cn("relative", className)} ref={containerRef}>
       {/* Action background for rounded corners visibility */}
-      <div className="absolute inset-0 bg-background rounded-xl lg:hidden" />
+      <div className="absolute inset-0 lg:hidden" />
       
       {/* Left Actions (Edit, Delete) - revealed on swipe right */}
       <div
@@ -162,7 +162,7 @@ export function SwipeableBookmarkItem({
       {/* Main Content */}
       <div
         {...bind()}
-        className="relative z-10 bg-background touch-pan-y"
+        className="relative z-10 touch-pan-y bg-background sm:bg-transparent"
         style={{
           transform: `translateX(${swipeOffset}px)`,
         }}

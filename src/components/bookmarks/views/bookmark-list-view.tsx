@@ -12,7 +12,7 @@ interface BookmarkListViewProps {
 
 export const BookmarkListView = memo(function BookmarkListView({ bookmarks, onEdit, onDelete }: BookmarkListViewProps) {
   return (
-    <div key={`list-${bookmarks.length}`} className="space-y-2">
+    <div key={`list-${bookmarks.length}`} className="space-y-2 p-4">
       {bookmarks.map((bookmark) => (
         <div key={bookmark.id}>
           <BookmarkListItem

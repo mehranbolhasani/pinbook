@@ -19,7 +19,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdi
   };
 
   return (
-    <div className="flex items-center justify-between group/item mb-2 hover:bg-zinc-100 p-4">
+    <div className="flex items-center justify-between group/item mb-2 hover:bg-zinc-100 p-4 dark:hover:bg-zinc-800">
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2 mb-1">
           <h3 className="font-normal text-md truncate">

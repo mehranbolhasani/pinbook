@@ -79,8 +79,6 @@ export default function Home() {
     return filteredAndSortedBookmarks[selectedBookmarkIndex];
   }, [selectedBookmarkIndex, filteredAndSortedBookmarks]);
 
-  const selectedBookmarkId = selectedBookmark?.id || null;
-
   // Reset selected index when filters change
   useEffect(() => {
     setSelectedBookmarkIndex(null);
@@ -113,10 +111,6 @@ export default function Home() {
   const handleCloseEditDialog = () => {
     setEditingBookmark(null);
     setIsEditDialogOpen(false);
-  };
-
-  const handleDeleteBookmark = (bookmark: Bookmark) => {
-    setDeleteConfirmation({ isOpen: true, bookmark });
   };
 
   const handleConfirmDelete = () => {
@@ -233,17 +227,12 @@ export default function Home() {
   return (
     <ErrorBoundary>
       <div className="max-h-full">
-
-        <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[722px] h-screen -z-10">
-          <span className="absolute top-0 left-0 w-px h-full bg-primary/15"></span>
-          <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
-        </div>
         
         {/* Mobile Navigation */}
         <MobileNav />
         
         {/* Desktop Header */}
-        <Header onSearch={setSearchQuery} searchQuery={searchQuery} onAddBookmark={handleAddBookmark} />
+        <Header onAddBookmark={handleAddBookmark} />
         
         <div className="flex w-full max-w-[720px] mx-auto h-full items-start gap-4">
           {/* Main Content */}

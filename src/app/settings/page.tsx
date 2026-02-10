@@ -2,35 +2,24 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/lib/stores/auth';
-import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Grid3X3, List, ListOrdered } from 'lucide-react';
+import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
 
 export default function SettingsPage() {
-  const { 
-    username, 
-    apiToken, 
-    logout, 
-    setUsername, 
-    setApiToken 
+  const {
+    username,
+    apiToken,
+    logout,
+    setUsername,
+    setApiToken
   } = useAuthStore();
-  
-  const { 
-    layout, 
-    setLayout, 
-    sortBy, 
-    setSortBy, 
-    sortOrder, 
-    setSortOrder 
-  } = useUIStore();
 
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(username || '');
@@ -51,17 +40,6 @@ export default function SettingsPage() {
     }
   };
 
-  const layoutOptions = [
-    { value: 'card', label: 'Card View', icon: Grid3X3 },
-    { value: 'list', label: 'List View', icon: List },
-    { value: 'minimal', label: 'Minimal List', icon: ListOrdered }
-  ];
-
-  const getLayoutIcon = (layoutValue: string) => {
-    const option = layoutOptions.find(opt => opt.value === layoutValue);
-    return option ? option.icon : null;
-  };
-
   const handleLogout = () => {
     logout();
   };
@@ -79,25 +57,12 @@ export default function SettingsPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold">Settings</h1>
-            <p className="text-muted-foreground">Manage your Pinbook preferences and account</p>
+            <p className="text-muted-foreground">Manage your Pinboard account</p>
           </div>
         </div>
 
         <SettingsErrorBoundary>
-          <Tabs defaultValue="pinboard" className="w-full">
-          <TabsList className="grid w-full md:w-fit grid-cols-2 bg-card">
-            <TabsTrigger value="pinboard" className="flex items-center space-x-2">
-              <User className="h-4 w-4" />
-              <span className="text-sm md:text-base">Pinboard Account</span>
-            </TabsTrigger>
-            <TabsTrigger value="app" className="flex items-center space-x-2">
-              <Settings className="h-4 w-4" />
-              <span className="text-sm md:text-base">App Settings</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="pinboard" className="space-y-6">
-            {/* Pinboard Account Settings */}
+          <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -208,102 +173,7 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="app" className="space-y-6">
-            {/* App Settings */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="h-5 w-5" />
-                  <span>App Preferences</span>
-                </CardTitle>
-                <CardDescription>
-                  Customize your Pinbook experience
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Layout Preference */}
-                <div className="space-y-3">
-                  <Label>Default Layout</Label>
-                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                    {[
-                      { value: 'card', icon: Grid3X3, label: 'Masonry Cards', description: 'Pinterest-style grid' },
-                      { value: 'list', icon: List, label: 'List View', description: 'Compact horizontal list' },
-                      { value: 'minimal', icon: ListOrdered, label: 'Minimal List', description: 'Ultra-compact view' }
-                    ].map((option) => (
-                      <Button
-                        key={option.value}
-                        variant={layout === option.value ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
-                        className="flex flex-row h-16 md:h-20 p-3 flex-1 items-center justify-start gap-3"
-                      >
-                        <span>
-                          {(() => {
-                            const IconComponent = getLayoutIcon(option.value);
-                            return IconComponent ? <IconComponent className="h-4 w-4" /> : null;
-                          })()}
-                        </span>
-                        <span className="flex flex-col items-start">
-                          <span className="font-medium text-sm md:text-base">{option.label}</span>
-                          <span className="text-xs opacity-80 font-light">{option.description}</span>
-                        </span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Sort Preferences */}
-                <div className="space-y-3">
-                  <Label>Default Sort</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="sortBy">Sort By</Label>
-                      <div className="flex space-x-2">
-                        {[
-                          { value: 'date', label: 'Date' },
-                          { value: 'title', label: 'Title' },
-                          { value: 'url', label: 'URL' }
-                        ].map((option) => (
-                          <Button
-                            key={option.value}
-                            variant={sortBy === option.value ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
-                          >
-                            {option.label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="sortOrder">Order</Label>
-                      <div className="flex space-x-2">
-                        {[
-                          { value: 'desc', label: 'Newest First' },
-                          { value: 'asc', label: 'Oldest First' }
-                        ].map((option) => (
-                          <Button
-                            key={option.value}
-                            variant={sortOrder === option.value ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => setSortOrder(option.value as 'asc' | 'desc')}
-                          >
-                            {option.label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
         </SettingsErrorBoundary>
       </div>
     </div>

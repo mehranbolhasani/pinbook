@@ -9,7 +9,6 @@ interface KeyboardShortcutsOptions {
   onNavigate?: (direction: 'up' | 'down' | 'left' | 'right') => void;
   onOpenSelected?: () => void;
   onEditSelected?: () => void;
-  onToggleRead?: () => void;
   onShowHelp?: () => void;
   isDialogOpen?: boolean;
 }
@@ -21,7 +20,6 @@ export function useKeyboardShortcuts({
   onNavigate,
   onOpenSelected,
   onEditSelected,
-  onToggleRead,
   onShowHelp,
   isDialogOpen = false
 }: KeyboardShortcutsOptions) {
@@ -88,11 +86,6 @@ export function useKeyboardShortcuts({
           event.preventDefault();
           onEditSelected?.();
           break;
-        case 'r':
-        case 'R':
-          event.preventDefault();
-          onToggleRead?.();
-          break;
       }
     }
   }, [
@@ -102,7 +95,6 @@ export function useKeyboardShortcuts({
     onNavigate,
     onOpenSelected,
     onEditSelected,
-    onToggleRead,
     onShowHelp,
     isDialogOpen
   ]);

@@ -6,8 +6,6 @@ import {
   Bookmark 
 } from '@/types/pinboard';
 import { retry, retryConfigs } from '@/lib/utils/retry';
-import { rateLimitedQueues } from '@/lib/utils/rate-limiter';
-import { offlineQueue } from '@/lib/utils/offline-queue';
 
 // Enhanced error types
 export class PinboardAPIError extends Error {
@@ -138,77 +136,53 @@ export class PinboardAPI {
 
   // Get all bookmarks
   async getAllBookmarks(params: SearchParams = {}): Promise<Bookmark[]> {
-    // Filter out undefined values
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(([, value]) => value !== undefined)
     ) as Record<string, string | number | boolean>;
-    
-    try {
-      const response = await retry(
-        () => rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams, { 
-          timeout: 15000
-        })),
-        retryConfigs.network
-      );
-      
-      if (!Array.isArray(response)) {
-        return [];
-      }
-      
-      // Bookmarks loaded successfully
-      
-      return response.map(this.transformBookmark);
-    } catch (error) {
-      throw error;
+
+    const response = await retry(
+      () => this.makeRequest<PinboardBookmark[]>('/posts/all', filteredParams, { timeout: 15000 }),
+      retryConfigs.network
+    );
+
+    if (!Array.isArray(response)) {
+      return [];
     }
+    return response.map(this.transformBookmark);
   }
 
   // Get recent bookmarks
   async getRecentBookmarks(count: number = 10): Promise<Bookmark[]> {
-    const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmarksResponse>('/posts/recent', { count }));
-    
+    const response = await this.makeRequest<PinboardBookmarksResponse>('/posts/recent', { count });
     if (!response.posts) {
       return [];
     }
-
     return response.posts.map(this.transformBookmark);
   }
 
 
   // Delete a bookmark
   async deleteBookmark(url: string): Promise<boolean> {
-    try {
-      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/delete', { url }));
-      return response.result_code === 'done';
-    } catch (error) {
-      if (error instanceof OfflineError) {
-        offlineQueue.addAction('delete', { url });
-        return true;
-      }
-      throw error;
-    }
+    const response = await this.makeRequest<{ result_code: string }>('/posts/delete', { url });
+    return response.result_code === 'done';
   }
 
   // Get all tags
   async getTags(): Promise<Record<string, number>> {
-    const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<Record<string, number>>('/tags/get'));
+    const response = await this.makeRequest<Record<string, number>>('/tags/get');
     return response || {};
   }
 
   // Search bookmarks
   async searchBookmarks(query: string, params: SearchParams = {}): Promise<Bookmark[]> {
     const searchParams = { ...params, q: query };
-    // Filter out undefined values
     const filteredParams = Object.fromEntries(
       Object.entries(searchParams).filter(([, value]) => value !== undefined)
     ) as Record<string, string | number | boolean>;
-    
-    const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmarksResponse>('/posts/search', filteredParams));
-    
+    const response = await this.makeRequest<PinboardBookmarksResponse>('/posts/search', filteredParams);
     if (!response.posts) {
       return [];
     }
-
     return response.posts.map(this.transformBookmark);
   }
 
@@ -242,7 +216,6 @@ export class PinboardAPI {
 
   // Add a new bookmark
   async addBookmark(params: AddBookmarkParams): Promise<Bookmark> {
-    // Filter out undefined values
     const requestParams = Object.fromEntries(
       Object.entries({
         url: params.url,
@@ -255,132 +228,35 @@ export class PinboardAPI {
         replace: params.replace
       }).filter(([, value]) => value !== undefined)
     ) as Record<string, string | number | boolean>;
-    
-    try {
-      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/add', requestParams));
 
-      if (response.result_code !== 'done') {
-        throw new Error('Failed to add bookmark');
-      }
-
-      return {
-        id: `temp-${Date.now()}`,
-        title: params.description,
-        url: params.url,
-        description: params.description,
-        extended: params.extended || '',
-        tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
-        createdAt: new Date(),
-        isRead: params.toread === 'no',
-        isShared: params.shared === 'yes',
-        domain: new URL(params.url).hostname,
-        hash: `temp-${Date.now()}`,
-        meta: '',
-        href: params.url,
-        shared: params.shared || 'no',
-        toread: params.toread || 'no'
-      };
-    } catch (error) {
-      if (error instanceof OfflineError) {
-        offlineQueue.addAction('add', params);
-        return {
-          id: `temp-${Date.now()}`,
-          title: params.description,
-          url: params.url,
-          description: params.description,
-          extended: params.extended || '',
-          tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
-          createdAt: new Date(),
-          isRead: params.toread === 'no',
-          isShared: params.shared === 'yes',
-          domain: new URL(params.url).hostname,
-          hash: `temp-${Date.now()}`,
-          meta: '',
-          href: params.url,
-          shared: params.shared || 'no',
-          toread: params.toread || 'no'
-        };
-      }
-      throw error;
-    }
-  }
-
-  // Update bookmark read status
-  async updateBookmarkReadStatus(hash: string, isRead: boolean, bookmarkData?: Bookmark): Promise<void> {
-    // Use provided bookmark data or fetch it
-    let bookmark = bookmarkData;
-    if (!bookmark) {
-      const bookmarks = await this.getAllBookmarks();
-      bookmark = bookmarks.find(b => b.hash === hash);
-    }
-    
-    if (!bookmark) {
-      throw new Error('Bookmark not found');
+    const response = await this.makeRequest<{ result_code: string }>('/posts/add', requestParams);
+    if (response.result_code !== 'done') {
+      throw new Error('Failed to add bookmark');
     }
 
-    try {
-      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/add', {
-      url: bookmark.url,
-      description: bookmark.title,
-      extended: bookmark.extended,
-      tags: bookmark.tags.join(' '),
-      toread: isRead ? 'no' : 'yes',
-      shared: bookmark.isShared ? 'yes' : 'no',
-      replace: 'yes'
-    }));
-
-      if (response.result_code !== 'done') {
-        throw new Error('Failed to update bookmark');
-      }
-    } catch (error) {
-      if (error instanceof OfflineError) {
-        offlineQueue.addAction('mark_read', { hash, isRead, bookmarkData: bookmark });
-        return;
-      }
-      throw error;
-    }
-  }
-
-  // Update bookmark share status  
-  async updateBookmarkShareStatus(hash: string, isShared: boolean, bookmarkData?: Bookmark): Promise<void> {
-    // Use provided bookmark data or fetch it
-    let bookmark = bookmarkData;
-    if (!bookmark) {
-      const bookmarks = await this.getAllBookmarks();
-      bookmark = bookmarks.find(b => b.hash === hash);
-    }
-    
-    if (!bookmark) {
-      throw new Error('Bookmark not found');
-    }
-
-    try {
-      const response = await rateLimitedQueues.pinboard.add(() => this.makeRequest<{ result_code: string }>('/posts/add', {
-      url: bookmark.url,
-      description: bookmark.title,
-      extended: bookmark.extended,
-      tags: bookmark.tags.join(' '),
-      toread: bookmark.isRead ? 'no' : 'yes',
-      shared: isShared ? 'yes' : 'no',
-      replace: 'yes'
-    }));
-
-      if (response.result_code !== 'done') {
-        throw new Error('Failed to update bookmark');
-      }
-    } catch (error) {
-      if (error instanceof OfflineError) {
-        offlineQueue.addAction('mark_shared', { hash, isShared, bookmarkData: bookmark });
-        return;
-      }
-      throw error;
-    }
+    return {
+      id: `temp-${Date.now()}`,
+      title: params.description,
+      url: params.url,
+      description: params.description,
+      extended: params.extended || '',
+      tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
+      createdAt: new Date(),
+      isRead: params.toread === 'no',
+      isShared: params.shared === 'yes',
+      domain: new URL(params.url).hostname,
+      hash: `temp-${Date.now()}`,
+      meta: '',
+      href: params.url,
+      shared: params.shared || 'no',
+      toread: params.toread || 'no'
+    };
   }
 
   // Validate API token
   async validateToken(): Promise<boolean> {
     try {
-      await rateLimitedQueues.pinboard.add(() => this.makeRequest<PinboardBookmarksResponse>('/posts/recent', { count: 1 }));
+      await this.makeRequest<PinboardBookmarksResponse>('/posts/recent', { count: 1 });
       return true;
     } catch {
       return false;

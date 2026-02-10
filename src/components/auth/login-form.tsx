@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/lib/stores/auth';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { testPinboardConnection } from '@/lib/api/test-connection';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Paperclip } from 'lucide-react';
 
 export function LoginForm() {
@@ -65,27 +66,24 @@ export function LoginForm() {
   return (
     <div className="min-h-svh h-svh flex items-center justify-center bg-background">
       <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-screen z-10">
-        <span className="absolute top-0 left-0 w-px h-full bg-primary/15"></span>
-        <span className="absolute top-0 right-0 w-px h-full bg-primary/15"></span>
-      </div>
-
-      <div className="flex items-center justify-center fixed -top-20 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-1/5 z-10 blur-3xl opacity-70">
-        <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -right-12"></span>
-        <span className="relative w-full h-full bg-primary/35 aspect-square rounded-full blur-2xl"></span>
-        <span className="relative w-full h-full bg-primary/15 aspect-square rounded-full blur-2xl -left-12"></span>
+        <span className="absolute top-0 left-0 w-px h-full bg-primary/5"></span>
+        <span className="absolute top-0 right-0 w-px h-full bg-primary/5"></span>
       </div>
         
       <div className="w-full max-w-md z-20 h-screen flex flex-col items-center justify-between py-20">
+        <div className="absolute top-4 right-4 z-30">
+          <ThemeToggle />
+        </div>
         <div className="text-center">
           <div className="flex flex-col items-center justify-center gap-2">
-            <Paperclip className="h-8 w-8 text-primary" />
-            <h2 className="text-3xl font-bold tracking-tighter">Pinbook</h2>
+            <Paperclip className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold tracking-tighter">Pinbook</h2>
           </div>
-          <p className="text-muted-foreground w-2/4 mx-auto mt-4">
+          <p className="text-muted-foreground w-2/4 mx-auto mt-4 text-sm">
             Enter your Pinboard API credentials to get started
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4 w-full px-8 sm:px-0">
+        <form onSubmit={handleSubmit} className="space-y-4 w-2/3 px-8 sm:px-0">
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
@@ -125,7 +123,7 @@ export function LoginForm() {
 
           <Button 
             type="submit" 
-            className="w-1/2 mx-auto mt-4" 
+            className="w-fit mx-auto mt-4 px-4" 
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}

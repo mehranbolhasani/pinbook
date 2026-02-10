@@ -1,12 +1,6 @@
 'use client';
 
-import { 
-  Grid3X3, 
-  List, 
-  ListOrdered, 
-  SortAsc,
-  SortDesc
-} from 'lucide-react';
+import { SortAsc, SortDesc } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/lib/stores/ui';
 import { cn } from '@/lib/utils';
@@ -16,9 +10,7 @@ export function BookmarkToolbar() {
     sortBy, 
     setSortBy, 
     sortOrder, 
-    setSortOrder,
-    layout,
-    setLayout 
+    setSortOrder
   } = useUIStore();
 
   const sortOptions = [
@@ -27,16 +19,10 @@ export function BookmarkToolbar() {
     { value: 'url', label: 'URL' }
   ];
 
-  const layoutOptions = [
-    { value: 'card', label: 'Card', icon: Grid3X3 },
-    { value: 'list', label: 'List', icon: List },
-    { value: 'minimal', label: 'Minimal', icon: ListOrdered }
-  ];
-
   return (
-    <div className="flex items-center justify-between w-full border-b border-primary/15 pb-4 px-4">
+    <div className="flex items-center justify-between w-full pb-4 px-4">
       {/* Sort Button Group */}
-      <div className="flex items-center gap-1 border rounded-full p-1 bg-background border-primary/30">
+      <div className="flex items-center gap-1 bg-background">
         {sortOptions.map((option) => (
           <Button
             key={option.value}
@@ -65,28 +51,6 @@ export function BookmarkToolbar() {
             <SortDesc className="h-4 w-4" />
           )}
         </Button>
-      </div>
-
-      {/* Layout Button Group */}
-      <div className="flex items-center gap-1 border rounded-full p-1 bg-background border-primary/30">
-        {layoutOptions.map((option) => {
-          const Icon = option.icon;
-          return (
-            <Button
-              key={option.value}
-              variant={layout === option.value ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setLayout(option.value as 'card' | 'list' | 'minimal')}
-              className={cn(
-                'h-8 px-3 hover:bg-primary/90 hover:text-primary-foreground dark:hover:bg-primary/50 dark:hover:text-primary!',
-                layout === option.value && 'bg-primary/15 text-primary hover:bg-primary/90 dark:hover:bg-primary/50'
-              )}
-              title={option.label}
-            >
-              <Icon className="h-4 w-4" />
-            </Button>
-          );
-        })}
       </div>
     </div>
   );

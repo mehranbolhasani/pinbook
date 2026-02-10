@@ -11,9 +11,6 @@ import {
   Plus, 
   Search, 
   Filter,
-  Grid3X3,
-  List,
-  Minus,
   Settings
 } from 'lucide-react';
 import { useUIStore } from '@/lib/stores/ui';
@@ -35,8 +32,6 @@ const MobileAddBookmark = dynamic(
 export function MobileNav() {
   const { isAuthenticated } = useAuthStore();
   const { 
-    layout, 
-    setLayout,
     searchQuery,
     setSearchQuery
   } = useUIStore();
@@ -100,33 +95,8 @@ export function MobileNav() {
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
         <div className="flex h-14 items-center justify-between px-2">
-          {/* Layout Toggle - Left */}
-          <div className="flex items-center space-x-1">
-            <Button
-              variant={layout === 'card' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setLayout('card')}
-              className="h-10 w-10 p-0"
-            >
-              <Grid3X3 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={layout === 'list' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setLayout('list')}
-              className="h-10 w-10 p-0"
-            >
-              <List className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={layout === 'minimal' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setLayout('minimal')}
-              className="h-10 w-10 p-0"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-          </div>
+          {/* Spacer for balance - Sort/Filter is center */}
+          <div className="w-20" />
 
           {/* Sort/Filter Combined - Center */}
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>

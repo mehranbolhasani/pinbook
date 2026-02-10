@@ -161,7 +161,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
               <ul className="text-muted-foreground space-y-1">
                 <li>• Use <kbd className="px-1 py-0.5 text-xs bg-muted rounded">Cmd/Ctrl + K</kbd> to quickly search</li>
                 <li>• Press <kbd className="px-1 py-0.5 text-xs bg-muted rounded">?</kbd> anytime to see this help</li>
-                <li>• Keyboard shortcuts work in all views (list, card, minimal)</li>
+                <li>• Keyboard shortcuts work in the list view</li>
                 <li>• Some shortcuts require a bookmark to be selected first</li>
               </ul>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
-import { useAddBookmark } from '@/hooks/usePinboard';
+import { useAddBookmark, useTags } from '@/hooks/usePinboard';
 import { useToast } from '@/hooks/useToast';
 
 interface AddBookmarkDialogProps {
@@ -26,8 +26,11 @@ interface AddBookmarkDialogProps {
 
 export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
   const { mutate: addBookmark, isPending: isSubmitting } = useAddBookmark();
+  const { data: tagsData = {} } = useTags();
   const toast = useToast();
-  
+
+  const allTagNames = useMemo(() => Object.keys(tagsData).sort(), [tagsData]);
+
   const [formData, setFormData] = useState({
     url: '',
     title: '',
@@ -74,15 +77,25 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
     });
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+  const addTag = (tag?: string) => {
+    const toAdd = (tag ?? tagInput).trim();
+    if (toAdd && !formData.tags.includes(toAdd)) {
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, tagInput.trim()]
+        tags: [...prev.tags, toAdd]
       }));
       setTagInput('');
     }
   };
+
+  const tagSuggestions = useMemo(() => {
+    const q = tagInput.trim().toLowerCase();
+    if (!q) return [];
+    return allTagNames.filter(
+      (name) =>
+        name.toLowerCase().startsWith(q) && !formData.tags.includes(name)
+    ).slice(0, 8);
+  }, [tagInput, allTagNames, formData.tags]);
 
   const removeTag = (tagToRemove: string) => {
     setFormData(prev => ({
@@ -91,10 +104,14 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
     }));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      addTag();
+      if (tagSuggestions.length > 0) {
+        addTag(tagSuggestions[0]);
+      } else {
+        addTag();
+      }
     }
   };
 
@@ -173,17 +190,37 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
           
           <div className="space-y-2">
             <Label htmlFor="tags">Tags</Label>
-            <div className="flex space-x-2">
+            <div className="relative flex space-x-2">
               <Input
                 id="tags"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleTagKeyDown}
                 placeholder="Add a tag"
               />
-              <Button type="button" onClick={addTag} size="sm">
+              <Button type="button" onClick={() => addTag()} size="sm">
                 <Plus className="h-4 w-4" />
               </Button>
+              {tagSuggestions.length > 0 && (
+                <ul
+                  className="absolute top-full left-0 z-10 mt-1 w-[calc(100%-2.5rem)] rounded-md border bg-popover py-1 shadow-md"
+                  role="listbox"
+                >
+                  {tagSuggestions.map((tag) => (
+                    <li key={tag}>
+                      <button
+                        type="button"
+                        className="w-full px-3 py-2 text-left text-sm hover:bg-accent"
+                        onClick={() => addTag(tag)}
+                        role="option"
+                        aria-selected={false}
+                      >
+                        {tag}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               {formData.tags.map((tag) => (

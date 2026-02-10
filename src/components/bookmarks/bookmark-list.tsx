@@ -1,18 +1,13 @@
 'use client';
 
-import { memo, useCallback } from 'react';
-import { BookmarkCardView } from './views/bookmark-card-view';
+import { memo } from 'react';
 import { BookmarkListView } from './views/bookmark-list-view';
-import { BookmarkMinimalView } from './views/bookmark-minimal-view';
 import { VirtualizedBookmarkList, useVirtualizationThreshold } from './virtualized-bookmark-list';
 import { BookmarkToolbar } from './bookmark-toolbar';
 import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
-import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
-import { PullToRefreshIndicator } from '@/components/ui/pull-to-refresh-indicator';
-import { useBookmarks } from '@/hooks/usePinboard';
 
 import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
 
@@ -27,19 +22,9 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
   const { 
     searchQuery, 
     selectedTags,
-    layout,
     setSearchQuery,
     setSelectedTags,
   } = useUIStore();
-
-  // Pull-to-refresh for mobile
-  const { refetch } = useBookmarks();
-  const { bind, isRefreshing, pullDistance } = usePullToRefresh({
-    onRefresh: async () => {
-      await refetch();
-    },
-    threshold: 80,
-  });
 
   // Check if we should use virtualization (moved to component level)
   const virtualizationThreshold = useVirtualizationThreshold();
@@ -48,7 +33,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
 
 
   if (isLoading) {
-    return <BookmarkListSkeleton count={6} layout={layout} />;
+    return <BookmarkListSkeleton count={6} />;
   }
 
   if (filteredAndSortedBookmarks.length === 0) {
@@ -91,7 +76,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
 
   const renderBookmarks = () => {
     if (isLoading) {
-      return <BookmarkListSkeleton count={6} layout={layout} />;
+      return <BookmarkListSkeleton count={6} />;
     }
 
     // Use virtualization for large lists
@@ -101,51 +86,21 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
           bookmarks={filteredAndSortedBookmarks}
           onEditBookmark={onEditBookmark}
           onDeleteBookmark={onDeleteBookmark}
-          layout={layout}
         />
       );
     }
 
-    switch (layout) {
-      case 'list':
-        return (
-          <BookmarkListView
-            bookmarks={filteredAndSortedBookmarks}
-            onEdit={onEditBookmark!}
-            onDelete={onDeleteBookmark!}
-          />
-        );
-      case 'minimal':
-        return (
-          <BookmarkMinimalView
-            bookmarks={filteredAndSortedBookmarks}
-            onEdit={onEditBookmark!}
-            onDelete={onDeleteBookmark!}
-          />
-        );
-      case 'card':
-      default:
-        return (
-          <BookmarkCardView
-            bookmarks={filteredAndSortedBookmarks}
-            onEdit={onEditBookmark!}
-            onDelete={onDeleteBookmark!}
-          />
-        );
-    }
+    return (
+      <BookmarkListView
+        bookmarks={filteredAndSortedBookmarks}
+        onEdit={onEditBookmark!}
+        onDelete={onDeleteBookmark!}
+      />
+    );
   };
 
   return (
-    <div data-ptr-container {...bind()} className="lg:touch-auto mb-32">
-      {/* Pull-to-refresh indicator - mobile only */}
-      <div className="lg:hidden">
-        <PullToRefreshIndicator
-          pullDistance={pullDistance}
-          isRefreshing={isRefreshing}
-          threshold={80}
-        />
-      </div>
-
+    <div className="mb-32">
       {/* Toolbar */}
       <div className="items-center justify-end hidden lg:flex">
         <BookmarkToolbar />

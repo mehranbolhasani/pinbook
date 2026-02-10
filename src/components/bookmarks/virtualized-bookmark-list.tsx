@@ -3,15 +3,14 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useRef } from 'react';
 import { Bookmark } from '@/types/pinboard';
-import { BookmarkCard } from './bookmark-card';
-import { BookmarkMinimalItem } from './bookmark-minimal-item';
 import { BookmarkListItem } from './bookmark-list-item';
+
+const LIST_ITEM_HEIGHT = 80;
 
 interface VirtualizedBookmarkListProps {
   bookmarks: Bookmark[];
   onEditBookmark?: (bookmark: Bookmark) => void;
   onDeleteBookmark?: (bookmark: Bookmark) => void;
-  layout: 'card' | 'list' | 'minimal';
   className?: string;
 }
 
@@ -19,69 +18,18 @@ export function VirtualizedBookmarkList({
   bookmarks,
   onEditBookmark,
   onDeleteBookmark,
-  layout,
   className = ''
 }: VirtualizedBookmarkListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Calculate item height based on layout
-  const getItemHeight = (layout: string) => {
-    switch (layout) {
-      case 'minimal':
-        return 60; // Minimal list items
-      case 'list':
-        return 80; // List view items
-      case 'card':
-        return 200; // Card items (approximate)
-      default:
-        return 80;
-    }
-  };
-
-  const itemHeight = getItemHeight(layout);
-
   const virtualizer = useWindowVirtualizer({
     count: bookmarks.length,
-    estimateSize: () => itemHeight,
+    estimateSize: () => LIST_ITEM_HEIGHT,
     overscan: 5,
     scrollMargin: parentRef.current?.offsetTop ?? 0,
   });
 
   const items = virtualizer.getVirtualItems();
-
-  const renderBookmark = (bookmark: Bookmark) => {
-    switch (layout) {
-      case 'minimal':
-        return (
-          <BookmarkMinimalItem
-            key={bookmark.id}
-            bookmark={bookmark}
-            onEdit={onEditBookmark}
-            onDelete={onDeleteBookmark}
-          />
-        );
-      case 'list':
-        return (
-          <BookmarkListItem
-            key={bookmark.id}
-            bookmark={bookmark}
-            onEdit={onEditBookmark}
-            onDelete={onDeleteBookmark}
-          />
-        );
-      case 'card':
-        return (
-          <BookmarkCard
-            key={bookmark.id}
-            bookmark={bookmark}
-            onEdit={onEditBookmark}
-            onDelete={onDeleteBookmark}
-          />
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <div
@@ -110,7 +58,11 @@ export function VirtualizedBookmarkList({
               transform: `translateY(${virtualItem.start - virtualizer.options.scrollMargin}px)`,
             }}
           >
-            {renderBookmark(bookmarks[virtualItem.index])}
+            <BookmarkListItem
+              bookmark={bookmarks[virtualItem.index]}
+              onEdit={onEditBookmark}
+              onDelete={onDeleteBookmark}
+            />
           </div>
         ))}
       </div>
@@ -120,5 +72,5 @@ export function VirtualizedBookmarkList({
 
 // Hook for determining when to use virtualization
 export function useVirtualizationThreshold() {
-  return 100; // Use virtualization when more than 100 bookmarks
+  return 75; // Use virtualization when more than 75 bookmarks
 }

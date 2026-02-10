@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,7 +10,7 @@ import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
-import { useAddBookmark } from '@/hooks/usePinboard';
+import { useAddBookmark, useTags } from '@/hooks/usePinboard';
 import { useToast } from '@/hooks/useToast';
 
 interface MobileAddBookmarkProps {
@@ -19,8 +19,11 @@ interface MobileAddBookmarkProps {
 
 export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
   const { mutate: addBookmark, isPending: isSubmitting } = useAddBookmark();
+  const { data: tagsData = {} } = useTags();
   const toast = useToast();
-  
+
+  const allTagNames = useMemo(() => Object.keys(tagsData).sort(), [tagsData]);
+
   const [formData, setFormData] = useState({
     url: '',
     title: '',
@@ -67,28 +70,31 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
     });
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+  const addTag = (tag?: string) => {
+    const toAdd = (tag ?? tagInput).trim();
+    if (toAdd && !formData.tags.includes(toAdd)) {
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, tagInput.trim()]
+        tags: [...prev.tags, toAdd]
       }));
       setTagInput('');
     }
   };
+
+  const tagSuggestions = useMemo(() => {
+    const q = tagInput.trim().toLowerCase();
+    if (!q) return [];
+    return allTagNames.filter(
+      (name) =>
+        name.toLowerCase().startsWith(q) && !formData.tags.includes(name)
+    ).slice(0, 8);
+  }, [tagInput, allTagNames, formData.tags]);
 
   const removeTag = (tagToRemove: string) => {
     setFormData(prev => ({
       ...prev,
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag();
-    }
   };
 
   const handleUrlChange = async (url: string) => {
@@ -175,7 +181,7 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
         
         <div className="space-y-2">
           <Label htmlFor="tags">Tags</Label>
-          <div className="flex space-x-2">
+          <div className="relative flex space-x-2">
             <Input
               id="tags"
               value={tagInput}
@@ -183,15 +189,36 @@ export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  addTag();
+                  if (tagSuggestions.length > 0) addTag(tagSuggestions[0]);
+                  else addTag();
                 }
               }}
               placeholder="Add a tag"
               autoComplete="off"
             />
-            <Button type="button" onClick={addTag} size="sm">
+            <Button type="button" onClick={() => addTag()} size="sm">
               <Plus className="h-4 w-4" />
             </Button>
+            {tagSuggestions.length > 0 && (
+              <ul
+                className="absolute top-full left-0 z-10 mt-1 w-[calc(100%-2.5rem)] rounded-md border bg-popover py-1 shadow-md"
+                role="listbox"
+              >
+                {tagSuggestions.map((tag) => (
+                  <li key={tag}>
+                    <button
+                      type="button"
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-accent"
+                      onClick={() => addTag(tag)}
+                      role="option"
+                      aria-selected={false}
+                    >
+                      {tag}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             {formData.tags.map((tag) => (

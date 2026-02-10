@@ -75,6 +75,5 @@ export interface AppState {
   selectedTags: string[];
   sortBy: 'date' | 'title' | 'url';
   sortOrder: 'asc' | 'desc';
-  layout: 'card' | 'list' | 'minimal';
   isInitialized: boolean;
 }

@@ -61,7 +61,6 @@ export const usernameSchema = z.string()
 
 // Settings validation schema
 export const settingsSchema = z.object({
-  layout: z.enum(['card', 'list', 'minimal']).default('list'),
   sortBy: z.enum(['date', 'title', 'url']).default('date'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   theme: z.enum(['light', 'dark', 'system']).default('system'),

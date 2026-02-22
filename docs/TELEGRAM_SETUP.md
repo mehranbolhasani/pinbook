@@ -92,6 +92,9 @@ Telegram sends updates to a **public URL**. So your app must be reachable at tha
 
 From your **project root**, run the script once. It needs `TELEGRAM_BOT_TOKEN` and your public base URL.
 
+**Important — use the URL that does not redirect:**  
+If your site redirects (e.g. `pinbook.xyz` → `www.pinbook.xyz` or the other way), set `PINBOOK_BASE_URL` to the **final** URL you see in the browser (the one that doesn’t change). Telegram sends POST with a body; if the webhook URL redirects (307/301), the request can break and the bot will never receive updates. So use e.g. `https://www.pinbook.xyz` if that’s your canonical domain, not `https://pinbook.xyz` if that redirects.
+
 **If `.env.local` is in the project root**, you can load it and run:
 
 ```bash
@@ -178,9 +181,10 @@ The bot will add the URL to your Pinboard and reply with something like: “Save
 ## Troubleshooting
 
 - **Bot never replies (no message at all)**  
+  - **307 redirect on webhook:** In Vercel (or other hosts) you may see `GET /api/telegram/webhook` with status **307**. That usually means the webhook URL you gave Telegram redirects (e.g. `pinbook.xyz` → `www.pinbook.xyz`). Telegram sends **POST** to your URL; after a redirect the request can break and the body is lost, so the bot never gets the message. **Fix:** Set the webhook to the URL that does **not** redirect. Open your app in the browser and check the address bar: use that exact base URL (e.g. `https://www.pinbook.xyz`) in `PINBOOK_BASE_URL` and run `node scripts/set-telegram-webhook.mjs` again.
   - **Webhook secret:** If you set `TELEGRAM_WEBHOOK_SECRET` in env, Telegram must send the same value when it calls your webhook. When you ran the webhook script, you must have passed that secret (e.g. `node scripts/set-telegram-webhook.mjs https://your-url.com your-secret`). If they don’t match, the server returns 401 and the bot sends nothing. Fix: run the script again with the same secret, or remove `TELEGRAM_WEBHOOK_SECRET` and run the script without a secret.
   - **One environment for link + webhook:** The bot has a single webhook URL (whichever you last set). Use **one** environment for both “Connect Telegram” and receiving messages. If the webhook points to **production**, do “Connect Telegram” in the **production** Pinbook (and use production Redis). If you connected on local but the webhook points to prod, prod doesn’t have your link/code data, so you’ll get “invalid code” or “not linked” — and if something else fails, no reply. Stick to prod for both, or local+ngrok for both.
-  - **Check server logs:** When you send a message to the bot, the server should log something like `Telegram webhook: update_id=... chat_id=... text=...`. If you never see that, Telegram isn’t reaching your app (wrong URL, app down, or firewall). If you see that but no reply, check for errors right after (e.g. `TELEGRAM_BOT_TOKEN` invalid, or `Telegram sendMessage failed`).
+  - **Check server logs:** When you send a message to the bot, the server should log something like `Telegram webhook: update_id=... chat_id=... text=...`. If you never see that, Telegram isn’t reaching your app (wrong URL, app down, or redirect). If you see that but no reply, check for errors right after (e.g. `TELEGRAM_BOT_TOKEN` invalid, or `Telegram sendMessage failed`).
 
 - **“This code is invalid or expired”**  
   Generate a new code in Settings → Telegram → Connect Telegram and send the new `/start CODE` within a few minutes. If you’re not using Redis, restarting the dev server invalidates old codes. If you linked on local but the webhook is set to prod (or the other way around), the server that receives the message doesn’t have the code — use the same environment for connecting and for the webhook.

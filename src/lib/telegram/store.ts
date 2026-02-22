@@ -7,9 +7,16 @@
 import { createHash } from 'crypto';
 
 const CODE_TTL_SECONDS = 600; // 10 minutes
+const PENDING_TTL_SECONDS = 300; // 5 minutes
 const CODE_PREFIX = 'telegram:code:';
 const USER_PREFIX = 'telegram:user:';
 const TOKEN_HASH_PREFIX = 'telegram:token:';
+const PENDING_PREFIX = 'telegram:pending:';
+
+export interface PendingBookmark {
+  url: string;
+  description: string;
+}
 
 function hashToken(apiToken: string): string {
   return createHash('sha256').update(apiToken, 'utf8').digest('hex');
@@ -19,6 +26,7 @@ function hashToken(apiToken: string): string {
 const memoryCodes = new Map<string, { apiToken: string; expiresAt: number }>();
 const memoryUsers = new Map<string, string>();
 const memoryTokenToTelegram = new Map<string, string>();
+const memoryPending = new Map<string, { data: PendingBookmark; expiresAt: number }>();
 
 async function getRedis() {
   const url = process.env.KV_REST_URL;
@@ -105,4 +113,50 @@ export async function disconnectByApiToken(apiToken: string): Promise<boolean> {
   memoryUsers.delete(telegramId);
   memoryTokenToTelegram.delete(hash);
   return true;
+}
+
+// Pending bookmark (waiting for tags) per chat
+export async function setPendingBookmark(chatId: number, data: PendingBookmark): Promise<void> {
+  const redis = await getRedis();
+  const key = PENDING_PREFIX + chatId;
+  if (redis) {
+    await redis.setex(key, PENDING_TTL_SECONDS, JSON.stringify(data));
+    return;
+  }
+  memoryPending.set(String(chatId), {
+    data,
+    expiresAt: Date.now() + PENDING_TTL_SECONDS * 1000
+  });
+}
+
+export async function getPendingBookmark(chatId: number): Promise<PendingBookmark | null> {
+  const redis = await getRedis();
+  const key = PENDING_PREFIX + chatId;
+  if (redis) {
+    const raw = await redis.get<string>(key);
+    if (raw) {
+      try {
+        return JSON.parse(raw) as PendingBookmark;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+  const entry = memoryPending.get(String(chatId));
+  if (!entry || Date.now() > entry.expiresAt) {
+    if (entry) memoryPending.delete(String(chatId));
+    return null;
+  }
+  return entry.data;
+}
+
+export async function clearPendingBookmark(chatId: number): Promise<void> {
+  const redis = await getRedis();
+  const key = PENDING_PREFIX + chatId;
+  if (redis) {
+    await redis.del(key);
+    return;
+  }
+  memoryPending.delete(String(chatId));
 }

@@ -4,9 +4,13 @@ import { sendTelegramMessage } from '@/lib/telegram/bot';
 import {
   getCodeAndDelete,
   linkTelegramUser,
-  getApiTokenByTelegramId
+  getApiTokenByTelegramId,
+  getPendingBookmark,
+  setPendingBookmark,
+  clearPendingBookmark
 } from '@/lib/telegram/store';
 import { addBookmarkServer } from '@/lib/telegram/pinboard-server';
+import { fetchPageTitle } from '@/lib/telegram/fetch-title';
 
 const URL_REGEX = /https?:\/\/[^\s]+/i;
 
@@ -14,9 +18,17 @@ function extractFirstUrl(text: string): string | null {
   const match = text.match(URL_REGEX);
   if (!match) return null;
   let url = match[0];
-  // Trim trailing punctuation that might have been captured
   url = url.replace(/[.,;:!?)]+$/, '');
   return url;
+}
+
+/** Parse tags from user message: comma or space separated, trimmed, single space between */
+function parseTagsInput(text: string): string {
+  return text
+    .split(/[\s,]+/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .join(' ');
 }
 
 export async function POST(request: NextRequest) {
@@ -72,7 +84,7 @@ export async function POST(request: NextRequest) {
       await sendTelegramMessage(
         botToken,
         chatId,
-        '✅ <b>Linked!</b> Send me any URL and I\'ll add it to your Pinboard.'
+        '✅ <b>Linked!</b> Send me a URL and I\'ll fetch the title, ask for tags, then save it to Pinboard. Or send /skip when asked for tags to save without tags.'
       );
       return NextResponse.json({ ok: true });
     }
@@ -82,17 +94,6 @@ export async function POST(request: NextRequest) {
         botToken,
         chatId,
         'To connect this chat to Pinboard, get a code from Pinbook Settings → Connect Telegram, then send: <code>/start YOUR_CODE</code>'
-      );
-      return NextResponse.json({ ok: true });
-    }
-
-    // Extract URL and add bookmark
-    const url = extractFirstUrl(text);
-    if (!url) {
-      await sendTelegramMessage(
-        botToken,
-        chatId,
-        'Send me a link (URL) to save it to Pinboard. Example: https://example.com/article'
       );
       return NextResponse.json({ ok: true });
     }
@@ -107,25 +108,68 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    const description = text.replace(URL_REGEX, '').trim() || url;
-    const result = await addBookmarkServer(apiToken, {
-      url,
-      description: description.slice(0, 255)
-    });
+    const urlInMessage = extractFirstUrl(text);
+    const pending = await getPendingBookmark(chatId);
 
-    if (result.ok) {
+    // If user sends a new URL while we were waiting for tags, start over with the new URL
+    if (pending && urlInMessage) {
+      const title = await fetchPageTitle(urlInMessage);
+      const description = title ?? urlInMessage;
+      await setPendingBookmark(chatId, { url: urlInMessage, description });
+      const titleLine = title ? `\n<b>Title:</b> ${title.slice(0, 100)}${title.length > 100 ? '…' : ''}` : '';
       await sendTelegramMessage(
         botToken,
         chatId,
-        `✅ Saved to Pinboard: ${url}`
+        `📎 New link received.${titleLine}\n\nSend tags (comma or space separated), or /skip to save without tags.`
       );
-    } else {
-      await sendTelegramMessage(
-        botToken,
-        chatId,
-        `❌ Failed to save: ${result.error ?? 'Unknown error'}`
-      );
+      return NextResponse.json({ ok: true });
     }
+
+    // Pending bookmark: this message is tags or /skip
+    if (pending) {
+      const tags = text === '/skip' ? '' : parseTagsInput(text);
+      const result = await addBookmarkServer(apiToken, {
+        url: pending.url,
+        description: pending.description.slice(0, 255),
+        tags: tags || undefined
+      });
+      await clearPendingBookmark(chatId);
+      if (result.ok) {
+        const tagPart = tags ? ` with tags: ${tags}` : '';
+        await sendTelegramMessage(
+          botToken,
+          chatId,
+          `✅ Saved to Pinboard${tagPart}: ${pending.url}`
+        );
+      } else {
+        await sendTelegramMessage(
+          botToken,
+          chatId,
+          `❌ Failed to save: ${result.error ?? 'Unknown error'}`
+        );
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    // New URL: fetch title, store pending, ask for tags
+    if (!urlInMessage) {
+      await sendTelegramMessage(
+        botToken,
+        chatId,
+        'Send me a link (URL) to save it to Pinboard. Example: https://example.com/article'
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    const title = await fetchPageTitle(urlInMessage);
+    const description = title ?? urlInMessage;
+    await setPendingBookmark(chatId, { url: urlInMessage, description });
+    const titleLine = title ? `\n<b>Title:</b> ${title.slice(0, 100)}${title.length > 100 ? '…' : ''}` : '';
+    await sendTelegramMessage(
+      botToken,
+      chatId,
+      `📎 Link received.${titleLine}\n\nSend tags (comma or space separated), or /skip to save without tags.`
+    );
   } catch (err) {
     console.error('Telegram webhook error:', err);
     await sendTelegramMessage(

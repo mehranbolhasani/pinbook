@@ -162,7 +162,7 @@ or:
 Check this out https://news.ycombinator.com
 ```
 
-The bot will add the URL to your Pinboard and reply with something like: “Saved to Pinboard: …”.
+The bot will fetch the page title, ask for tags (reply with tags or /skip), then save to Pinboard. Example: “Saved to Pinboard: …”.
 
 ---
 

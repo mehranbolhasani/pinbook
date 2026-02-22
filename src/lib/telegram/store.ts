@@ -120,15 +120,19 @@ export async function disconnectByApiToken(apiToken: string): Promise<boolean> {
   return true;
 }
 
+function pendingKey(chatId: number): string {
+  return PENDING_PREFIX + String(chatId);
+}
+
 // Pending bookmark (waiting for tags) per chat
 export async function setPendingBookmark(chatId: number, data: PendingBookmark): Promise<void> {
   const redis = await getRedis();
-  const key = PENDING_PREFIX + chatId;
+  const key = pendingKey(chatId);
   if (redis) {
     await redis.setex(key, PENDING_TTL_SECONDS, JSON.stringify(data));
     return;
   }
-  memoryPending.set(String(chatId), {
+  memoryPending.set(key, {
     data,
     expiresAt: Date.now() + PENDING_TTL_SECONDS * 1000
   });
@@ -136,7 +140,7 @@ export async function setPendingBookmark(chatId: number, data: PendingBookmark):
 
 export async function getPendingBookmark(chatId: number): Promise<PendingBookmark | null> {
   const redis = await getRedis();
-  const key = PENDING_PREFIX + chatId;
+  const key = pendingKey(chatId);
   if (redis) {
     const raw = await redis.get<string>(key);
     if (raw) {
@@ -148,9 +152,9 @@ export async function getPendingBookmark(chatId: number): Promise<PendingBookmar
     }
     return null;
   }
-  const entry = memoryPending.get(String(chatId));
+  const entry = memoryPending.get(key);
   if (!entry || Date.now() > entry.expiresAt) {
-    if (entry) memoryPending.delete(String(chatId));
+    if (entry) memoryPending.delete(key);
     return null;
   }
   return entry.data;
@@ -158,10 +162,10 @@ export async function getPendingBookmark(chatId: number): Promise<PendingBookmar
 
 export async function clearPendingBookmark(chatId: number): Promise<void> {
   const redis = await getRedis();
-  const key = PENDING_PREFIX + chatId;
+  const key = pendingKey(chatId);
   if (redis) {
     await redis.del(key);
     return;
   }
-  memoryPending.delete(String(chatId));
+  memoryPending.delete(key);
 }

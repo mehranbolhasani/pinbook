@@ -111,6 +111,8 @@ export async function POST(request: NextRequest) {
 
     const urlInMessage = extractFirstUrl(text);
     const pending = await getPendingBookmark(chatId);
+    const hasRedis = await hasPersistentStore();
+    console.log('Telegram webhook: chatId=', chatId, 'url=', !!urlInMessage, 'pending=', !!pending, 'hasRedis=', hasRedis);
 
     // If user sends a new URL while we were waiting for tags, start over with the new URL
     if (pending && urlInMessage) {
@@ -166,6 +168,7 @@ export async function POST(request: NextRequest) {
     const description = title ?? urlInMessage;
 
     const canAskForTags = await hasPersistentStore();
+    console.log('Telegram webhook: canAskForTags=', canAskForTags, 'for chatId=', chatId);
     if (!canAskForTags) {
       // No Redis: pending state wouldn't persist across serverless invocations, so save immediately
       const result = await addBookmarkServer(apiToken, {

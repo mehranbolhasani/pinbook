@@ -65,6 +65,8 @@ Save the file. **Do not commit `.env.local`** (it’s gitignored).
    KV_REST_TOKEN=AXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 
+   **Vercel:** After adding these in Project Settings → Environment Variables, trigger a **new deployment** (e.g. Deployments → ⋮ → Redeploy, or push a new commit). The running app only picks up new env vars on a new deployment.
+
 ---
 
 ## 4. Expose your app to the internet (so Telegram can call your webhook)

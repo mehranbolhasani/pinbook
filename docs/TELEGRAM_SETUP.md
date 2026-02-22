@@ -177,11 +177,16 @@ The bot will add the URL to your Pinboard and reply with something like: “Save
 
 ## Troubleshooting
 
+- **Bot never replies (no message at all)**  
+  - **Webhook secret:** If you set `TELEGRAM_WEBHOOK_SECRET` in env, Telegram must send the same value when it calls your webhook. When you ran the webhook script, you must have passed that secret (e.g. `node scripts/set-telegram-webhook.mjs https://your-url.com your-secret`). If they don’t match, the server returns 401 and the bot sends nothing. Fix: run the script again with the same secret, or remove `TELEGRAM_WEBHOOK_SECRET` and run the script without a secret.
+  - **One environment for link + webhook:** The bot has a single webhook URL (whichever you last set). Use **one** environment for both “Connect Telegram” and receiving messages. If the webhook points to **production**, do “Connect Telegram” in the **production** Pinbook (and use production Redis). If you connected on local but the webhook points to prod, prod doesn’t have your link/code data, so you’ll get “invalid code” or “not linked” — and if something else fails, no reply. Stick to prod for both, or local+ngrok for both.
+  - **Check server logs:** When you send a message to the bot, the server should log something like `Telegram webhook: update_id=... chat_id=... text=...`. If you never see that, Telegram isn’t reaching your app (wrong URL, app down, or firewall). If you see that but no reply, check for errors right after (e.g. `TELEGRAM_BOT_TOKEN` invalid, or `Telegram sendMessage failed`).
+
 - **“This code is invalid or expired”**  
-  Generate a new code in Settings → Telegram → Connect Telegram and send the new `/start CODE` within a few minutes. If you’re not using Redis, restarting the dev server invalidates old codes.
+  Generate a new code in Settings → Telegram → Connect Telegram and send the new `/start CODE` within a few minutes. If you’re not using Redis, restarting the dev server invalidates old codes. If you linked on local but the webhook is set to prod (or the other way around), the server that receives the message doesn’t have the code — use the same environment for connecting and for the webhook.
 
 - **“This chat is not linked”** when sending a URL  
-  Complete the linking step: get a code in Settings and send `/start CODE` to the bot.
+  Complete the linking step: get a code in Settings and send `/start CODE` to the bot (on the same Pinbook environment where the webhook is set).
 
 - **Webhook script fails or bot never replies**  
   - Check that `PINBOOK_BASE_URL` is exactly the base URL (no `/api/...`). The script appends `/api/telegram/webhook`.

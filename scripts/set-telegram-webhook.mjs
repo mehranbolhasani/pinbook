@@ -1,27 +1,44 @@
 #!/usr/bin/env node
 /**
  * Set the Telegram bot webhook to your Pinbook app.
+ * Loads .env.local from the current directory if present.
  *
  * Usage:
- *   # With env vars (e.g. from .env.local, or export them):
- *   TELEGRAM_BOT_TOKEN=123:ABC PINBOOK_BASE_URL=https://your-app.vercel.app node scripts/set-telegram-webhook.mjs
+ *   node scripts/set-telegram-webhook.mjs
+ *   (with TELEGRAM_BOT_TOKEN and PINBOOK_BASE_URL in .env.local)
  *
- *   # Or with optional webhook secret:
- *   TELEGRAM_BOT_TOKEN=... PINBOOK_BASE_URL=... TELEGRAM_WEBHOOK_SECRET=mysecret node scripts/set-telegram-webhook.mjs
- *
- *   # Or pass base URL as first argument (and optional secret as second):
- *   node scripts/set-telegram-webhook.mjs https://your-app.vercel.app [optional-secret]
+ *   Or pass base URL: node scripts/set-telegram-webhook.mjs https://your-app.vercel.app [secret]
  */
+
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+
+// Load .env.local from project root (current working directory)
+const envPath = join(process.cwd(), '.env.local');
+if (existsSync(envPath)) {
+  const content = readFileSync(envPath, 'utf8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const baseUrl = process.env.PINBOOK_BASE_URL || process.env.BASE_URL || process.argv[2];
 const secret = process.env.TELEGRAM_WEBHOOK_SECRET || process.argv[3];
 
 if (!token || !baseUrl) {
-  console.error('Usage: set TELEGRAM_BOT_TOKEN and your app base URL.');
-  console.error('  TELEGRAM_BOT_TOKEN=xxx PINBOOK_BASE_URL=https://your-domain.com node scripts/set-telegram-webhook.mjs');
-  console.error('  or: node scripts/set-telegram-webhook.mjs <base_url> [secret]');
-  console.error('  (token must be in TELEGRAM_BOT_TOKEN env var)');
+  console.error('Missing TELEGRAM_BOT_TOKEN or PINBOOK_BASE_URL.');
+  console.error('  - From project root, add them to .env.local and run: node scripts/set-telegram-webhook.mjs');
+  console.error('  - Or run: node scripts/set-telegram-webhook.mjs <base_url>  (token still from .env.local)');
   process.exit(1);
 }
 

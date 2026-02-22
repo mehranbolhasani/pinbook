@@ -24,13 +24,14 @@ export async function POST(request: NextRequest) {
   if (secret) {
     const headerSecret = request.headers.get('x-telegram-bot-api-secret-token');
     if (headerSecret !== secret) {
+      console.error('Telegram webhook: secret token mismatch (check TELEGRAM_WEBHOOK_SECRET vs setWebhook secret_token)');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
   }
 
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   if (!botToken) {
-    console.error('TELEGRAM_BOT_TOKEN is not set');
+    console.error('Telegram webhook: TELEGRAM_BOT_TOKEN is not set');
     return NextResponse.json({ error: 'Bot not configured' }, { status: 500 });
   }
 
@@ -45,6 +46,10 @@ export async function POST(request: NextRequest) {
   if (!message?.from?.id || !message.chat?.id) {
     return NextResponse.json({ ok: true });
   }
+
+  // Log so you can confirm in server logs that the webhook is being hit
+  const textPreview = (message.text ?? '').slice(0, 50);
+  console.log('Telegram webhook: update_id=', update.update_id, 'chat_id=', message.chat.id, 'text=', textPreview || '(no text)');
 
   const chatId = message.chat.id;
   const telegramId = String(message.from.id);

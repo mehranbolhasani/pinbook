@@ -142,8 +142,13 @@ export async function getPendingBookmark(chatId: number): Promise<PendingBookmar
   const redis = await getRedis();
   const key = pendingKey(chatId);
   if (redis) {
-    const raw = await redis.get<string>(key);
-    if (raw) {
+    const raw = await redis.get<string | PendingBookmark>(key);
+    if (!raw) return null;
+    // Upstash Redis may auto-deserialize JSON, so raw can be object or string
+    if (typeof raw === 'object' && raw !== null && 'url' in raw && 'description' in raw) {
+      return raw as PendingBookmark;
+    }
+    if (typeof raw === 'string') {
       try {
         return JSON.parse(raw) as PendingBookmark;
       } catch {

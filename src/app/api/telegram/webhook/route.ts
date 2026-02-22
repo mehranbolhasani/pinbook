@@ -7,7 +7,8 @@ import {
   getApiTokenByTelegramId,
   getPendingBookmark,
   setPendingBookmark,
-  clearPendingBookmark
+  clearPendingBookmark,
+  hasPersistentStore
 } from '@/lib/telegram/store';
 import { addBookmarkServer } from '@/lib/telegram/pinboard-server';
 import { fetchPageTitle } from '@/lib/telegram/fetch-title';
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    // New URL: fetch title, store pending, ask for tags
+    // New URL: fetch title, then either ask for tags (if Redis) or save immediately (no Redis)
     if (!urlInMessage) {
       await sendTelegramMessage(
         botToken,
@@ -163,6 +164,30 @@ export async function POST(request: NextRequest) {
 
     const title = await fetchPageTitle(urlInMessage);
     const description = title ?? urlInMessage;
+
+    const canAskForTags = await hasPersistentStore();
+    if (!canAskForTags) {
+      // No Redis: pending state wouldn't persist across serverless invocations, so save immediately
+      const result = await addBookmarkServer(apiToken, {
+        url: urlInMessage,
+        description: description.slice(0, 255)
+      });
+      if (result.ok) {
+        await sendTelegramMessage(
+          botToken,
+          chatId,
+          `✅ Saved to Pinboard: ${urlInMessage}\n\n(To add tags, set up Redis — see Pinbook docs.)`
+        );
+      } else {
+        await sendTelegramMessage(
+          botToken,
+          chatId,
+          `❌ Failed to save: ${result.error ?? 'Unknown error'}`
+        );
+      }
+      return NextResponse.json({ ok: true });
+    }
+
     await setPendingBookmark(chatId, { url: urlInMessage, description });
     const titleLine = title ? `\n<b>Title:</b> ${title.slice(0, 100)}${title.length > 100 ? '…' : ''}` : '';
     await sendTelegramMessage(

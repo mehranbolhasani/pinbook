@@ -38,6 +38,11 @@ async function getRedis() {
   return null;
 }
 
+/** True if Redis is configured (pending state will work across requests). */
+export async function hasPersistentStore(): Promise<boolean> {
+  return (await getRedis()) !== null;
+}
+
 export async function setCode(code: string, apiToken: string): Promise<void> {
   const redis = await getRedis();
   if (redis) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/lib/stores/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw } from 'lucide-react';
+import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Send, Unplug } from 'lucide-react';
 import Link from 'next/link';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
 
@@ -26,6 +26,11 @@ export default function SettingsPage() {
   const [newApiToken, setNewApiToken] = useState(apiToken || '');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Telegram link state
+  const [telegramConnected, setTelegramConnected] = useState<boolean | null>(null);
+  const [telegramLoading, setTelegramLoading] = useState(false);
+  const [telegramCode, setTelegramCode] = useState<{ code: string; botUsername: string } | null>(null);
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -42,6 +47,74 @@ export default function SettingsPage() {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const fetchTelegramStatus = useCallback(async () => {
+    const token = apiToken ?? newApiToken;
+    if (!token) {
+      setTelegramConnected(false);
+      return;
+    }
+    try {
+      const res = await fetch('/api/telegram/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiToken: token })
+      });
+      const data = await res.json();
+      setTelegramConnected(!!data?.connected);
+    } catch {
+      setTelegramConnected(false);
+    }
+  }, [apiToken, newApiToken]);
+
+  useEffect(() => {
+    if (apiToken ?? newApiToken) {
+      fetchTelegramStatus();
+    } else {
+      setTelegramConnected(false);
+    }
+  }, [apiToken, newApiToken, fetchTelegramStatus]);
+
+  const handleConnectTelegram = async () => {
+    const token = apiToken ?? newApiToken;
+    if (!token) return;
+    setTelegramLoading(true);
+    setTelegramCode(null);
+    try {
+      const res = await fetch('/api/telegram/request-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiToken: token })
+      });
+      const data = await res.json();
+      if (data?.code && data?.botUsername) {
+        setTelegramCode({ code: data.code, botUsername: data.botUsername });
+      }
+    } catch {
+      // Silent fail
+    } finally {
+      setTelegramLoading(false);
+    }
+  };
+
+  const handleDisconnectTelegram = async () => {
+    const token = apiToken ?? newApiToken;
+    if (!token) return;
+    setTelegramLoading(true);
+    try {
+      await fetch('/api/telegram/disconnect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiToken: token })
+      });
+      setTelegramCode(null);
+      await fetchTelegramStatus();
+    } catch {
+      // Silent fail
+    } finally {
+      setTelegramLoading(false);
+    }
   };
 
   return (
@@ -151,6 +224,80 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Telegram */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Send className="h-5 w-5" />
+                  <span>Telegram</span>
+                </CardTitle>
+                <CardDescription>
+                  Save links to Pinboard by sending them to the bot. Connect once, then send any URL in Telegram.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Bot connection</p>
+                    <p className="text-sm text-muted-foreground">
+                      {telegramConnected === null
+                        ? 'Checking…'
+                        : telegramConnected
+                          ? 'This account is linked to Telegram'
+                          : 'Not linked'}
+                    </p>
+                  </div>
+                  <Badge variant={telegramConnected ? 'default' : 'secondary'}>
+                    {telegramConnected === null ? '…' : telegramConnected ? 'Connected' : 'Not connected'}
+                  </Badge>
+                </div>
+
+                {telegramCode ? (
+                  <div className="rounded-lg border bg-muted/50 p-4 space-y-2">
+                    <p className="text-sm font-medium">Send this in Telegram:</p>
+                    <p className="font-mono text-sm break-all">
+                      /start {telegramCode.code}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Open Telegram and send the line above to @{telegramCode.botUsername}. The code expires in 10 minutes.
+                    </p>
+                    <Button variant="outline" size="sm" onClick={() => setTelegramCode(null)}>
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {!telegramConnected ? (
+                      <Button
+                        onClick={handleConnectTelegram}
+                        disabled={telegramLoading || !(apiToken ?? newApiToken)}
+                      >
+                        {telegramLoading ? (
+                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Send className="h-4 w-4 mr-2" />
+                        )}
+                        Connect Telegram
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="destructive"
+                        onClick={handleDisconnectTelegram}
+                        disabled={telegramLoading}
+                      >
+                        {telegramLoading ? (
+                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Unplug className="h-4 w-4 mr-2" />
+                        )}
+                        Disconnect
+                      </Button>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 

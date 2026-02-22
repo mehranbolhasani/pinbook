@@ -10,6 +10,7 @@ A modern, minimal web client for Pinboard built with Next.js 14, TypeScript, and
 - 🔍 **Smart Search** - Search across titles, descriptions, and URLs
 - 📱 **Responsive Design** - Works great on desktop and mobile
 - 🌙 **Dark/Light Mode** - Built-in theme support
+- 📲 **Telegram Bot** - Save links to Pinboard by sending them in Telegram
 - ⚡ **Fast & Reliable** - Built with modern web technologies
 
 ## Tech Stack
@@ -53,6 +54,14 @@ npm run dev
 1. Go to [Pinboard Settings](https://pinboard.in/settings/password)
 2. Copy your API token (format: `username:token`)
 3. Use this token to log into Pinbook
+
+### Telegram Bot (Optional)
+
+Save links to Pinboard by sending them to a Telegram bot.
+
+**→ Full step-by-step guide: [docs/TELEGRAM_SETUP.md](docs/TELEGRAM_SETUP.md)**
+
+Short version: create a bot with [@BotFather](https://t.me/BotFather), add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_BOT_USERNAME` (and optionally Redis and webhook secret) to `.env.local`, run `node scripts/set-telegram-webhook.mjs` with your app’s public URL, then in Pinbook go to **Settings → Telegram → Connect Telegram** and send the shown `/start CODE` to your bot.
 
 ## Deployment
 

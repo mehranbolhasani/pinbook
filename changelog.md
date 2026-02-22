@@ -1,5 +1,16 @@
 # Pinbook Changelog
 
+## 2026-02-22 — Telegram bot: save links via Telegram
+
+### Telegram integration
+
+- **Connect Telegram** in Settings to link your Pinboard account to a bot
+- **Code-based linking** – get a one-time code in Pinbook, send `/start CODE` to the bot; your API token never goes to Telegram
+- **Save links** – send any URL in a message to the bot to add it to Pinboard
+- **Backend**: New API routes `/api/telegram/request-code`, `/api/telegram/status`, `/api/telegram/disconnect`, `/api/telegram/webhook`
+- **Storage**: Upstash Redis (or in-memory fallback for local dev) for link codes and Telegram user mapping
+- **Docs**: `.env.example` and README section for bot token, webhook URL, and optional Redis
+
 ## 2025-11-19 — v0.3.0 - Mobile Navigation Overhaul
 
 ### Mobile Experience Redesign

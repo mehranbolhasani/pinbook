@@ -48,7 +48,9 @@ export function MobileNav() {
 
   // Sync local state when external searchQuery changes (e.g., cleared by filters)
   useEffect(() => {
-    setLocalSearchQuery(searchQuery);
+    import('react-dom').then(({ flushSync }) => {
+      flushSync(() => setLocalSearchQuery(searchQuery));
+    });
   }, [searchQuery]);
 
   const handleSearchChange = (value: string) => {

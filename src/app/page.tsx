@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
- 
+
 import dynamic from 'next/dynamic';
 import { BookmarkList } from '@/components/bookmarks/bookmark-list';
 import { LoginForm } from '@/components/auth/login-form';
@@ -51,7 +51,7 @@ import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
   const { setSearchQuery, searchQuery, selectedTags, sortBy, sortOrder } = useUIStore();
-  
+
   // React Query Hooks
   const { data: bookmarks = [], isLoading: isBookmarksLoading, error: bookmarksError } = useBookmarks();
   const { mutate: deleteBookmark } = useDeleteBookmark();
@@ -66,7 +66,7 @@ export default function Home() {
     isOpen: boolean;
     bookmark: Bookmark | null;
   }>({ isOpen: false, bookmark: null });
-  
+
   const toast = useToast();
 
   // Compute filtered and sorted bookmarks using shared hook
@@ -79,9 +79,11 @@ export default function Home() {
     return filteredAndSortedBookmarks[selectedBookmarkIndex];
   }, [selectedBookmarkIndex, filteredAndSortedBookmarks]);
 
-  // Reset selected index when filters change
+  // Reset selected index when filters change - flush to avoid extra render
   useEffect(() => {
-    setSelectedBookmarkIndex(null);
+    import('react-dom').then(({ flushSync }) => {
+      flushSync(() => setSelectedBookmarkIndex(null));
+    });
   }, [searchQuery, selectedTags, sortBy, sortOrder]);
 
   // Sidebar search removed; bookmarks list contains its own search input.
@@ -195,7 +197,7 @@ export default function Home() {
     setDeleteConfirmation({ isOpen: true, bookmark });
   }, []);
 
-  
+
   // Set up keyboard shortcuts
   useKeyboardShortcuts({
     onSearch: handleFocusSearch,
@@ -204,7 +206,7 @@ export default function Home() {
     onNavigate: handleNavigate,
     onOpenSelected: handleOpenSelected,
     onEditSelected: handleEditSelected,
-    
+
     onShowHelp: handleShowShortcuts,
     isDialogOpen: isEditDialogOpen || isAddDialogOpen || isShortcutsModalOpen
   });
@@ -227,19 +229,19 @@ export default function Home() {
   return (
     <ErrorBoundary>
       <div className="max-h-full">
-        
+
         {/* Mobile Navigation */}
         <MobileNav />
-        
+
         {/* Desktop Header */}
         <Header onAddBookmark={handleAddBookmark} />
-        
-        <div className="flex w-full max-w-[720px] mx-auto h-full items-start gap-4">
+
+        <div className="flex w-full max-w-160 mx-auto h-full items-start gap-4">
           {/* Main Content */}
           <main className="flex-1 min-w-0 w-full">
             <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
-              <BookmarkList 
+              <BookmarkList
                 bookmarks={bookmarks}
                 isLoading={isBookmarksLoading}
                 onEditBookmark={handleEditBookmarkMemo}
@@ -249,7 +251,7 @@ export default function Home() {
             </div>
           </main>
         </div>
-        
+
         {/* Edit Bookmark Dialog */}
         <EditBookmarkDialog
           bookmark={editingBookmark}
@@ -257,13 +259,13 @@ export default function Home() {
           onClose={handleCloseEditDialog}
           onSave={handleSaveBookmark}
         />
-        
+
         {/* Add Bookmark Dialog */}
         <AddBookmarkDialog
           isOpen={isAddDialogOpen}
           onClose={() => setIsAddDialogOpen(false)}
         />
-        
+
         {/* Keyboard Shortcuts Modal */}
         <KeyboardShortcutsModal
           isOpen={isShortcutsModalOpen}

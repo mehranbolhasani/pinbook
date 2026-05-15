@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { BookmarkListItem } from '../bookmark-list-item';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface BookmarkListViewProps {
   bookmarks: Bookmark[];
@@ -11,16 +12,33 @@ interface BookmarkListViewProps {
 }
 
 export const BookmarkListView = memo(function BookmarkListView({ bookmarks, onEdit, onDelete }: BookmarkListViewProps) {
-  return (
-    <div key={`list-${bookmarks.length}`} className="space-y-2 p-4">
-      {bookmarks.map((bookmark) => (
-        <div key={bookmark.id}>
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) {
+    return (
+      <div className="flex flex-col py-4">
+        {bookmarks.map((bookmark) => (
           <BookmarkListItem
+            key={bookmark.id}
             bookmark={bookmark}
             onEdit={onEdit}
             onDelete={onDelete}
           />
-        </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col py-4">
+      {bookmarks.map((bookmark, index) => (
+        <BookmarkListItem
+          key={bookmark.id}
+          bookmark={bookmark}
+          index={index}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );

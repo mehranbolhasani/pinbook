@@ -6,10 +6,10 @@ import { useUIStore } from '@/lib/stores/ui';
 import { cn } from '@/lib/utils';
 
 export function BookmarkToolbar() {
-  const { 
-    sortBy, 
-    setSortBy, 
-    sortOrder, 
+  const {
+    sortBy,
+    setSortBy,
+    sortOrder,
     setSortOrder
   } = useUIStore();
 
@@ -20,7 +20,7 @@ export function BookmarkToolbar() {
   ];
 
   return (
-    <div className="flex items-center justify-between w-full pb-4 px-4">
+    <div className="flex items-center justify-between w-full">
       {/* Sort Button Group */}
       <div className="flex items-center gap-1 bg-background">
         {sortOptions.map((option) => (

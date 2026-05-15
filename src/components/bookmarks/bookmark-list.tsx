@@ -3,7 +3,6 @@
 import { memo } from 'react';
 import { BookmarkListView } from './views/bookmark-list-view';
 import { VirtualizedBookmarkList, useVirtualizationThreshold } from './virtualized-bookmark-list';
-import { BookmarkToolbar } from './bookmark-toolbar';
 import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
@@ -26,11 +25,9 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
     setSelectedTags,
   } = useUIStore();
 
-  // Check if we should use virtualization (moved to component level)
   const virtualizationThreshold = useVirtualizationThreshold();
 
   const filteredAndSortedBookmarks = useFilteredBookmarks(bookmarks);
-
 
   if (isLoading) {
     return <BookmarkListSkeleton count={6} />;
@@ -75,11 +72,6 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
   const shouldUseVirtualization = filteredAndSortedBookmarks.length > virtualizationThreshold;
 
   const renderBookmarks = () => {
-    if (isLoading) {
-      return <BookmarkListSkeleton count={6} />;
-    }
-
-    // Use virtualization for large lists
     if (shouldUseVirtualization) {
       return (
         <VirtualizedBookmarkList
@@ -101,12 +93,6 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
 
   return (
     <div className="mb-32">
-      {/* Toolbar */}
-      <div className="items-center justify-end hidden lg:flex">
-        <BookmarkToolbar />
-      </div>
-      
-      {/* Results counter */}
       {(searchQuery || selectedTags.length > 0) && (
         <div className="text-sm text-muted-foreground mb-4">
           Showing {filteredAndSortedBookmarks.length} of {bookmarks.length} bookmarks
@@ -115,10 +101,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
         </div>
       )}
       
-      {/* Bookmarks */}
       {renderBookmarks()}
-      
-      {/* Selection mode removed */}
     </div>
   );
 });

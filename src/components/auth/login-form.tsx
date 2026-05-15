@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +11,8 @@ import { getPinboardAPI } from '@/lib/api/pinboard';
 import { testPinboardConnection } from '@/lib/api/test-connection';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Paperclip } from 'lucide-react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { fadeInUp } from '@/lib/animations';
 
 export function LoginForm() {
   const [apiToken, setApiToken] = useState('');
@@ -74,7 +77,12 @@ export function LoginForm() {
         <div className="absolute top-4 right-4 z-30">
           <ThemeToggle />
         </div>
-        <div className="text-center">
+        <motion.div
+          className="text-center"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+        >
           <div className="flex flex-col items-center justify-center gap-2">
             <Paperclip className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold tracking-tighter">Pinbook</h2>
@@ -82,8 +90,15 @@ export function LoginForm() {
           <p className="text-muted-foreground w-2/4 mx-auto mt-4 text-sm">
             Enter your Pinboard API credentials to get started
           </p>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4 w-2/3 px-8 sm:px-0">
+        </motion.div>
+        <motion.form
+          onSubmit={handleSubmit}
+          className="space-y-4 w-2/3 px-8 sm:px-0"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          transition={{ delay: 0.1 }}
+        >
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
@@ -116,9 +131,13 @@ export function LoginForm() {
           </div>
 
           {error && (
-            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+            <motion.div
+              className="text-sm text-destructive bg-destructive/10 p-3 rounded-md"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
           <Button 
@@ -128,9 +147,15 @@ export function LoginForm() {
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
-        </form>
+        </motion.form>
 
-        <div className="mt-6 text-center">
+        <motion.div
+          className="mt-6 text-center"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          transition={{ delay: 0.2 }}
+        >
           <p className="text-sm text-muted-foreground flex flex-col items-center justify-center">
             <span>Don&apos;t have a Pinboard account?{' '}</span>
             <a 
@@ -142,7 +167,7 @@ export function LoginForm() {
               Sign up for Pinboard
             </a>
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

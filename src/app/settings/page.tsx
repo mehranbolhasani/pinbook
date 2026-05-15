@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'motion/react';
 import { useAuthStore } from '@/lib/stores/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Send, Unplug } from 'lucide-react';
 import Link from 'next/link';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 export default function SettingsPage() {
   const {
@@ -69,11 +71,13 @@ export default function SettingsPage() {
   }, [apiToken, newApiToken]);
 
   useEffect(() => {
-    if (apiToken ?? newApiToken) {
-      fetchTelegramStatus();
-    } else {
-      setTelegramConnected(false);
-    }
+    import('react-dom').then(({ flushSync }) => {
+      if (apiToken ?? newApiToken) {
+        flushSync(() => fetchTelegramStatus());
+      } else {
+        flushSync(() => setTelegramConnected(false));
+      }
+    });
   }, [apiToken, newApiToken, fetchTelegramStatus]);
 
   const handleConnectTelegram = async () => {
@@ -118,10 +122,15 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-start space-x-4 mb-8 flex-col">
+        <motion.div
+          className="flex items-start space-x-4 mb-8 flex-col"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        >
           <Link href="/" className="mr-0! mb-4">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4" />
@@ -132,10 +141,15 @@ export default function SettingsPage() {
             <h1 className="text-3xl font-bold">Settings</h1>
             <p className="text-muted-foreground">Manage your Pinboard account</p>
           </div>
-        </div>
+        </motion.div>
 
         <SettingsErrorBoundary>
           <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, type: 'spring', stiffness: 300, damping: 25 }}
+            >
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -159,66 +173,71 @@ export default function SettingsPage() {
                   </Badge>
                 </div>
 
-                <Separator />
-
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      value={newUsername}
-                      onChange={(e) => setNewUsername(e.target.value)}
-                      placeholder="Your Pinboard username"
-                      disabled={!isEditing}
-                    />
+
+                  <div className={`flex items-start gap-4 ${isEditing ? 'opacity-100' : 'opacity-50'}`}>
+                    <div className="space-y-2 flex-1">
+                      <Label htmlFor="username">Username</Label>
+                      <Input
+                        id="username"
+                        value={newUsername}
+                        onChange={(e) => setNewUsername(e.target.value)}
+                        placeholder={`${username}`}
+                        disabled={!isEditing}
+                      />
+                    </div>
+
+                    <div className="space-y-2 flex-1">
+                      <Label htmlFor="apiToken">API Token</Label>
+                      <Input
+                        id="apiToken"
+                        type="password"
+                        value={newApiToken}
+                        onChange={(e) => setNewApiToken(e.target.value)}
+                        placeholder="•••••••••••••••••••••••"
+                        disabled={!isEditing}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Get your API token from{' '}
+                        <a
+                          href="https://pinboard.in/settings/password"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          Pinboard settings
+                        </a>
+                      </p>
+                    </div>
+
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="apiToken">API Token</Label>
-                    <Input
-                      id="apiToken"
-                      type="password"
-                      value={newApiToken}
-                      onChange={(e) => setNewApiToken(e.target.value)}
-                      placeholder="username:token"
-                      disabled={!isEditing}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Get your API token from{' '}
-                      <a 
-                        href="https://pinboard.in/settings/password" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Pinboard settings
-                      </a>
-                    </p>
-                  </div>
 
-                  <div className="flex flex-col md:flex-row items-stretch md:items-center space-y-2 md:space-y-0 md:space-x-2">
-                    {!isEditing ? (
-                      <Button onClick={() => setIsEditing(true)} className="w-full md:w-auto">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Edit Account
-                      </Button>
-                    ) : (
-                      <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                        <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto">
-                          {isSaving ? (
-                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                          ) : (
-                            <Save className="h-4 w-4 mr-2" />
-                          )}
-                          {isSaving ? 'Saving...' : 'Save Changes'}
+                  <div className="flex flex-col md:flex-row items-stretch md:items-center md:justify-between space-y-2">
+                    <div className="flex flex-col md:flex-row items-stretch md:items-center m-0">
+                      {!isEditing ? (
+                        <Button variant="secondary" onClick={() => setIsEditing(true)} className="w-full md:w-auto">
+                          <Settings className="size-5" size={16} strokeWidth={1.5} />
+                          Edit Account
                         </Button>
-                        <Button variant="outline" onClick={() => setIsEditing(false)} className="w-full md:w-auto">
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                    
-                    <Button variant="destructive" onClick={handleLogout} className="w-full md:w-auto">
+                      ) : (
+                        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                          <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto">
+                            {isSaving ? (
+                              <RefreshCw className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Save className="h-4 w-4 mr-2" />
+                            )}
+                            {isSaving ? 'Saving...' : 'Save Changes'}
+                          </Button>
+                          <Button variant="outline" onClick={() => setIsEditing(false)} className="w-full md:w-auto">
+                            Cancel
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
+                    <Button variant="destructive_secondary" onClick={handleLogout} className="w-full md:w-auto">
                       <LogOut className="h-4 w-4 mr-2" />
                       Logout
                     </Button>
@@ -226,8 +245,14 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
 
             {/* Telegram */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 25 }}
+            >
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -300,8 +325,14 @@ export default function SettingsPage() {
                 )}
               </CardContent>
             </Card>
+            </motion.div>
 
             {/* App Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, type: 'spring', stiffness: 300, damping: 25 }}
+            >
             <Card>
               <CardHeader>
                 <CardTitle>About Pinbook</CardTitle>
@@ -320,6 +351,7 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
           </div>
         </SettingsErrorBoundary>
       </div>

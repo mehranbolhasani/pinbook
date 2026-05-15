@@ -1,9 +1,14 @@
 'use client';
 
+import { motion } from 'motion/react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { skeletonPulse } from '@/lib/animations';
 
 export function BookmarkSkeleton() {
-  return (
+  const prefersReducedMotion = useReducedMotion();
+
+  const skeletonContent = (
     <div className="flex items-center space-x-4 p-4 border-b">
       <Skeleton className="h-12 w-12 rounded" />
       <div className="flex-1 space-y-2">
@@ -19,6 +24,17 @@ export function BookmarkSkeleton() {
         <Skeleton className="h-8 w-8" />
       </div>
     </div>
+  );
+
+  if (prefersReducedMotion) return skeletonContent;
+
+  return (
+    <motion.div
+      animate={{ opacity: skeletonPulse.opacity }}
+      transition={skeletonPulse.transition}
+    >
+      {skeletonContent}
+    </motion.div>
   );
 }
 

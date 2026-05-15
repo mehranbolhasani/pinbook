@@ -1,25 +1,31 @@
 'use client';
 
 import { memo } from 'react';
+import { motion } from 'motion/react';
 import { Bookmark } from '@/types/pinboard';
 import { formatDate } from '@/lib/utils';
-import { ExternalLink, Trash2, Edit } from 'lucide-react';
+import { ExternalLink, Trash2, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { listItem, hoverLift, buttonHover } from '@/lib/animations';
 
 interface BookmarkListItemProps {
   bookmark: Bookmark;
+  index?: number;
   onEdit?: (bookmark: Bookmark) => void;
   onDelete?: (bookmark: Bookmark) => void;
 }
 
-export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdit, onDelete }: BookmarkListItemProps) {
+export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index = 0, onEdit, onDelete }: BookmarkListItemProps) {
+  const prefersReducedMotion = useReducedMotion();
+
   const handleOpenUrl = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
-  return (
-    <div className="flex items-center justify-between group/item mb-2 hover:bg-zinc-100 p-4 dark:hover:bg-zinc-800">
+  const cardContent = (
+    <div className="flex items-center justify-between bg-card group/item dark:hover:bg-zinc-800 p-4 mb-3 rounded-xl shadow-2xl shadow-primary/10">
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2 mb-1">
           <h3 className="font-normal text-md truncate">
@@ -58,40 +64,62 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, onEdi
 
       <div className="flex items-center shrink-0 gap-1 lg:invisible lg:group-hover/item:visible">
         <Button
-          variant="ghost"
-          size="sm"
+          variant="secondary"
+          size="icon"
           onClick={() => handleOpenUrl(bookmark.url)}
-          className="h-8 w-8 p-0"
+          className='hover:text-accent'
           title="Open Link"
           aria-label="Open link"
         >
-          <ExternalLink className="h-3 w-3" />
+          <ExternalLink strokeWidth={1.5} />
         </Button>
         {onEdit && (
           <Button
-            variant="ghost"
-            size="sm"
+            variant="secondary"
+            size="icon-sm"
             onClick={() => onEdit(bookmark)}
-            className="h-8 w-8 p-0"
+            className='hover:text-accent'
             title="Edit Bookmark"
             aria-label="Edit bookmark"
           >
-            <Edit className="h-3 w-3" />
+            <Pencil strokeWidth={1.5} />
           </Button>
         )}
         {onDelete && (
           <Button
-            variant="ghost"
-            size="sm"
+            variant="secondary"
+            size="icon"
             onClick={() => onDelete(bookmark)}
-            className="h-8 w-8 p-0 text-destructive hover:text-white hover:bg-destructive"
+            className="hover:text-destructive"
             title="Delete Bookmark"
             aria-label="Delete bookmark"
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 strokeWidth={1.5} />
           </Button>
         )}
       </div>
     </div>
+  );
+
+  if (prefersReducedMotion) {
+    return cardContent;
+  }
+
+  return (
+    <motion.div
+      variants={listItem(index)}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      whileHover="hover"
+    >
+      <motion.div
+        variants={hoverLift}
+        initial="rest"
+        className="hover:shadow-2xl hover:shadow-accent/10"
+      >
+        {cardContent}
+      </motion.div>
+    </motion.div>
   );
 });

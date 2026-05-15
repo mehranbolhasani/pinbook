@@ -38,13 +38,15 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
 
   useEffect(() => {
     if (bookmark) {
-      setFormData({
-        title: bookmark.title,
-        url: bookmark.url,
-        description: bookmark.description,
-        extended: bookmark.extended,
-        tags: bookmark.tags,
-        isShared: bookmark.isShared
+      import('react-dom').then(({ flushSync }) => {
+        flushSync(() => setFormData({
+          title: bookmark.title,
+          url: bookmark.url,
+          description: bookmark.description,
+          extended: bookmark.extended,
+          tags: bookmark.tags,
+          isShared: bookmark.isShared
+        }));
       });
     }
   }, [bookmark]);

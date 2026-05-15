@@ -1,7 +1,7 @@
 'use client';
 
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { BookmarkListItem } from './bookmark-list-item';
 
@@ -21,12 +21,19 @@ export function VirtualizedBookmarkList({
   className = ''
 }: VirtualizedBookmarkListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
+  const [scrollMargin, setScrollMargin] = useState(0);
+
+  useEffect(() => {
+    if (parentRef.current) {
+      setScrollMargin(parentRef.current.offsetTop);
+    }
+  }, []);
 
   const virtualizer = useWindowVirtualizer({
     count: bookmarks.length,
     estimateSize: () => LIST_ITEM_HEIGHT,
     overscan: 5,
-    scrollMargin: parentRef.current?.offsetTop ?? 0,
+    scrollMargin,
   });
 
   const items = virtualizer.getVirtualItems();
@@ -72,5 +79,5 @@ export function VirtualizedBookmarkList({
 
 // Hook for determining when to use virtualization
 export function useVirtualizationThreshold() {
-  return 75; // Use virtualization when more than 75 bookmarks
+  return 75;
 }

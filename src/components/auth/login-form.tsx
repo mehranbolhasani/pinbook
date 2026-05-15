@@ -10,7 +10,7 @@ import { useAuthStore } from '@/lib/stores/auth';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { testPinboardConnection } from '@/lib/api/test-connection';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Paperclip } from 'lucide-react';
+import { Album } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fadeInUp } from '@/lib/animations';
 
@@ -19,7 +19,7 @@ export function LoginForm() {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const { login } = useAuthStore();
   const router = useRouter();
 
@@ -68,11 +68,7 @@ export function LoginForm() {
 
   return (
     <div className="min-h-svh h-svh flex items-center justify-center bg-background">
-      <div className="skeleton fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[720px] h-screen z-10">
-        <span className="absolute top-0 left-0 w-px h-full bg-primary/5"></span>
-        <span className="absolute top-0 right-0 w-px h-full bg-primary/5"></span>
-      </div>
-        
+
       <div className="w-full max-w-md z-20 h-screen flex flex-col items-center justify-between py-20">
         <div className="absolute top-4 right-4 z-30">
           <ThemeToggle />
@@ -84,7 +80,7 @@ export function LoginForm() {
           variants={fadeInUp}
         >
           <div className="flex flex-col items-center justify-center gap-2">
-            <Paperclip className="h-6 w-6 text-primary" />
+            <Album className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold tracking-tighter">Pinbook</h2>
           </div>
           <p className="text-muted-foreground w-2/4 mx-auto mt-4 text-sm">
@@ -111,7 +107,7 @@ export function LoginForm() {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="apiToken">API Token</Label>
             <Input
@@ -124,7 +120,7 @@ export function LoginForm() {
               required
             />
             <p className="text-xs text-muted-foreground">
-              You can find your API token in your Pinboard settings. 
+              You can find your API token in your Pinboard settings.
               <br />
               Format: <code className="bg-muted px-1 rounded">username:token</code>
             </p>
@@ -140,9 +136,9 @@ export function LoginForm() {
             </motion.div>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-fit mx-auto mt-4 px-4" 
+          <Button
+            type="submit"
+            className="w-fit mx-auto mt-4 px-4"
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
@@ -158,9 +154,9 @@ export function LoginForm() {
         >
           <p className="text-sm text-muted-foreground flex flex-col items-center justify-center">
             <span>Don&apos;t have a Pinboard account?{' '}</span>
-            <a 
-              href="https://pinboard.in/signup/" 
-              target="_blank" 
+            <a
+              href="https://pinboard.in/signup/"
+              target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >

@@ -1,5 +1,16 @@
 # Pinbook Changelog
 
+## 2026-05-16 — Telegram bot: browse & edit bookmarks
+
+### Telegram bot enhancements
+
+- **View bookmarks** — `/list` (or `/bookmarks`) shows paginated bookmarks (5/page) with inline keyboard navigation
+- **Edit bookmarks** — select a bookmark, choose a field (title, notes, tags), send the new value; updates via Pinboard API with `replace=yes`
+- **Inline keyboards** — page navigation, bookmark detail view, field selection, and confirmation keyboards
+- **Callback queries** — button presses update messages in-place (no message spam); session context stored per chat
+- **Server-side APIs**: `getBookmarksServer` and `updateBookmarkServer` added to `pinboard-server.ts`
+- **State**: Edit context stored in Redis/memory with 30-min TTL (bookmark list cache, page, selected bookmark, editing field)
+
 ## 2026-02-22 — Telegram bot: save links via Telegram
 
 ### Telegram integration

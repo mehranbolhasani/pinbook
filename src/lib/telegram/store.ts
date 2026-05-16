@@ -6,16 +6,28 @@
 
 import { createHash } from 'crypto';
 
+import type { PinboardBookmark } from '@/types/pinboard';
+
 const CODE_TTL_SECONDS = 600; // 10 minutes
 const PENDING_TTL_SECONDS = 300; // 5 minutes
+const EDIT_CONTEXT_TTL_SECONDS = 1800; // 30 minutes
 const CODE_PREFIX = 'telegram:code:';
 const USER_PREFIX = 'telegram:user:';
 const TOKEN_HASH_PREFIX = 'telegram:token:';
 const PENDING_PREFIX = 'telegram:pending:';
+const EDIT_PREFIX = 'telegram:edit:';
 
 export interface PendingBookmark {
   url: string;
   description: string;
+}
+
+export interface EditContext {
+  bookmarks: PinboardBookmark[];
+  currentPage: number;
+  totalPages: number;
+  selectedIndex: number;
+  editingField?: 'title' | 'extended' | 'tags';
 }
 
 function hashToken(apiToken: string): string {
@@ -27,6 +39,7 @@ const memoryCodes = new Map<string, { apiToken: string; expiresAt: number }>();
 const memoryUsers = new Map<string, string>();
 const memoryTokenToTelegram = new Map<string, string>();
 const memoryPending = new Map<string, { data: PendingBookmark; expiresAt: number }>();
+const memoryEditContext = new Map<string, { data: EditContext; expiresAt: number }>();
 
 async function getRedis() {
   const url = process.env.KV_REST_URL;
@@ -173,4 +186,54 @@ export async function clearPendingBookmark(chatId: number): Promise<void> {
     return;
   }
   memoryPending.delete(key);
+}
+
+// Edit context — stores bookmark list cache and edit session state per chat
+
+function editKey(chatId: number): string {
+  return EDIT_PREFIX + String(chatId);
+}
+
+export async function setEditContext(chatId: number, context: EditContext): Promise<void> {
+  const redis = await getRedis();
+  const key = editKey(chatId);
+  const serialized = JSON.stringify(context);
+  if (redis) {
+    await redis.setex(key, EDIT_CONTEXT_TTL_SECONDS, serialized);
+    return;
+  }
+  memoryEditContext.set(key, {
+    data: context,
+    expiresAt: Date.now() + EDIT_CONTEXT_TTL_SECONDS * 1000
+  });
+}
+
+export async function getEditContext(chatId: number): Promise<EditContext | null> {
+  const redis = await getRedis();
+  const key = editKey(chatId);
+  if (redis) {
+    const raw = await redis.get<string>(key);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as EditContext;
+    } catch {
+      return null;
+    }
+  }
+  const entry = memoryEditContext.get(key);
+  if (!entry || Date.now() > entry.expiresAt) {
+    if (entry) memoryEditContext.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+export async function clearEditContext(chatId: number): Promise<void> {
+  const redis = await getRedis();
+  const key = editKey(chatId);
+  if (redis) {
+    await redis.del(key);
+    return;
+  }
+  memoryEditContext.delete(key);
 }

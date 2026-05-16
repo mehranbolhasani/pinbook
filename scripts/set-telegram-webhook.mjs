@@ -35,26 +35,54 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const baseUrl = process.env.PINBOOK_BASE_URL || process.env.BASE_URL || process.argv[2];
 const secret = process.env.TELEGRAM_WEBHOOK_SECRET || process.argv[3];
 
-if (!token || !baseUrl) {
-  console.error('Missing TELEGRAM_BOT_TOKEN or PINBOOK_BASE_URL.');
-  console.error('  - From project root, add them to .env.local and run: node scripts/set-telegram-webhook.mjs');
-  console.error('  - Or run: node scripts/set-telegram-webhook.mjs <base_url>  (token still from .env.local)');
+if (!token) {
+  console.error('Missing TELEGRAM_BOT_TOKEN.');
+  console.error('  - From project root, add it to .env.local and run: node scripts/set-telegram-webhook.mjs');
+  console.error('  - Or set TELEGRAM_BOT_TOKEN env var and run: node scripts/set-telegram-webhook.mjs');
   process.exit(1);
 }
 
-const webhookUrl = baseUrl.replace(/\/$/, '') + '/api/telegram/webhook';
-const setUrl = new URL(`https://api.telegram.org/bot${token}/setWebhook`);
-setUrl.searchParams.set('url', webhookUrl);
-if (secret) setUrl.searchParams.set('secret_token', secret);
+// 1. Set webhook
+if (baseUrl) {
+  const webhookUrl = baseUrl.replace(/\/$/, '') + '/api/telegram/webhook';
+  const setUrl = new URL(`https://api.telegram.org/bot${token}/setWebhook`);
+  setUrl.searchParams.set('url', webhookUrl);
+  if (secret) setUrl.searchParams.set('secret_token', secret);
 
-const res = await fetch(setUrl.toString(), { method: 'GET' });
-const data = await res.json();
+  const res = await fetch(setUrl.toString(), { method: 'GET' });
+  const data = await res.json();
 
-if (!data.ok) {
-  console.error('Telegram API error:', data);
+  if (!data.ok) {
+    console.error('Telegram setWebhook error:', data);
+    process.exit(1);
+  }
+
+  console.log('Webhook set successfully.');
+  console.log('  URL:', webhookUrl);
+  if (secret) console.log('  Secret token: set');
+} else {
+  console.log('Skipping webhook setup (no PINBOOK_BASE_URL provided).');
+}
+
+// 2. Set bot commands
+const commands = [
+  { command: 'list', description: 'Browse your bookmarks' },
+  { command: 'bookmarks', description: 'Browse your bookmarks' },
+  { command: 'start', description: 'Link your Pinboard account' },
+  { command: 'help', description: 'Show all commands' }
+];
+
+const commandsRes = await fetch(`https://api.telegram.org/bot${token}/setMyCommands`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ commands })
+});
+const commandsData = await commandsRes.json();
+
+if (!commandsData.ok) {
+  console.error('Telegram setMyCommands error:', commandsData);
   process.exit(1);
 }
 
-console.log('Webhook set successfully.');
-console.log('  URL:', webhookUrl);
-if (secret) console.log('  Secret token: set');
+console.log('Bot commands set successfully:');
+commands.forEach(c => console.log(`  /${c.command} — ${c.description}`));

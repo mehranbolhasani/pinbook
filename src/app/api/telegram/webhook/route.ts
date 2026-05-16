@@ -10,8 +10,8 @@ import {
   clearPendingBookmark,
   getEditContext,
   setEditContext,
-  clearEditContext,
-  hasPersistentStore
+  hasPersistentStore,
+  type EditContext
 } from '@/lib/telegram/store';
 import { addBookmarkServer, getBookmarksServer, updateBookmarkServer } from '@/lib/telegram/pinboard-server';
 import { fetchPageTitle } from '@/lib/telegram/fetch-title';
@@ -25,7 +25,7 @@ import {
   buildAfterUpdateKeyboard,
   buildEditPromptMessage
 } from '@/lib/telegram/inline-keyboards';
-import type { PinboardBookmark, AddBookmarkParams } from '@/types/pinboard';
+import type { AddBookmarkParams } from '@/types/pinboard';
 
 const URL_REGEX = /https?:\/\/[^\s]+/i;
 const BOOKMARKS_PER_PAGE = 5;
@@ -45,6 +45,32 @@ function parseTagsInput(text: string): string {
     .filter(Boolean)
     .join(' ');
 }
+
+async function rebuildContext(chatId: number, apiToken: string, page?: number, selectedIndex?: number): Promise<EditContext | null> {
+  const bookmarks = await getBookmarksServer(apiToken);
+  if (bookmarks.length === 0) return null;
+  const totalPages = Math.ceil(bookmarks.length / BOOKMARKS_PER_PAGE);
+  const currentPage = (page !== undefined && page >= 0 && page < totalPages) ? page : 0;
+  const idx = (selectedIndex !== undefined && selectedIndex >= 0 && selectedIndex < bookmarks.length) ? selectedIndex : -1;
+  const ctx: EditContext = { bookmarks, currentPage, totalPages, selectedIndex: idx, editingField: undefined };
+  await setEditContext(chatId, ctx);
+  return ctx;
+}
+
+const HELP_TEXT = [
+  '📖 <b>Available commands:</b>',
+  '',
+  '<code>/start CODE</code> — Link your Pinboard account',
+  '<code>/list</code> or <code>/bookmarks</code> — Browse your bookmarks',
+  '<code>/help</code> — Show this message',
+  '',
+  '<b>Save a bookmark:</b> Send any URL',
+  '',
+  '<b>Edit a bookmark:</b>',
+  '1. /list → tap a number',
+  '2. Tap ✏️ Edit → choose a field',
+  '3. Send the new value'
+].join('\n');
 
 export async function POST(request: NextRequest) {
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
@@ -87,6 +113,7 @@ export async function POST(request: NextRequest) {
     const chatId = cbMessage.chat.id;
     const telegramId = String(callbackQuery.from.id);
     const cbData = callbackQuery.data;
+    const messageId = cbMessage.message_id;
 
     try {
       const apiToken = await getApiTokenByTelegramId(telegramId);
@@ -96,12 +123,78 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ ok: true });
       }
 
-      const ctx = await getEditContext(chatId);
-
       if (cbData === 'noop') {
         await answerCallbackQuery(botToken, callbackQuery.id);
         return NextResponse.json({ ok: true });
       }
+
+      const ctx = await getEditContext(chatId);
+
+      // ---- STATELESS CALLBACKS (work without stored context) ----
+
+      // Page navigation — re-fetch if context expired
+      if (cbData.startsWith('page:')) {
+        const page = parseInt(cbData.slice(5), 10);
+        if (isNaN(page) || page < 0) {
+          await answerCallbackQuery(botToken, callbackQuery.id);
+          return NextResponse.json({ ok: true });
+        }
+        const effectiveCtx = ctx && page < ctx.totalPages ? ctx : await rebuildContext(chatId, apiToken);
+        if (!effectiveCtx || page >= effectiveCtx.totalPages) {
+          await answerCallbackQuery(botToken, callbackQuery.id);
+          return NextResponse.json({ ok: true });
+        }
+        effectiveCtx.currentPage = page;
+        effectiveCtx.selectedIndex = -1;
+        effectiveCtx.editingField = undefined;
+        await setEditContext(chatId, effectiveCtx);
+
+        await editTelegramMessage(botToken, chatId, messageId, buildListMessage(effectiveCtx), buildListKeyboard(effectiveCtx));
+        await answerCallbackQuery(botToken, callbackQuery.id);
+        return NextResponse.json({ ok: true });
+      }
+
+      // Show bookmark detail — re-fetch if context expired
+      if (cbData.startsWith('detail:')) {
+        const idx = parseInt(cbData.slice(7), 10);
+        if (isNaN(idx) || idx < 0) {
+          await answerCallbackQuery(botToken, callbackQuery.id);
+          return NextResponse.json({ ok: true });
+        }
+        const effectiveCtx = ctx && idx < ctx.bookmarks.length ? ctx : await rebuildContext(chatId, apiToken, undefined, idx);
+        if (!effectiveCtx || idx >= effectiveCtx.bookmarks.length) {
+          await answerCallbackQuery(botToken, callbackQuery.id);
+          return NextResponse.json({ ok: true });
+        }
+        effectiveCtx.selectedIndex = idx;
+        effectiveCtx.editingField = undefined;
+        await setEditContext(chatId, effectiveCtx);
+
+        await editTelegramMessage(botToken, chatId, messageId, buildDetailMessage(effectiveCtx), buildDetailKeyboard(effectiveCtx));
+        await answerCallbackQuery(botToken, callbackQuery.id);
+        return NextResponse.json({ ok: true });
+      }
+
+      // Back to list — re-fetch if context expired
+      if (cbData === 'back_to_list') {
+        const effectiveCtx = ctx ?? await rebuildContext(chatId, apiToken);
+        if (!effectiveCtx) {
+          await answerCallbackQuery(botToken, callbackQuery.id);
+          await editTelegramMessage(botToken, chatId, messageId, '📚 You have no bookmarks yet. Send a URL to save your first one!');
+          return NextResponse.json({ ok: true });
+        }
+        effectiveCtx.selectedIndex = -1;
+        effectiveCtx.editingField = undefined;
+        await setEditContext(chatId, effectiveCtx);
+
+        await editTelegramMessage(botToken, chatId, messageId, buildListMessage(effectiveCtx), buildListKeyboard(effectiveCtx));
+        await answerCallbackQuery(botToken, callbackQuery.id);
+        return NextResponse.json({ ok: true });
+      }
+
+      // ---- STATEFUL CALLBACKS (require stored context) ----
+      // These involve the edit flow where we need to know exactly which bookmark
+      // and which field the user was interacting with.
 
       if (!ctx) {
         await answerCallbackQuery(botToken, callbackQuery.id, 'Session expired');
@@ -109,44 +202,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ ok: true });
       }
 
-      // Page navigation
-      if (cbData.startsWith('page:')) {
-        const page = parseInt(cbData.slice(5), 10);
-        if (isNaN(page) || page < 0 || page >= ctx.totalPages) {
-          await answerCallbackQuery(botToken, callbackQuery.id);
-          return NextResponse.json({ ok: true });
-        }
-        ctx.currentPage = page;
-        ctx.selectedIndex = -1;
-        ctx.editingField = undefined;
-        await setEditContext(chatId, ctx);
-
-        const listText = buildListMessage(ctx);
-        const listKeyboard = buildListKeyboard(ctx);
-        await editTelegramMessage(botToken, chatId, cbMessage.message_id, listText, listKeyboard);
-        await answerCallbackQuery(botToken, callbackQuery.id);
-        return NextResponse.json({ ok: true });
-      }
-
-      // Show bookmark detail
-      if (cbData.startsWith('detail:')) {
-        const idx = parseInt(cbData.slice(7), 10);
-        if (isNaN(idx) || idx < 0 || idx >= ctx.bookmarks.length) {
-          await answerCallbackQuery(botToken, callbackQuery.id);
-          return NextResponse.json({ ok: true });
-        }
-        ctx.selectedIndex = idx;
-        ctx.editingField = undefined;
-        await setEditContext(chatId, ctx);
-
-        const detailText = buildDetailMessage(ctx);
-        const detailKeyboard = buildDetailKeyboard(ctx);
-        await editTelegramMessage(botToken, chatId, cbMessage.message_id, detailText, detailKeyboard);
-        await answerCallbackQuery(botToken, callbackQuery.id);
-        return NextResponse.json({ ok: true });
-      }
-
-      // Enter edit field selection
       if (cbData === 'edit') {
         if (ctx.selectedIndex < 0 || ctx.selectedIndex >= ctx.bookmarks.length) {
           await answerCallbackQuery(botToken, callbackQuery.id, 'Invalid bookmark');
@@ -169,42 +224,31 @@ export async function POST(request: NextRequest) {
           'What would you like to change?'
         ].join('\n');
 
-        await editTelegramMessage(botToken, chatId, cbMessage.message_id, editPrompt, buildEditFieldKeyboard());
+        await editTelegramMessage(botToken, chatId, messageId, editPrompt, buildEditFieldKeyboard());
         await answerCallbackQuery(botToken, callbackQuery.id);
         return NextResponse.json({ ok: true });
       }
 
-      // Edit specific field
       if (cbData.startsWith('edit:')) {
-        const field = cbData.slice(5); // 'title' | 'extended' | 'tags'
+        const field = cbData.slice(5);
         if (!['title', 'extended', 'tags'].includes(field)) {
           await answerCallbackQuery(botToken, callbackQuery.id);
+          return NextResponse.json({ ok: true });
+        }
+
+        if (ctx.selectedIndex < 0 || ctx.selectedIndex >= ctx.bookmarks.length) {
+          await answerCallbackQuery(botToken, callbackQuery.id, 'Invalid bookmark');
           return NextResponse.json({ ok: true });
         }
 
         ctx.editingField = field as 'title' | 'extended' | 'tags';
         await setEditContext(chatId, ctx);
 
-        const promptText = buildEditPromptMessage(ctx, field);
-        await editTelegramMessage(botToken, chatId, cbMessage.message_id, promptText, buildEditBackToDetailKeyboard());
+        await editTelegramMessage(botToken, chatId, messageId, buildEditPromptMessage(ctx, field), buildEditBackToDetailKeyboard());
         await answerCallbackQuery(botToken, callbackQuery.id);
         return NextResponse.json({ ok: true });
       }
 
-      // Back to list
-      if (cbData === 'back_to_list') {
-        ctx.selectedIndex = -1;
-        ctx.editingField = undefined;
-        await setEditContext(chatId, ctx);
-
-        const listText = buildListMessage(ctx);
-        const listKeyboard = buildListKeyboard(ctx);
-        await editTelegramMessage(botToken, chatId, cbMessage.message_id, listText, listKeyboard);
-        await answerCallbackQuery(botToken, callbackQuery.id);
-        return NextResponse.json({ ok: true });
-      }
-
-      // Back to detail view
       if (cbData === 'back_to_detail') {
         if (ctx.selectedIndex < 0 || ctx.selectedIndex >= ctx.bookmarks.length) {
           await answerCallbackQuery(botToken, callbackQuery.id);
@@ -213,14 +257,11 @@ export async function POST(request: NextRequest) {
         ctx.editingField = undefined;
         await setEditContext(chatId, ctx);
 
-        const detailText = buildDetailMessage(ctx);
-        const detailKeyboard = buildDetailKeyboard(ctx);
-        await editTelegramMessage(botToken, chatId, cbMessage.message_id, detailText, detailKeyboard);
+        await editTelegramMessage(botToken, chatId, messageId, buildDetailMessage(ctx), buildDetailKeyboard(ctx));
         await answerCallbackQuery(botToken, callbackQuery.id);
         return NextResponse.json({ ok: true });
       }
 
-      // Unknown callback data
       await answerCallbackQuery(botToken, callbackQuery.id);
       return NextResponse.json({ ok: true });
 
@@ -262,7 +303,7 @@ export async function POST(request: NextRequest) {
       await sendTelegramMessage(
         botToken,
         chatId,
-        '✅ <b>Linked!</b>\n\nSend a URL to save it to Pinboard.\nUse /list to browse your bookmarks.'
+        '✅ <b>Linked!</b>\n\nSend a URL to save it to Pinbook.\nUse /list to browse your bookmarks.\nUse /help for all commands.'
       );
       return NextResponse.json({ ok: true });
     }
@@ -273,6 +314,12 @@ export async function POST(request: NextRequest) {
         chatId,
         'To connect this chat to Pinboard, get a code from Pinbook Settings → Connect Telegram, then send: <code>/start YOUR_CODE</code>\n\nOnce linked, send a URL to save it or use /list to browse your bookmarks.'
       );
+      return NextResponse.json({ ok: true });
+    }
+
+    // /help
+    if (text === '/help') {
+      await sendTelegramMessage(botToken, chatId, HELP_TEXT);
       return NextResponse.json({ ok: true });
     }
 
@@ -315,12 +362,12 @@ export async function POST(request: NextRequest) {
         targetPage = 0;
       }
 
-      const ctx = {
+      const ctx: EditContext = {
         bookmarks,
         currentPage: targetPage,
         totalPages,
         selectedIndex: -1,
-        editingField: undefined as 'title' | 'extended' | 'tags' | undefined
+        editingField: undefined
       };
       await setEditContext(chatId, ctx);
 
@@ -365,7 +412,6 @@ export async function POST(request: NextRequest) {
       const result = await updateBookmarkServer(apiToken, updateParams);
 
       if (result.ok) {
-        // Update cached bookmark in context
         if (field === 'title') {
           editCtx.bookmarks[editCtx.selectedIndex].description = newValue;
         } else if (field === 'extended') {

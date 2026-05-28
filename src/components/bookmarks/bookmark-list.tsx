@@ -7,6 +7,7 @@ import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
+import { BookmarkX, BookmarkPlus } from 'lucide-react';
 
 import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
 
@@ -39,6 +40,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
         <div className="text-muted-foreground mb-4">
           {searchQuery || selectedTags.length > 0 ? (
             <>
+              <BookmarkX className="h-10 w-10 mx-auto mb-3 opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No bookmarks found</h3>
               <p className="text-sm">
                 Try adjusting your search or filters
@@ -58,6 +60,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
             </>
           ) : (
             <>
+              <BookmarkPlus className="h-10 w-10 mx-auto mb-3 opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No bookmarks yet</h3>
               <p className="text-sm">
                 Start by adding your first bookmark

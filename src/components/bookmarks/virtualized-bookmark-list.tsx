@@ -5,8 +5,6 @@ import { useRef, useState, useEffect } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { BookmarkListItem } from './bookmark-list-item';
 
-const LIST_ITEM_HEIGHT = 80;
-
 interface VirtualizedBookmarkListProps {
   bookmarks: Bookmark[];
   onEditBookmark?: (bookmark: Bookmark) => void;
@@ -31,7 +29,8 @@ export function VirtualizedBookmarkList({
 
   const virtualizer = useWindowVirtualizer({
     count: bookmarks.length,
-    estimateSize: () => LIST_ITEM_HEIGHT,
+    estimateSize: () => 80,
+    measureElement: (el) => el.getBoundingClientRect().height,
     overscan: 5,
     scrollMargin,
   });
@@ -56,17 +55,19 @@ export function VirtualizedBookmarkList({
         {items.map((virtualItem) => (
           <div
             key={virtualItem.key}
+            data-index={virtualItem.index}
+            ref={virtualizer.measureElement}
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               width: '100%',
-              height: `${virtualItem.size}px`,
-              transform: `translateY(${virtualItem.start - virtualizer.options.scrollMargin}px)`,
+              transform: `translateY(${virtualItem.start - scrollMargin}px)`,
             }}
           >
             <BookmarkListItem
               bookmark={bookmarks[virtualItem.index]}
+              index={virtualItem.index}
               onEdit={onEditBookmark}
               onDelete={onDeleteBookmark}
             />

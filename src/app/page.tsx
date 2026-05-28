@@ -79,12 +79,21 @@ export default function Home() {
     return filteredAndSortedBookmarks[selectedBookmarkIndex];
   }, [selectedBookmarkIndex, filteredAndSortedBookmarks]);
 
-  // Reset selected index when filters change - flush to avoid extra render
+  // Reset selected index when filters change
   useEffect(() => {
-    import('react-dom').then(({ flushSync }) => {
-      flushSync(() => setSelectedBookmarkIndex(null));
-    });
+    // eslint-disable-next-line
+    setSelectedBookmarkIndex(null);
   }, [searchQuery, selectedTags, sortBy, sortOrder]);
+
+  // Scroll selected bookmark into view
+  useEffect(() => {
+    if (selectedBookmarkIndex !== null) {
+      const el = document.querySelector(`[data-index="${selectedBookmarkIndex}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }, [selectedBookmarkIndex]);
 
   // Sidebar search removed; bookmarks list contains its own search input.
 

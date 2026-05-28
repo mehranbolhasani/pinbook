@@ -46,13 +46,17 @@ export function useKeyboardShortcuts({
       return;
     }
 
+    // Escape only when a dialog is open
     if (event.key === 'Escape') {
-      event.preventDefault();
-      onCloseDialog?.();
+      if (isDialogOpen && onCloseDialog) {
+        event.preventDefault();
+        onCloseDialog();
+      }
       return;
     }
 
-    if (event.key === '?') {
+    // Help shortcut: Shift+/ to avoid blocking find-in-page
+    if (event.shiftKey && event.key === '?') {
       event.preventDefault();
       onShowHelp?.();
       return;
@@ -62,29 +66,41 @@ export function useKeyboardShortcuts({
     if (!isDialogOpen) {
       switch (event.key) {
         case 'ArrowUp':
-          event.preventDefault();
-          onNavigate?.('up');
+          if (onNavigate) {
+            event.preventDefault();
+            onNavigate('up');
+          }
           break;
         case 'ArrowDown':
-          event.preventDefault();
-          onNavigate?.('down');
+          if (onNavigate) {
+            event.preventDefault();
+            onNavigate('down');
+          }
           break;
         case 'ArrowLeft':
-          event.preventDefault();
-          onNavigate?.('left');
+          if (onNavigate) {
+            event.preventDefault();
+            onNavigate('left');
+          }
           break;
         case 'ArrowRight':
-          event.preventDefault();
-          onNavigate?.('right');
+          if (onNavigate) {
+            event.preventDefault();
+            onNavigate('right');
+          }
           break;
         case 'Enter':
-          event.preventDefault();
-          onOpenSelected?.();
+          if (onOpenSelected) {
+            event.preventDefault();
+            onOpenSelected();
+          }
           break;
         case 'e':
         case 'E':
-          event.preventDefault();
-          onEditSelected?.();
+          if (onEditSelected) {
+            event.preventDefault();
+            onEditSelected();
+          }
           break;
       }
     }

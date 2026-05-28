@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { useUIStore } from '@/lib/stores/ui';
-import { useBookmarks, useTags } from '@/hooks/usePinboard';
+import { useTags } from '@/hooks/usePinboard';
 
 export function MobileSidebar() {
   const { 
@@ -24,7 +24,6 @@ export function MobileSidebar() {
     clearFilters
   } = useUIStore();
   
-  const { data: bookmarks = [] } = useBookmarks();
   const { data: tagsData = {} } = useTags();
   const tags = Object.keys(tagsData).sort();
 
@@ -106,9 +105,7 @@ export function MobileSidebar() {
           ) : (
             <div className="space-y-1">
               {tags.map((tag) => {
-                const tagCount = bookmarks.filter(bookmark => 
-                  bookmark.tags.includes(tag)
-                ).length;
+                const tagCount = tagsData[tag] ?? 0;
                 
                 return (
                   <Button

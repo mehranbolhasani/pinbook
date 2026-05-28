@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Bookmark } from '@/types/pinboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
+import { useTags } from '@/hooks/usePinboard';
 
 interface EditBookmarkDialogProps {
   bookmark: Bookmark | null;
@@ -36,18 +37,21 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
   });
   const [tagInput, setTagInput] = useState('');
 
+  const { data: tagsData = {} } = useTags();
+  const allTagNames = useMemo(() => Object.keys(tagsData).sort(), [tagsData]);
+
   useEffect(() => {
     if (bookmark) {
-      import('react-dom').then(({ flushSync }) => {
-        flushSync(() => setFormData({
-          title: bookmark.title,
-          url: bookmark.url,
-          description: bookmark.description,
-          extended: bookmark.extended,
-          tags: bookmark.tags,
-          isShared: bookmark.isShared
-        }));
+      // eslint-disable-next-line
+      setFormData({
+        title: bookmark.title,
+        url: bookmark.url,
+        description: bookmark.description,
+        extended: bookmark.extended,
+        tags: bookmark.tags,
+        isShared: bookmark.isShared
       });
+      setTagInput('');
     }
   }, [bookmark]);
 
@@ -63,11 +67,12 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
     onClose();
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+  const addTag = (tag?: string) => {
+    const toAdd = (tag ?? tagInput).trim();
+    if (toAdd && !formData.tags.includes(toAdd)) {
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, tagInput.trim()]
+        tags: [...prev.tags, toAdd]
       }));
       setTagInput('');
     }
@@ -79,6 +84,15 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
   };
+
+  const tagSuggestions = useMemo(() => {
+    const q = tagInput.trim().toLowerCase();
+    if (!q) return [];
+    return allTagNames.filter(
+      (name) =>
+        name.toLowerCase().startsWith(q) && !formData.tags.includes(name)
+    ).slice(0, 8);
+  }, [tagInput, allTagNames, formData.tags]);
 
   if (!bookmark) return null;
 
@@ -149,7 +163,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
             
             <div className="space-y-2">
               <Label htmlFor="tags">Tags</Label>
-              <div className="flex space-x-2">
+              <div className="relative flex space-x-2">
                 <Input
                   id="tags"
                   value={tagInput}
@@ -157,15 +171,36 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
-                      addTag();
+                      if (tagSuggestions.length > 0) addTag(tagSuggestions[0]);
+                      else addTag();
                     }
                   }}
                   placeholder="Add a tag"
                   autoComplete="off"
                 />
-                <Button type="button" onClick={addTag} size="sm">
+                <Button type="button" onClick={() => addTag()} size="sm">
                   Add
                 </Button>
+                {tagSuggestions.length > 0 && (
+                  <ul
+                    className="absolute top-full left-0 z-10 mt-1 w-[calc(100%-2.5rem)] rounded-md border bg-popover py-1 shadow-md"
+                    role="listbox"
+                  >
+                    {tagSuggestions.map((tag) => (
+                      <li key={tag}>
+                        <button
+                          type="button"
+                          className="w-full px-3 py-2 text-left text-sm hover:bg-accent"
+                          onClick={() => addTag(tag)}
+                          role="option"
+                          aria-selected={false}
+                        >
+                          {tag}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div className="flex flex-wrap gap-2">
                 {formData.tags.map((tag) => (

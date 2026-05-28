@@ -13,6 +13,7 @@ import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Send, Unplug } from
 import Link from 'next/link';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { getPinboardAPI } from '@/lib/api/pinboard';
 
 export default function SettingsPage() {
   const {
@@ -33,15 +34,28 @@ export default function SettingsPage() {
   const [telegramLoading, setTelegramLoading] = useState(false);
   const [telegramCode, setTelegramCode] = useState<{ code: string; botUsername: string } | null>(null);
 
+  const [saveError, setSaveError] = useState('');
+
   const handleSave = async () => {
     setIsSaving(true);
+    setSaveError('');
     try {
+      // Validate new API token before persisting
+      if (newApiToken && newApiToken.includes(':')) {
+        const api = getPinboardAPI(newApiToken);
+        const isValid = await api.validateToken();
+        if (!isValid) {
+          setSaveError('Invalid API token. Please check your credentials.');
+          setIsSaving(false);
+          return;
+        }
+      }
       // Update auth store
       setUsername(newUsername);
       setApiToken(newApiToken);
       setIsEditing(false);
-    } catch {
-      // Silently fail
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to save settings');
     } finally {
       setIsSaving(false);
     }
@@ -71,13 +85,12 @@ export default function SettingsPage() {
   }, [apiToken, newApiToken]);
 
   useEffect(() => {
-    import('react-dom').then(({ flushSync }) => {
-      if (apiToken ?? newApiToken) {
-        flushSync(() => fetchTelegramStatus());
-      } else {
-        flushSync(() => setTelegramConnected(false));
-      }
-    });
+    if (apiToken ?? newApiToken) {
+      // eslint-disable-next-line
+      fetchTelegramStatus();
+    } else {
+      setTelegramConnected(false);
+    }
   }, [apiToken, newApiToken, fetchTelegramStatus]);
 
   const handleConnectTelegram = async () => {
@@ -203,7 +216,7 @@ export default function SettingsPage() {
                           href="https://pinboard.in/settings/password"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="text-primary hover:underline"
                         >
                           Pinboard settings
                         </a>
@@ -212,6 +225,11 @@ export default function SettingsPage() {
 
                   </div>
 
+                  {saveError && (
+                    <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                      {saveError}
+                    </div>
+                  )}
 
                   <div className="flex flex-col md:flex-row items-stretch md:items-center md:justify-between space-y-2">
                     <div className="flex flex-col md:flex-row items-stretch md:items-center m-0">

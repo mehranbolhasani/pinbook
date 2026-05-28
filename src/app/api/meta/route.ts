@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isValidPublicUrl } from '@/lib/security/ssrf';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -8,11 +9,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'URL parameter is required' }, { status: 400 });
   }
 
+  // SSRF protection
+  const urlCheck = isValidPublicUrl(url);
+  if (!urlCheck.valid) {
+    return NextResponse.json({ error: urlCheck.reason }, { status: 400 });
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   try {
-    // Validate URL
-    new URL(url);
-    
-    // Fetch the webpage
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; Pinbook/1.0)',
@@ -21,24 +27,28 @@ export async function GET(request: NextRequest) {
         'Accept-Encoding': 'gzip, deflate',
         'Connection': 'keep-alive',
       },
-      // Set a timeout
-      signal: AbortSignal.timeout(10000), // 10 second timeout
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      return NextResponse.json(
+        { error: 'Failed to fetch metadata' },
+        { status: 502 }
+      );
     }
 
     const html = await response.text();
-    
+
     // Extract title from HTML
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     const title = titleMatch ? titleMatch[1].trim() : null;
-    
+
     // Extract description from meta tags
     const descriptionMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["'][^>]*>/i);
     const description = descriptionMatch ? descriptionMatch[1].trim() : null;
-    
+
     // Extract Open Graph title as fallback
     const ogTitleMatch = html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["'][^>]*>/i);
     const ogTitle = ogTitleMatch ? ogTitleMatch[1].trim() : null;
@@ -46,16 +56,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       title: title || ogTitle || null,
       description: description || null,
-      url: response.url, // Final URL after redirects
+      url: response.url,
     });
 
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error('Error fetching metadata:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch metadata',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Failed to fetch metadata' },
       { status: 500 }
     );
   }

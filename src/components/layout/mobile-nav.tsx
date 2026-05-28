@@ -1,22 +1,20 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Input } from '@/components/ui/input';
-import { 
-  Paperclip as BookmarkIcon, 
-  Plus, 
-  Search, 
+import {
+  Paperclip as BookmarkIcon,
+  Plus,
   Filter,
   Settings
 } from 'lucide-react';
 import { useUIStore } from '@/lib/stores/ui';
 import { useAuthStore } from '@/lib/stores/auth';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { debounce } from '@/lib/utils/debounce';
+import { SearchInput } from '@/components/ui/search-input';
 
 // Lazy load heavy sheet components
 const MobileSidebar = dynamic(
@@ -31,32 +29,13 @@ const MobileAddBookmark = dynamic(
 
 export function MobileNav() {
   const { isAuthenticated } = useAuthStore();
-  const { 
+  const {
     searchQuery,
     setSearchQuery
   } = useUIStore();
-  
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAddBookmarkOpen, setIsAddBookmarkOpen] = useState(false);
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-
-  // Debounced search callback
-  const debouncedSearch = useMemo(
-    () => debounce((query: string) => setSearchQuery(query), 300),
-    [setSearchQuery]
-  );
-
-  // Sync local state when external searchQuery changes (e.g., cleared by filters)
-  useEffect(() => {
-    import('react-dom').then(({ flushSync }) => {
-      flushSync(() => setLocalSearchQuery(searchQuery));
-    });
-  }, [searchQuery]);
-
-  const handleSearchChange = (value: string) => {
-    setLocalSearchQuery(value);
-    debouncedSearch(value);
-  };
 
   if (!isAuthenticated) return null;
 
@@ -72,15 +51,14 @@ export function MobileNav() {
           </div>
 
           {/* Center: Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              value={localSearchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-10 h-9"
-            />
-          </div>
+          <SearchInput
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search..."
+            className="flex-1"
+            inputClassName="h-9"
+            id="mobile-search"
+          />
 
           {/* Right: Settings & Theme Toggle */}
           <div className="flex items-center space-x-1 shrink-0">
@@ -97,8 +75,7 @@ export function MobileNav() {
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
         <div className="flex h-14 items-center justify-between px-2">
-          {/* Spacer for balance - Sort/Filter is center */}
-          <div className="w-20" />
+          <div className="flex-1" />
 
           {/* Sort/Filter Combined - Center */}
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>

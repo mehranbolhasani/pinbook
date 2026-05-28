@@ -164,7 +164,6 @@ export function validateAndNormalizeTags(tags: string): string[] {
   return tags
     .split(/\s+/)
     .map(tag => tag.trim().toLowerCase())
-    .filter(tag => tag.length > 0)
-    .filter(tag => /^[a-zA-Z0-9_-]+$/.test(tag)) // Only alphanumeric, underscore, and hyphen
+    .filter(tag => tag.length > 0 && tag.length <= 100)
     .slice(0, 20); // Limit to 20 tags
 }

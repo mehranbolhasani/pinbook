@@ -83,13 +83,13 @@ export function LoginForm() {
             <Album className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold tracking-tighter">Pinbook</h2>
           </div>
-          <p className="text-muted-foreground w-2/4 mx-auto mt-4 text-sm">
+          <p className="text-muted-foreground max-w-xs mx-auto mt-4 text-sm">
             Enter your Pinboard API credentials to get started
           </p>
         </motion.div>
         <motion.form
           onSubmit={handleSubmit}
-          className="space-y-4 w-2/3 px-8 sm:px-0"
+          className="space-y-4 w-full max-w-sm px-8 sm:px-0"
           initial="hidden"
           animate="visible"
           variants={fadeInUp}

@@ -20,7 +20,6 @@ export function useBookmarks() {
     queryFn: async () => {
       if (!apiToken) throw new Error('No API token');
       const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
       return api.getAllBookmarks();
     },
     enabled: !!apiToken,
@@ -36,7 +35,6 @@ export function useTags() {
     queryFn: async () => {
       if (!apiToken) throw new Error('No API token');
       const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
       return api.getTags();
     },
     enabled: !!apiToken,
@@ -52,7 +50,6 @@ export function useAddBookmark() {
     mutationFn: async (params: AddBookmarkParams) => {
       if (!apiToken) throw new Error('No API token');
       const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
       return api.addBookmark(params);
     },
     // Optimistic Update
@@ -131,8 +128,6 @@ export function useUpdateBookmark() {
     mutationFn: async ({ updates }: { id: string; updates: Partial<Bookmark> }) => {
       if (!apiToken) throw new Error('No API token');
       const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
-      
       const params = mapBookmarkToAddParams(updates);
       return api.addBookmark(params);
     },
@@ -169,7 +164,6 @@ export function useDeleteBookmark() {
     mutationFn: async (url: string) => {
       if (!apiToken) throw new Error('No API token');
       const api = getPinboardAPI(apiToken);
-      if (!api) throw new Error('Failed to initialize API');
       return api.deleteBookmark(url);
     },
     // Optimistic Update

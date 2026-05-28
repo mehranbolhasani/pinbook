@@ -25,7 +25,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
   };
 
   const cardContent = (
-    <div className="flex items-center justify-between bg-card group/item dark:hover:bg-zinc-800 p-4 mb-3 rounded-xl shadow-2xl shadow-primary/10">
+    <div data-index={index} className="flex items-center justify-between bg-card group/item hover:bg-muted/50 p-4 mb-3 rounded-xl border border-border transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2 mb-1">
           <h3 className="font-normal text-md truncate">
@@ -64,37 +64,37 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
 
       <div className="flex items-center shrink-0 gap-1 lg:invisible lg:group-hover/item:visible">
         <Button
-          variant="secondary"
-          size="icon"
+          variant="ghost"
+          size="icon-sm"
           onClick={() => handleOpenUrl(bookmark.url)}
-          className='hover:text-accent'
+          className='hover:text-accent hover:bg-transparent!'
           title="Open Link"
           aria-label="Open link"
         >
-          <ExternalLink strokeWidth={1.5} />
+          <ExternalLink className="h-4 w-4" strokeWidth={1.5} />
         </Button>
         {onEdit && (
           <Button
-            variant="secondary"
+            variant="ghost"
             size="icon-sm"
             onClick={() => onEdit(bookmark)}
-            className='hover:text-accent'
+            className='hover:text-accent hover:bg-transparent!'
             title="Edit Bookmark"
             aria-label="Edit bookmark"
           >
-            <Pencil strokeWidth={1.5} />
+            <Pencil className="h-4 w-4" strokeWidth={1.5} />
           </Button>
         )}
         {onDelete && (
           <Button
-            variant="secondary"
-            size="icon"
+            variant="ghost"
+            size="icon-sm"
             onClick={() => onDelete(bookmark)}
-            className="hover:text-destructive"
+            className='hover:text-destructive hover:bg-transparent!'
             title="Delete Bookmark"
             aria-label="Delete bookmark"
           >
-            <Trash2 strokeWidth={1.5} />
+            <Trash2 className="h-4 w-4" strokeWidth={1.5} />
           </Button>
         )}
       </div>

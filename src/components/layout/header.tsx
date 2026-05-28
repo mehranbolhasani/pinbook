@@ -36,7 +36,7 @@ function HeaderLogo() {
       <button
         type="button"
         onClick={clearFilters}
-        className="flex items-center space-x-1 cursor-pointer text-emerald-500"
+        className="flex items-center space-x-1 cursor-pointer text-primary"
         aria-label="Pinbook – clear filters"
       >
         <Album className="h-5 w-5" />
@@ -48,10 +48,10 @@ function HeaderLogo() {
   if (prefersReducedMotion) return content;
 
   return (
-    <motion.button
+      <motion.button
       type="button"
       onClick={clearFilters}
-      className="flex items-center space-x-1 cursor-pointer text-emerald-500"
+      className="flex items-center space-x-1 cursor-pointer text-primary"
       aria-label="Pinbook – clear filters"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
@@ -136,9 +136,8 @@ const HeaderSearch = memo(function HeaderSearch() {
   );
 
   useEffect(() => {
-    import('react-dom').then(({ flushSync }) => {
-      flushSync(() => setLocalSearchQuery(searchQuery));
-    });
+    // eslint-disable-next-line
+    setLocalSearchQuery(searchQuery);
   }, [searchQuery]);
 
   const handleSearchChange = (value: string) => {
@@ -318,7 +317,7 @@ export function Header({ onAddBookmark }: HeaderProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const headerContent = (
-    <header className="relative w-full max-w-160 mx-auto z-50 gap-2 py-8">
+    <header className="relative w-full max-w-160 mx-auto z-50 gap-2 py-4">
       <div className="container flex h-full flex-col items-center justify-center gap-8">
         <div className="flex items-center w-full justify-between py-4">
           <HeaderLogo />
@@ -342,7 +341,7 @@ export function Header({ onAddBookmark }: HeaderProps) {
 
   return (
     <motion.header
-      className="relative w-full max-w-160 mx-auto z-50 gap-2 py-8"
+      className="relative w-full max-w-160 mx-auto z-50 gap-2 py-4"
       initial="hidden"
       animate="visible"
       variants={fadeInDown}

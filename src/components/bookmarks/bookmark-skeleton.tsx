@@ -9,7 +9,7 @@ export function BookmarkSkeleton() {
   const prefersReducedMotion = useReducedMotion();
 
   const skeletonContent = (
-    <div className="flex items-center space-x-4 p-4 border-b">
+    <div className="flex items-center space-x-4 p-4 border-b border-border bg-card rounded-xl mb-3">
       <Skeleton className="h-12 w-12 rounded" />
       <div className="flex-1 space-y-2">
         <Skeleton className="h-5 w-3/4" />

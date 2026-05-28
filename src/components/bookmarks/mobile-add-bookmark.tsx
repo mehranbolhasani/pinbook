@@ -1,269 +1,74 @@
 'use client';
 
-import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
-import { useAddBookmark, useTags } from '@/hooks/usePinboard';
-import { useToast } from '@/hooks/useToast';
+import { BookmarkFormFields } from './bookmark-form-fields';
+import { useBookmarkForm } from '@/hooks/useBookmarkForm';
 
 interface MobileAddBookmarkProps {
   onClose: () => void;
 }
 
 export function MobileAddBookmark({ onClose }: MobileAddBookmarkProps) {
-  const { mutate: addBookmark, isPending: isSubmitting } = useAddBookmark();
-  const { data: tagsData = {} } = useTags();
-  const toast = useToast();
-
-  const allTagNames = useMemo(() => Object.keys(tagsData).sort(), [tagsData]);
-
-  const [formData, setFormData] = useState({
-    url: '',
-    title: '',
-    description: '',
-    extended: '',
-    tags: [] as string[],
-    isShared: false
-  });
-  const [tagInput, setTagInput] = useState('');
-
-  const handleSave = () => {
-    if (!formData.url.trim()) {
-      toast.showError('Validation Error', 'URL is required');
-      return;
-    }
-
-    addBookmark({
-      url: formData.url,
-      description: formData.title || formData.description,
-      extended: formData.extended,
-      tags: formData.tags.join(' '),
-      shared: formData.isShared ? 'yes' : 'no'
-    }, {
-      onSuccess: (newBookmark) => {
-        toast.showSuccess('Bookmark added successfully', `"${newBookmark.title}" has been saved`);
-        
-        // Reset form
-        setFormData({
-          url: '',
-          title: '',
-          description: '',
-          extended: '',
-          tags: [],
-          isShared: false
-        });
-        setTagInput('');
-        
-        onClose();
-      },
-      onError: (error) => {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to add bookmark';
-        toast.showError('Failed to add bookmark', errorMessage);
-      }
-    });
-  };
-
-  const addTag = (tag?: string) => {
-    const toAdd = (tag ?? tagInput).trim();
-    if (toAdd && !formData.tags.includes(toAdd)) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, toAdd]
-      }));
-      setTagInput('');
-    }
-  };
-
-  const tagSuggestions = useMemo(() => {
-    const q = tagInput.trim().toLowerCase();
-    if (!q) return [];
-    return allTagNames.filter(
-      (name) =>
-        name.toLowerCase().startsWith(q) && !formData.tags.includes(name)
-    ).slice(0, 8);
-  }, [tagInput, allTagNames, formData.tags]);
-
-  const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
-  };
-
-  const handleUrlChange = async (url: string) => {
-    setFormData(prev => ({ ...prev, url }));
-    
-    // Auto-fetch title if URL looks valid and we don't have a title yet
-    if (url.startsWith('http') && !formData.title) {
-      try {
-        const response = await fetch(`/api/meta?url=${encodeURIComponent(url)}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.title) {
-            setFormData(prev => ({ ...prev, title: data.title }));
-          }
-        }
-      } catch {
-        // Silently fail - user can still add bookmark manually
-      }
-    }
-  };
+  const {
+    formData,
+    tagInput,
+    setTagInput,
+    tagSuggestions,
+    isSubmitting,
+    canSubmit,
+    handleSave,
+    addTag,
+    removeTag,
+    handleTagKeyDown,
+    handleUrlChange,
+    updateField,
+  } = useBookmarkForm({ onSuccess: onClose });
 
   return (
-    <form 
+    <form
       className="flex h-full flex-col bg-background"
       onSubmit={(e) => {
         e.preventDefault();
         handleSave();
       }}
     >
-      {/* Header */}
       <SheetHeader className="p-4 pb-0">
         <SheetTitle>Add New Bookmark</SheetTitle>
       </SheetHeader>
 
-      {/* Form Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="url">URL *</Label>
-          <Input
-            id="url"
-            value={formData.url}
-            onChange={(e) => handleUrlChange(e.target.value)}
-            placeholder="https://example.com"
-            type="url"
-            required
-            autoComplete="off"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            value={formData.title}
-            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            placeholder="Bookmark title (optional)"
-            autoComplete="off"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            placeholder="Brief description"
-            rows={2}
-            autoComplete="off"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="extended">Extended Notes</Label>
-          <Textarea
-            id="extended"
-            value={formData.extended}
-            onChange={(e) => setFormData(prev => ({ ...prev, extended: e.target.value }))}
-            placeholder="Additional notes"
-            rows={3}
-            autoComplete="off"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="tags">Tags</Label>
-          <div className="relative flex space-x-2">
-            <Input
-              id="tags"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (tagSuggestions.length > 0) addTag(tagSuggestions[0]);
-                  else addTag();
-                }
-              }}
-              placeholder="Add a tag"
-              autoComplete="off"
-            />
-            <Button type="button" onClick={() => addTag()} size="sm">
-              <Plus className="h-4 w-4" />
-            </Button>
-            {tagSuggestions.length > 0 && (
-              <ul
-                className="absolute top-full left-0 z-10 mt-1 w-[calc(100%-2.5rem)] rounded-md border bg-popover py-1 shadow-md"
-                role="listbox"
-              >
-                {tagSuggestions.map((tag) => (
-                  <li key={tag}>
-                    <button
-                      type="button"
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-accent"
-                      onClick={() => addTag(tag)}
-                      role="option"
-                      aria-selected={false}
-                    >
-                      {tag}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {formData.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                {tag}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeTag(tag)}
-                  className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </Badge>
-            ))}
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isShared"
-            checked={formData.isShared}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isShared: checked }))}
-          />
-          <Label htmlFor="isShared">Share publicly</Label>
-        </div>
+      <div className="flex-1 overflow-y-auto p-4">
+        <BookmarkFormFields
+          formData={formData}
+          tagInput={tagInput}
+          setTagInput={setTagInput}
+          tagSuggestions={tagSuggestions}
+          onUrlChange={handleUrlChange}
+          onFieldChange={updateField}
+          onAddTag={addTag}
+          onRemoveTag={removeTag}
+          onTagKeyDown={handleTagKeyDown}
+          autoCompleteOff
+          urlRequired
+        />
       </div>
 
       <Separator />
-      
-      {/* Actions */}
+
       <div className="p-4 flex gap-2">
-        <Button 
+        <Button
           type="button"
-          variant="outline" 
-          onClick={onClose} 
+          variant="outline"
+          onClick={onClose}
           disabled={isSubmitting}
           className="flex-1"
         >
           Cancel
         </Button>
-        <Button 
+        <Button
           type="submit"
-          disabled={isSubmitting || !formData.url.trim()}
+          disabled={isSubmitting || !canSubmit}
           className="flex-1"
         >
           {isSubmitting ? 'Adding...' : 'Add Bookmark'}

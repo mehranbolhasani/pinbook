@@ -56,9 +56,8 @@ export class PinboardAPI {
 
     const url = new URL('/api/pinboard', window.location.origin);
     
-    // Add endpoint and auth token
+    // Add endpoint
     url.searchParams.set('endpoint', endpoint);
-    url.searchParams.set('auth_token', this.apiToken);
     
     // Add other parameters
     Object.entries(params).forEach(([key, value]) => {
@@ -73,7 +72,8 @@ export class PinboardAPI {
     try {
       const response = await fetch(url.toString(), {
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-Pinboard-Token': this.apiToken,
         },
         signal: controller.signal
       });
@@ -85,7 +85,7 @@ export class PinboardAPI {
         
         try {
           const errorData = await response.json();
-          errorMessage = errorData.error || errorData.error_message || errorMessage;
+          errorMessage = errorData.error || errorMessage;
         } catch {
           // If we can't parse the error response, use the default message
         }
@@ -234,6 +234,13 @@ export class PinboardAPI {
       throw new Error('Failed to add bookmark');
     }
 
+    let domain: string;
+    try {
+      domain = new URL(params.url).hostname;
+    } catch {
+      domain = params.url;
+    }
+
     return {
       id: `temp-${Date.now()}`,
       title: params.description,
@@ -244,7 +251,7 @@ export class PinboardAPI {
       createdAt: new Date(),
       isRead: params.toread === 'no',
       isShared: params.shared === 'yes',
-      domain: new URL(params.url).hostname,
+      domain,
       hash: `temp-${Date.now()}`,
       meta: '',
       href: params.url,
@@ -265,12 +272,7 @@ export class PinboardAPI {
 
 }
 
-// Create a singleton instance
-let apiInstance: PinboardAPI | null = null;
-
-export const getPinboardAPI = (apiToken?: string): PinboardAPI | null => {
-  if (apiToken) {
-    apiInstance = new PinboardAPI(apiToken);
-  }
-  return apiInstance;
+// Factory function — always returns a fresh instance
+export const getPinboardAPI = (apiToken: string): PinboardAPI => {
+  return new PinboardAPI(apiToken);
 };

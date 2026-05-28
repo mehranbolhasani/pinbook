@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, cleanupRateLimitStore } from '@/lib/security/rate-limit';
 import type { TelegramUpdate } from '@/lib/telegram/types';
 import { sendTelegramMessage, editTelegramMessage, answerCallbackQuery } from '@/lib/telegram/bot';
 import {
@@ -73,6 +74,15 @@ const HELP_TEXT = [
 ].join('\n');
 
 export async function POST(request: NextRequest) {
+  cleanupRateLimitStore();
+  const limit = rateLimit(request, { windowMs: 60000, maxRequests: 30 });
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfter) } }
+    );
+  }
+
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
   if (secret) {
     const headerSecret = request.headers.get('x-telegram-bot-api-secret-token');
@@ -537,5 +547,10 @@ export async function POST(request: NextRequest) {
 }
 
 function escapeHtml(text: string): string {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, cleanupRateLimitStore } from '@/lib/security/rate-limit';
 import { setCode } from '@/lib/telegram/store';
 
 const CODE_LENGTH = 6;
@@ -13,6 +14,15 @@ function generateCode(): string {
 }
 
 export async function POST(request: NextRequest) {
+  cleanupRateLimitStore();
+  const limit = rateLimit(request, { windowMs: 60000, maxRequests: 10 });
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfter) } }
+    );
+  }
+
   try {
     const body = await request.json();
     const apiToken = typeof body?.apiToken === 'string' ? body.apiToken.trim() : null;

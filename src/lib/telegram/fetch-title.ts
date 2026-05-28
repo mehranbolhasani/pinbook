@@ -3,10 +3,18 @@
  * Used by the Telegram webhook. Timeout 4s; returns null on failure.
  */
 
+import { isValidPublicUrl } from '@/lib/security/ssrf';
+
 const TITLE_MAX_LENGTH = 255;
 const FETCH_TIMEOUT_MS = 4000;
 
 export async function fetchPageTitle(url: string): Promise<string | null> {
+  // SSRF protection
+  const urlCheck = isValidPublicUrl(url);
+  if (!urlCheck.valid) {
+    return null;
+  }
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {

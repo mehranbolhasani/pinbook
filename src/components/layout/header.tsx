@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useMemo, useEffect, memo } from 'react';
+import { memo } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { Search, Settings, LogOut, Bookmark, Plus, Moon, Sun, Monitor, Tag, Filter, SortAsc, SortDesc, ChevronDown } from 'lucide-react';
+import { Settings, LogOut, Bookmark, Plus, Tag, Filter, SortAsc, SortDesc, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/lib/stores/auth';
-import { useTheme } from 'next-themes';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,11 +18,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useUIStore } from '@/lib/stores/ui';
 import { useTags } from '@/hooks/usePinboard';
-import { debounce } from '@/lib/utils/debounce';
 import { cn } from '@/lib/utils';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fadeInDown, buttonHover } from '@/lib/animations';
 import { StaggerContainer } from '@/components/ui/stagger-container';
+import { SearchInput } from '@/components/ui/search-input';
 
 // Subcomponents with minimal store subscriptions
 
@@ -64,48 +63,11 @@ function HeaderLogo() {
 
 function HeaderUserActions() {
   const { username, logout } = useAuthStore();
-  const { theme, setTheme } = useTheme();
 
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm text-muted-foreground mr-2 hidden sm:inline">{username}</span>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="icon"
-            size="icon-sm"
-            aria-label="Theme"
-            className='bg-transparent'
-            title="Theme"
-          >
-            {theme === 'dark' ? (
-              <Moon className='size-4' size={16} strokeWidth={1.5} aria-hidden />
-            ) : theme === 'light' ? (
-              <Sun className='size-4' size={16} strokeWidth={1.5} aria-hidden />
-            ) : (
-              <Monitor className='size-4' size={16} strokeWidth={1.5} aria-hidden />
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side="top" className="mb-2">
-          <DropdownMenuLabel className="text-xs text-muted-foreground">Theme</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => setTheme('light')}>
-            <Sun className="mr-2 h-4 w-4" aria-hidden />
-            <span>Light</span>
-            {theme === 'light' && <span className="ml-auto">✓</span>}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme('dark')}>
-            <Moon className="mr-2 h-4 w-4" aria-hidden />
-            <span>Dark</span>
-            {theme === 'dark' && <span className="ml-auto">✓</span>}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme('system')}>
-            <Monitor className="mr-2 h-4 w-4" aria-hidden />
-            <span>System</span>
-            {(theme === 'system' || !theme) && <span className="ml-auto">✓</span>}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ThemeToggle variant="icon" />
       <Button variant="icon" size="icon-sm" className="h-8 w-8 bg-transparent" asChild aria-label="Settings">
         <Link href="/settings">
           <Settings className='size-4' size={16} strokeWidth={1.5} aria-hidden />
@@ -127,41 +89,17 @@ function HeaderUserActions() {
 const HeaderSearch = memo(function HeaderSearch() {
   const searchQuery = useUIStore((s) => s.searchQuery);
   const setSearchQuery = useUIStore((s) => s.setSearchQuery);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-
-  const debouncedSearch = useMemo(
-    () => debounce((query: string) => setSearchQuery(query), 300),
-    [setSearchQuery]
-  );
-
-  useEffect(() => {
-    // eslint-disable-next-line
-    setLocalSearchQuery(searchQuery);
-  }, [searchQuery]);
-
-  const handleSearchChange = (value: string) => {
-    setLocalSearchQuery(value);
-    debouncedSearch(value);
-  };
 
   return (
     <div className="flex-1 max-w-full items-center justify-center">
-      <div className="relative flex items-center justify-center border border-muted-foreground/50 dark:border-primary/30 rounded-full px-2 gap-2 focus-within:ring-4 focus-within:ring-primary/20">
-        <label htmlFor="header-search" className="text-muted-foreground cursor-pointer">
-          <Search className="h-4 w-4" aria-hidden />
-        </label>
-        <Input
-          id="header-search"
-          placeholder="Search"
-          value={localSearchQuery}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setIsSearchFocused(false)}
-          className={`h-8 p-0 w-full border-none ${isSearchFocused ? 'ring-0!' : ''}`}
-          aria-label="Search bookmarks"
-        />
-      </div>
+      <SearchInput
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search"
+        className="justify-center border border-muted-foreground/50 dark:border-primary/30 rounded-full px-2 gap-2 focus-within:ring-4 focus-within:ring-primary/20"
+        inputClassName="h-8 w-full border-none focus-visible:ring-0 pl-8"
+        id="header-search"
+      />
     </div>
   );
 });

@@ -243,7 +243,9 @@ export default function Home() {
         <MobileNav />
 
         {/* Desktop Header */}
-        <Header onAddBookmark={handleAddBookmark} />
+        <div className="hidden lg:block">
+          <Header onAddBookmark={handleAddBookmark} />
+        </div>
 
         <div className="flex w-full max-w-160 mx-auto h-full items-start gap-4 border-x border-x-foreground/20">
           {/* Main Content */}

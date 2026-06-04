@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
-  Paperclip as BookmarkIcon,
+  Bookmark,
   Plus,
   Filter,
   Settings
@@ -46,7 +46,7 @@ export function MobileNav() {
         <div className="flex h-14 items-center justify-between px-4 gap-3">
           {/* Left: Logo */}
           <div className="flex items-center space-x-2 shrink-0">
-            <BookmarkIcon className="h-5 w-5 text-primary" />
+            <Bookmark className="h-5 w-5 text-primary" />
             <span className="font-semibold hidden min-[380px]:inline">Pinbook</span>
           </div>
 

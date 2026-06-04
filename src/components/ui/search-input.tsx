@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { debounce } from '@/lib/utils/debounce';
+import { cn } from '@/lib/utils';
 
 interface SearchInputProps {
   value: string;
@@ -51,7 +52,7 @@ export function SearchInput({
         placeholder={placeholder}
         value={localValue}
         onChange={(e) => handleChange(e.target.value)}
-        className={`pl-10 ${inputClassName}`}
+        className={cn('pl-10', inputClassName)}
         aria-label={placeholder}
       />
     </div>

@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/lib/stores/auth';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Album } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fadeInUp } from '@/lib/animations';
 
@@ -73,7 +73,7 @@ export function LoginForm() {
           variants={fadeInUp}
         >
           <div className="flex flex-col items-center justify-center gap-2">
-            <Album className="h-6 w-6 text-primary" />
+            <Bookmark className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold tracking-tighter">Pinbook</h2>
           </div>
           <p className="text-muted-foreground max-w-xs mx-auto mt-4 text-sm">

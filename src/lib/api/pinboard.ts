@@ -241,23 +241,7 @@ export class PinboardAPI {
       domain = params.url;
     }
 
-    return {
-      id: `temp-${Date.now()}`,
-      title: params.description,
-      url: params.url,
-      description: params.description,
-      extended: params.extended || '',
-      tags: params.tags ? params.tags.split(' ').filter(tag => tag.trim()) : [],
-      createdAt: new Date(),
-      isRead: params.toread === 'no',
-      isShared: params.shared === 'yes',
-      domain,
-      hash: `temp-${Date.now()}`,
-      meta: '',
-      href: params.url,
-      shared: params.shared || 'no',
-      toread: params.toread || 'no'
-    };
+    return makeOptimisticBookmark(params, { domain });
   }
 
   // Validate API token
@@ -270,6 +254,83 @@ export class PinboardAPI {
     }
   }
 
+}
+
+// ---------------------------------------------------------------------------
+// Shared data-transform helpers (extracted from duplicated hand-written sites)
+// ---------------------------------------------------------------------------
+
+/**
+ * Build an optimistic Bookmark from AddBookmarkParams.
+ * Used by `PinboardAPI.addBookmark` and by `useAddBookmark` → `onMutate`.
+ *
+ * Pinboard field quirk preserved: `params.description` → Bookmark.title.
+ *
+ * @param overrides.domain — optional override for the derived domain.  When
+ *   omitted, domain is computed with `new URL(params.url).hostname` (no
+ *   try/catch), matching the `onMutate` optimistic path.
+ */
+export function makeOptimisticBookmark(
+  params: AddBookmarkParams,
+  overrides?: { domain?: string }
+): Bookmark {
+  const id = `temp-${Date.now()}`;
+  const hash = `temp-${Date.now()}`;
+
+  const domain =
+    overrides?.domain ?? new URL(params.url).hostname;
+
+  return {
+    id,
+    title: params.description,
+    url: params.url,
+    description: params.description,
+    extended: params.extended || '',
+    tags: params.tags ? params.tags.split(' ').filter((tag) => tag.trim()) : [],
+    createdAt: new Date(),
+    isRead: params.toread === 'no',
+    isShared: params.shared === 'yes',
+    domain,
+    hash,
+    meta: '',
+    href: params.url,
+    shared: params.shared || 'no',
+    toread: params.toread || 'no',
+  };
+}
+
+/**
+ * Map a Partial<Bookmark> to Pinboard's AddBookmarkParams.
+ * Preserves all current field mappings, including the inverted isRead → toread
+ * logic and the `replace: 'yes'` flag.
+ *
+ * Pinboard field quirk preserved: Bookmark.title/description → params.description.
+ */
+export function toAddBookmarkParams(bookmark: Partial<Bookmark>): AddBookmarkParams {
+  if (!bookmark.url) {
+    throw new Error('URL is required to update a bookmark');
+  }
+
+  return {
+    url: bookmark.url,
+    description: bookmark.title || bookmark.description || '',
+    extended: bookmark.extended || '',
+    tags: bookmark.tags ? bookmark.tags.join(' ') : undefined,
+    shared:
+      bookmark.isShared !== undefined
+        ? bookmark.isShared
+          ? 'yes'
+          : 'no'
+        : undefined,
+    toread:
+      bookmark.isRead !== undefined
+        ? bookmark.isRead
+          ? 'no'
+          : 'yes'
+        : undefined,
+    dt: bookmark.createdAt ? bookmark.createdAt.toISOString() : undefined,
+    replace: 'yes',
+  };
 }
 
 // Factory function — always returns a fresh instance

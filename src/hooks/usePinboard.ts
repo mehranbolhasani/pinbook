@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getPinboardAPI } from '@/lib/api/pinboard';
+import { getPinboardAPI, makeOptimisticBookmark, toAddBookmarkParams } from '@/lib/api/pinboard';
 import { useAuthStore } from '@/lib/stores/auth';
 import { Bookmark, AddBookmarkParams } from '@/types/pinboard';
 
@@ -62,23 +62,7 @@ export function useAddBookmark() {
 
       // Optimistically update to the new value
       if (previousBookmarks) {
-        const optimisticBookmark: Bookmark = {
-          id: `temp-${Date.now()}`,
-          title: newBookmarkParams.description,
-          url: newBookmarkParams.url,
-          description: newBookmarkParams.description,
-          extended: newBookmarkParams.extended || '',
-          tags: newBookmarkParams.tags ? newBookmarkParams.tags.split(' ').filter(tag => tag.trim()) : [],
-          createdAt: new Date(),
-          isRead: newBookmarkParams.toread === 'no',
-          isShared: newBookmarkParams.shared === 'yes',
-          domain: new URL(newBookmarkParams.url).hostname,
-          hash: `temp-${Date.now()}`,
-          meta: '',
-          href: newBookmarkParams.url,
-          shared: newBookmarkParams.shared || 'no',
-          toread: newBookmarkParams.toread || 'no'
-        };
+        const optimisticBookmark = makeOptimisticBookmark(newBookmarkParams);
 
         queryClient.setQueryData<Bookmark[]>(queryKeys.bookmarks, [
           optimisticBookmark,
@@ -102,24 +86,6 @@ export function useAddBookmark() {
   });
 }
 
-// Helper function to map Bookmark fields to AddBookmarkParams
-function mapBookmarkToAddParams(bookmark: Partial<Bookmark>): AddBookmarkParams {
-  if (!bookmark.url) {
-    throw new Error('URL is required to update a bookmark');
-  }
-  // Pinboard uses 'description' for title and 'extended' for description
-  return {
-    url: bookmark.url,
-    description: bookmark.title || bookmark.description || '',
-    extended: bookmark.extended || '',
-    tags: bookmark.tags ? bookmark.tags.join(' ') : undefined,
-    shared: bookmark.isShared !== undefined ? (bookmark.isShared ? 'yes' : 'no') : undefined,
-    toread: bookmark.isRead !== undefined ? (bookmark.isRead ? 'no' : 'yes') : undefined,
-    dt: bookmark.createdAt ? bookmark.createdAt.toISOString() : undefined,
-    replace: 'yes'
-  };
-}
-
 export function useUpdateBookmark() {
   const queryClient = useQueryClient();
   const { apiToken } = useAuthStore();
@@ -128,7 +94,7 @@ export function useUpdateBookmark() {
     mutationFn: async ({ updates }: { id: string; updates: Partial<Bookmark> }) => {
       if (!apiToken) throw new Error('No API token');
       const api = getPinboardAPI(apiToken);
-      const params = mapBookmarkToAddParams(updates);
+      const params = toAddBookmarkParams(updates);
       return api.addBookmark(params);
     },
     // Optimistic Update

@@ -46,11 +46,11 @@ import { useToast } from '@/hooks/useToast';
 import { ErrorBoundary, BookmarkListErrorBoundary } from '@/components/error-boundary';
 import { useBookmarks, useDeleteBookmark, useUpdateBookmark } from '@/hooks/usePinboard';
 
-import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
+import { usePaginatedBookmarks } from '@/hooks/usePaginatedBookmarks';
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
-  const { setSearchQuery, searchQuery, selectedTags, sortBy, sortOrder } = useUIStore();
+  const { setSearchQuery, searchQuery, selectedTags, sortBy, sortOrder, page } = useUIStore();
 
   // React Query Hooks
   const { data: bookmarks = [], isLoading: isBookmarksLoading, error: bookmarksError } = useBookmarks();
@@ -69,21 +69,21 @@ export default function Home() {
 
   const toast = useToast();
 
-  // Compute filtered and sorted bookmarks using shared hook
-  const filteredAndSortedBookmarks = useFilteredBookmarks(bookmarks);
+  // Compute paginated bookmarks using shared hook
+  const { bookmarks: paginatedBookmarks } = usePaginatedBookmarks(bookmarks);
 
   const selectedBookmark = useMemo(() => {
-    if (selectedBookmarkIndex === null || selectedBookmarkIndex < 0 || selectedBookmarkIndex >= filteredAndSortedBookmarks.length) {
+    if (selectedBookmarkIndex === null || selectedBookmarkIndex < 0 || selectedBookmarkIndex >= paginatedBookmarks.length) {
       return null;
     }
-    return filteredAndSortedBookmarks[selectedBookmarkIndex];
-  }, [selectedBookmarkIndex, filteredAndSortedBookmarks]);
+    return paginatedBookmarks[selectedBookmarkIndex];
+  }, [selectedBookmarkIndex, paginatedBookmarks]);
 
-  // Reset selected index when filters change
+  // Reset selected index when filters or page change
   useEffect(() => {
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedBookmarkIndex(null);
-  }, [searchQuery, selectedTags, sortBy, sortOrder]);
+  }, [searchQuery, selectedTags, sortBy, sortOrder, page]);
 
   // Scroll selected bookmark into view
   useEffect(() => {
@@ -157,7 +157,7 @@ export default function Home() {
   }, []);
 
   const handleNavigate = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    if (filteredAndSortedBookmarks.length === 0) return;
+    if (paginatedBookmarks.length === 0) return;
 
     setSelectedBookmarkIndex((currentIndex) => {
       // If no bookmark is selected, start at the first one
@@ -172,7 +172,7 @@ export default function Home() {
           newIndex = Math.max(0, currentIndex - 1);
           break;
         case 'down':
-          newIndex = Math.min(filteredAndSortedBookmarks.length - 1, currentIndex + 1);
+          newIndex = Math.min(paginatedBookmarks.length - 1, currentIndex + 1);
           break;
         case 'left':
         case 'right':
@@ -183,7 +183,7 @@ export default function Home() {
 
       return newIndex;
     });
-  }, [filteredAndSortedBookmarks.length]);
+  }, [paginatedBookmarks.length]);
 
   const handleOpenSelected = useCallback(() => {
     if (selectedBookmark) {
@@ -245,7 +245,7 @@ export default function Home() {
         {/* Desktop Header */}
         <Header onAddBookmark={handleAddBookmark} />
 
-        <div className="flex w-full max-w-160 mx-auto h-full items-start gap-4">
+        <div className="flex w-full max-w-160 mx-auto h-full items-start gap-4 border-x border-x-foreground/20">
           {/* Main Content */}
           <main className="flex-1 min-w-0 w-full">
             <div className="max-w-full mx-auto">

@@ -25,7 +25,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
   };
 
   const cardContent = (
-    <div data-index={index} className="flex items-center justify-between bg-card group/item hover:bg-muted/50 p-4 mb-3 rounded-xl border border-border transition-colors">
+    <div data-index={index} className="flex items-center justify-between bg-card group/item hover:border-accent p-4 mb-3 rounded-xl border border-border transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2 mb-1">
           <h3 className="font-normal text-md truncate">
@@ -67,7 +67,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
           variant="ghost"
           size="icon-sm"
           onClick={() => handleOpenUrl(bookmark.url)}
-          className='hover:text-accent hover:bg-transparent!'
+          className='hover:text-primary hover:bg-transparent!'
           title="Open Link"
           aria-label="Open link"
         >
@@ -78,7 +78,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
             variant="ghost"
             size="icon-sm"
             onClick={() => onEdit(bookmark)}
-            className='hover:text-accent hover:bg-transparent!'
+            className='hover:text-primary hover:bg-transparent!'
             title="Edit Bookmark"
             aria-label="Edit bookmark"
           >
@@ -116,7 +116,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
       <motion.div
         variants={hoverLift}
         initial="rest"
-        className="hover:shadow-2xl hover:shadow-accent/10"
+        className="hover:shadow-2xl hover:shadow-primary/10"
       >
         {cardContent}
       </motion.div>

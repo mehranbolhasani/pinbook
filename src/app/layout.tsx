@@ -22,7 +22,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.pinboard.in" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.pinboard.in" />
       </head>
-      <body className="font-sans antialiased bg-background selection:bg-accent selection:text-accent-foreground">
+      <body className="font-sans antialiased bg-background selection:bg-primary selection:text-primary-foreground">
         <QueryProvider>
           <ThemeProvider
             attribute="class"

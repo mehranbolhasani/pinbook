@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, memo } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { Search, Settings, LogOut, Album, Plus, Moon, Sun, Monitor, Tag, Filter, SortAsc, SortDesc, ChevronDown } from 'lucide-react';
+import { Search, Settings, LogOut, Bookmark, Plus, Moon, Sun, Monitor, Tag, Filter, SortAsc, SortDesc, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -39,7 +39,7 @@ function HeaderLogo() {
         className="flex items-center space-x-1 cursor-pointer text-primary"
         aria-label="Pinbook – clear filters"
       >
-        <Album className="h-5 w-5" />
+        <Bookmark className="h-5 w-5" />
         <h1 className="text-lg font-book tracking-tight">Pinbook</h1>
       </button>
     </div>
@@ -56,7 +56,7 @@ function HeaderLogo() {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <Album className="h-5 w-5" />
+      <Bookmark className="h-5 w-5" />
       <h1 className="text-lg font-book tracking-tight">Pinbook</h1>
     </motion.button>
   );
@@ -186,7 +186,7 @@ function HeaderTagsFilter() {
       {tags.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="sm" aria-label="Filter by tags">
+            <Button variant="outline" size="sm" aria-label="Filter by tags">
               <Tag className='size-4' size={16} strokeWidth={1.5} aria-hidden />
               <span>Tags</span>
               {selectedTags.length > 0 && (
@@ -245,7 +245,7 @@ function HeaderSortDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size="sm" aria-label="Sort bookmarks" className="gap-1">
+        <Button variant="outline" size="sm" aria-label="Sort bookmarks" className="gap-1">
           {sortOrder === 'asc' ? <SortAsc className='size-4' size={16} strokeWidth={1.5} aria-hidden /> : <SortDesc className='size-4' size={16} strokeWidth={1.5} aria-hidden />}
           <span className="capitalize">{sortBy}</span>
           <ChevronDown className="h-3 w-3 opacity-50" />
@@ -317,7 +317,7 @@ export function Header({ onAddBookmark }: HeaderProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const headerContent = (
-    <header className="relative w-full max-w-160 mx-auto z-50 gap-2 py-4">
+    <header className="relative w-full max-w-160 mx-auto z-50 gap-2 p-4 border-x border-x-foreground/20">
       <div className="container flex h-full flex-col items-center justify-center gap-8">
         <div className="flex items-center w-full justify-between py-4">
           <HeaderLogo />
@@ -341,7 +341,7 @@ export function Header({ onAddBookmark }: HeaderProps) {
 
   return (
     <motion.header
-      className="relative w-full max-w-160 mx-auto z-50 gap-2 py-4"
+      className="relative w-full max-w-160 mx-auto z-50 gap-2 p-4 border-x border-x-foreground/20"
       initial="hidden"
       animate="visible"
       variants={fadeInDown}

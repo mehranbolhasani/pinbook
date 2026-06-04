@@ -11,12 +11,16 @@ interface UIState {
   // Sorting
   sortBy: 'date' | 'title' | 'url';
   sortOrder: 'asc' | 'desc';
-  
+
+  // Pagination
+  page: number;
+
   // Actions
   setSearchQuery: (query: string) => void;
   setSelectedTags: (tags: string[]) => void;
   setSortBy: (sortBy: 'date' | 'title' | 'url') => void;
   setSortOrder: (order: 'asc' | 'desc') => void;
+  setPage: (page: number) => void;
   clearFilters: () => void;
 }
 
@@ -27,15 +31,18 @@ export const useUIStore = create<UIState>()(
       selectedTags: [],
       sortBy: 'date',
       sortOrder: 'desc',
+      page: 1,
 
       setSearchQuery: (searchQuery) => set({ searchQuery }),
       setSelectedTags: (selectedTags) => set({ selectedTags }),
       setSortBy: (sortBy) => set({ sortBy }),
       setSortOrder: (sortOrder) => set({ sortOrder }),
+      setPage: (page) => set({ page }),
 
-      clearFilters: () => set({ 
-        searchQuery: '', 
-        selectedTags: []
+      clearFilters: () => set({
+        searchQuery: '',
+        selectedTags: [],
+        page: 1,
       }),
     }),
     {

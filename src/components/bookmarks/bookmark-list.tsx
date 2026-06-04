@@ -8,8 +8,9 @@ import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
 import { BookmarkX, BookmarkPlus } from 'lucide-react';
+import { Pagination } from '@/components/ui/pagination';
 
-import { useFilteredBookmarks } from '@/hooks/useFilteredBookmarks';
+import { usePaginatedBookmarks } from '@/hooks/usePaginatedBookmarks';
 
 interface BookmarkListProps {
   bookmarks: Bookmark[];
@@ -19,22 +20,29 @@ interface BookmarkListProps {
 }
 
 export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, onEditBookmark, onDeleteBookmark }: BookmarkListProps) {
-  const { 
-    searchQuery, 
+  const {
+    searchQuery,
     selectedTags,
     setSearchQuery,
     setSelectedTags,
+    setPage,
   } = useUIStore();
 
   const virtualizationThreshold = useVirtualizationThreshold();
 
-  const filteredAndSortedBookmarks = useFilteredBookmarks(bookmarks);
+  const {
+    bookmarks: paginatedBookmarks,
+    totalCount,
+    pageCount,
+    currentPage,
+    pageSize,
+  } = usePaginatedBookmarks(bookmarks);
 
   if (isLoading) {
     return <BookmarkListSkeleton count={6} />;
   }
 
-  if (filteredAndSortedBookmarks.length === 0) {
+  if (totalCount === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-muted-foreground mb-4">
@@ -46,9 +54,9 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
                 Try adjusting your search or filters
               </p>
               <div className="mt-4 space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => {
                     setSearchQuery('');
                     setSelectedTags([]);
@@ -72,13 +80,13 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
     );
   }
 
-  const shouldUseVirtualization = filteredAndSortedBookmarks.length > virtualizationThreshold;
+  const shouldUseVirtualization = paginatedBookmarks.length > virtualizationThreshold;
 
   const renderBookmarks = () => {
     if (shouldUseVirtualization) {
       return (
         <VirtualizedBookmarkList
-          bookmarks={filteredAndSortedBookmarks}
+          bookmarks={paginatedBookmarks}
           onEditBookmark={onEditBookmark}
           onDeleteBookmark={onDeleteBookmark}
         />
@@ -87,24 +95,34 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
 
     return (
       <BookmarkListView
-        bookmarks={filteredAndSortedBookmarks}
+        bookmarks={paginatedBookmarks}
         onEdit={onEditBookmark!}
         onDelete={onDeleteBookmark!}
       />
     );
   };
 
+  const startItem = (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalCount);
+
   return (
     <div className="mb-32">
-      {(searchQuery || selectedTags.length > 0) && (
-        <div className="text-sm text-muted-foreground mb-4">
-          Showing {filteredAndSortedBookmarks.length} of {bookmarks.length} bookmarks
+
+      {renderBookmarks()}
+
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Showing {startItem}-{endItem} of {totalCount} bookmarks
           {searchQuery && ` for "${searchQuery}"`}
           {selectedTags.length > 0 && ` with tags: ${selectedTags.join(', ')}`}
         </div>
-      )}
-      
-      {renderBookmarks()}
+
+        <Pagination
+          currentPage={currentPage}
+          pageCount={pageCount}
+          onPageChange={setPage}
+        />
+      </div>
     </div>
   );
 });

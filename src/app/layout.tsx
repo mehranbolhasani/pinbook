@@ -1,9 +1,16 @@
 import type { Metadata, Viewport } from "next";
+import { SN_Pro } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
 import QueryProvider from "@/components/query-provider";
+
+const snPro = SN_Pro({
+  subsets: ["latin"],
+  variable: "--font-sn-pro",
+  display: "swap",
+});
 
 export default function RootLayout({
   children,
@@ -11,14 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={snPro.variable}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=SN+Pro:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <link rel="preconnect" href="https://api.pinboard.in" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.pinboard.in" />
       </head>

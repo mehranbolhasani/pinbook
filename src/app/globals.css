@@ -3,7 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "SN Pro", system-ui, sans-serif;
+  --font-sans: var(--font-sn-pro), system-ui, sans-serif;
 
   /* Blue Energy Palette */
   --color-blue-energy-50: oklch(94.94% 0.024 259.82);

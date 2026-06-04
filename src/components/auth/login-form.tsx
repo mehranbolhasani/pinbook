@@ -10,7 +10,6 @@ import { useAuthStore } from '@/lib/stores/auth';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Bookmark } from 'lucide-react';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fadeInUp } from '@/lib/animations';
 
 export function LoginForm() {

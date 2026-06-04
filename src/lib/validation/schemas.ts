@@ -20,8 +20,8 @@ export const bookmarkSchema = z.object({
 
 // Add bookmark validation schema
 export const addBookmarkSchema = z.object({
-  url: urlSchema,
-  title: z.string().min(1, 'Title is required'),
+  url: z.string().trim().min(1, 'URL is required'),
+  title: z.string().optional(),
   description: z.string().optional(),
   extended: z.string().optional(),
   tags: z.string().optional(),

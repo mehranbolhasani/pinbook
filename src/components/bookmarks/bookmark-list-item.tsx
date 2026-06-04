@@ -8,7 +8,7 @@ import { ExternalLink, Trash2, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { listItem, hoverLift, buttonHover } from '@/lib/animations';
+import { listItem, hoverLift } from '@/lib/animations';
 
 interface BookmarkListItemProps {
   bookmark: Bookmark;

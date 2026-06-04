@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 
 function subscribe(callback: () => void) {
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');

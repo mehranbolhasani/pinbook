@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useAddBookmark, useTags } from '@/hooks/usePinboard';
 import { useToast } from '@/hooks/useToast';
+import { validateAddBookmark } from '@/lib/validation/schemas';
 
 export interface BookmarkFormData {
   url: string;
@@ -47,8 +48,17 @@ export function useBookmarkForm({ onSuccess }: UseBookmarkFormOptions = {}) {
   }, []);
 
   const handleSave = useCallback(() => {
-    if (!formData.url.trim()) {
-      toast.showError('Validation Error', 'URL is required');
+    const validation = validateAddBookmark({
+      url: formData.url,
+      title: formData.title,
+      description: formData.description,
+      extended: formData.extended,
+      tags: formData.tags.join(' '),
+      shared: formData.isShared ? 'yes' : 'no',
+    });
+
+    if (!validation.isValid) {
+      toast.showError('Validation Error', validation.error || 'Invalid bookmark data');
       return;
     }
 

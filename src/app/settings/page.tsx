@@ -7,12 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Send, Unplug } from 'lucide-react';
 import Link from 'next/link';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 
 export default function SettingsPage() {

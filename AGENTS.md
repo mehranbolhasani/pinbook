@@ -14,7 +14,6 @@
 - `@/components/ui/*` for shadcn components
 - `@/lib/utils.ts` — `cn()`, `formatDate()` helpers; also `@/lib/utils/debounce.ts`, `@/lib/utils/retry.ts`
 - `@/types/pinboard.ts` — shared TypeScript types (`Bookmark`, `AddBookmarkParams`, `AuthState`, etc.)
-- **Quirk:** `package.json` lists `"next": "^9.3.3"` — ignore that, the project actually uses Next.js 15.
 
 ## State & data fetching
 - **`useAuthStore`** (`@/lib/stores/auth.ts`) — auth state (username, apiToken, login/logout). Persisted to localStorage.

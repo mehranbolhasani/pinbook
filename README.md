@@ -1,6 +1,6 @@
 # Pinbook - Your Personal Pinboard Client
 
-A modern, minimal web client for Pinboard built with Next.js 14, TypeScript, and Tailwind CSS.
+A modern, minimal web client for Pinboard built with Next.js 16, TypeScript, and Tailwind CSS.
 
 ## Features
 
@@ -15,7 +15,7 @@ A modern, minimal web client for Pinboard built with Next.js 14, TypeScript, and
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 with App Router
+- **Framework**: Next.js 16 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui
 - **State Management**: Zustand

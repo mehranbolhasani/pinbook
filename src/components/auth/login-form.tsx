@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/lib/stores/auth';
 import { getPinboardAPI } from '@/lib/api/pinboard';
-import { testPinboardConnection } from '@/lib/api/test-connection';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Album } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -37,12 +36,6 @@ export function LoginForm() {
       // Check token format (should be username:token)
       if (!apiToken.includes(':')) {
         throw new Error('API token should be in format: username:token');
-      }
-
-      // Test API connection first
-      const testResult = await testPinboardConnection(apiToken);
-      if (!testResult.success) {
-        throw new Error(`API connection failed: ${testResult.error}`);
       }
 
       // Validate API token

@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Moon, Sun, Monitor } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Moon01Icon, Sun01Icon, ComputerIcon } from '@hugeicons/core-free-icons';
 import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
@@ -29,21 +30,21 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
             variant="icon"
             size="icon-sm"
             aria-label="Theme"
-            className="bg-transparent"
+            className="bg-transparent text-primary"
             title="Theme"
           >
             {theme === 'dark' ? (
-              <Moon className="size-4" size={16} strokeWidth={1.5} aria-hidden />
+              <HugeiconsIcon icon={Moon01Icon} size={16} strokeWidth={1.5} aria-hidden />
             ) : theme === 'light' ? (
-              <Sun className="size-4" size={16} strokeWidth={1.5} aria-hidden />
+              <HugeiconsIcon icon={Sun01Icon} size={16} strokeWidth={1.5} aria-hidden />
             ) : (
-              <Monitor className="size-4" size={16} strokeWidth={1.5} aria-hidden />
+              <HugeiconsIcon icon={ComputerIcon} size={16} strokeWidth={1.5} aria-hidden />
             )}
           </Button>
         ) : (
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <HugeiconsIcon icon={Sun01Icon} size={16} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <HugeiconsIcon icon={Moon01Icon} size={16} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
         )}
@@ -52,17 +53,17 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
         <DropdownMenuLabel className="text-xs text-muted-foreground">Theme</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setTheme('light')}>
-          <Sun className="mr-2 h-4 w-4" />
+          <HugeiconsIcon icon={Sun01Icon} size={16} className="mr-2" />
           <span>Light</span>
           {theme === 'light' && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
-          <Moon className="mr-2 h-4 w-4" />
+          <HugeiconsIcon icon={Moon01Icon} size={16} className="mr-2" />
           <span>Dark</span>
           {theme === 'dark' && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
-          <Monitor className="mr-2 h-4 w-4" />
+          <HugeiconsIcon icon={ComputerIcon} size={16} className="mr-2" />
           <span>System</span>
           {(theme === 'system' || !theme) && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>

@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, User, Settings, LogOut, Save, RefreshCw, Send, Unplug } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon, UserIcon, Settings02Icon, Logout01Icon, SaveIcon, Refresh01Icon, SentIcon, Unlink01Icon } from '@hugeicons/core-free-icons';
 import Link from 'next/link';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
 import { getPinboardAPI } from '@/lib/api/pinboard';
@@ -134,28 +135,28 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto max-w-160 min-h-screen border-x border-x-primary/20 bg-card">
         {/* Header */}
         <motion.div
-          className="flex items-start space-x-4 mb-8 flex-col"
+          className="flex items-start flex-col border-b border-primary/20 p-6"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
-          <Link href="/" className="mr-0! mb-4">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4" />
+          <Link href="/" className="mb-6">
+            <Button variant="outline" size="sm">
+              <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
               Back to Bookmarks
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Settings</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
             <p className="text-muted-foreground">Manage your Pinboard account</p>
           </div>
         </motion.div>
 
         <SettingsErrorBoundary>
-          <div className="space-y-6">
+          <div className="space-y-0 *:not-last:border-b *:not-last:border-primary/20">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -163,11 +164,11 @@ export default function SettingsPage() {
             >
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <User className="h-5 w-5" />
-                  <span>Pinboard Account</span>
+                <CardTitle className="flex items-center space-x-1">
+                  <HugeiconsIcon icon={UserIcon} size={20} />
+                  <span className="tracking-tight">Pinboard Account</span>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="tracking-tight">
                   Manage your Pinboard account connection and credentials
                 </CardDescription>
               </CardHeader>
@@ -233,16 +234,16 @@ export default function SettingsPage() {
                     <div className="flex flex-col md:flex-row items-stretch md:items-center m-0">
                       {!isEditing ? (
                         <Button variant="secondary" onClick={() => setIsEditing(true)} className="w-full md:w-auto">
-                          <Settings className="size-5" size={16} strokeWidth={1.5} />
+                          <HugeiconsIcon icon={Settings02Icon} size={16} strokeWidth={1.5} />
                           Edit Account
                         </Button>
                       ) : (
                         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                           <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto">
                             {isSaving ? (
-                              <RefreshCw className="h-4 w-4 animate-spin" />
+                              <HugeiconsIcon icon={Refresh01Icon} size={16} className="animate-spin" />
                             ) : (
-                              <Save className="h-4 w-4 mr-2" />
+                              <HugeiconsIcon icon={SaveIcon} size={16} className="mr-2" />
                             )}
                             {isSaving ? 'Saving...' : 'Save Changes'}
                           </Button>
@@ -254,7 +255,7 @@ export default function SettingsPage() {
                     </div>
 
                     <Button variant="destructive_secondary" onClick={handleLogout} className="w-full md:w-auto">
-                      <LogOut className="h-4 w-4 mr-2" />
+                      <HugeiconsIcon icon={Logout01Icon} size={16} className="mr-2" />
                       Logout
                     </Button>
                   </div>
@@ -272,7 +273,7 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Send className="h-5 w-5" />
+                  <HugeiconsIcon icon={SentIcon} size={20} />
                   <span>Telegram</span>
                 </CardTitle>
                 <CardDescription>
@@ -317,9 +318,9 @@ export default function SettingsPage() {
                         disabled={telegramLoading || !(apiToken ?? newApiToken)}
                       >
                         {telegramLoading ? (
-                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                          <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2 animate-spin" />
                         ) : (
-                          <Send className="h-4 w-4 mr-2" />
+                          <HugeiconsIcon icon={SentIcon} size={16} className="mr-2" />
                         )}
                         Connect Telegram
                       </Button>
@@ -330,9 +331,9 @@ export default function SettingsPage() {
                         disabled={telegramLoading}
                       >
                         {telegramLoading ? (
-                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                          <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2 animate-spin" />
                         ) : (
-                          <Unplug className="h-4 w-4 mr-2" />
+                          <HugeiconsIcon icon={Unlink01Icon} size={16} className="mr-2" />
                         )}
                         Disconnect
                       </Button>

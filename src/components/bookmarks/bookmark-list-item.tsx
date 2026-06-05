@@ -4,7 +4,8 @@ import { memo } from 'react';
 import { motion } from 'motion/react';
 import { Bookmark } from '@/types/pinboard';
 import { formatDate } from '@/lib/utils';
-import { ExternalLink, Trash2, Pencil } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ExternalLinkIcon, Delete02Icon, PencilEdit01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -25,10 +26,10 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
   };
 
   const cardContent = (
-    <div data-index={index} className="flex items-center justify-between bg-card group/item hover:border-accent p-4 mb-3 rounded-xl border border-border transition-colors">
+    <div data-index={index} className="flex items-center justify-between bg-transparent group/item p-4 border-b border-primary/20 transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2 mb-1">
-          <h3 className="font-normal text-md truncate">
+          <h3 className="font-normal text-md truncate tracking-tight group-hover/item:text-primary">
             {bookmark.title}
           </h3>
 
@@ -62,7 +63,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
         </div>
       </div>
 
-      <div className="flex items-center shrink-0 gap-1 lg:invisible lg:group-hover/item:visible">
+      <div className="flex items-center shrink-0 gap-4 lg:invisible lg:group-hover/item:visible">
         <Button
           variant="ghost"
           size="icon-sm"
@@ -71,7 +72,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
           title="Open Link"
           aria-label="Open link"
         >
-          <ExternalLink className="h-4 w-4" strokeWidth={1.5} />
+          <HugeiconsIcon icon={ExternalLinkIcon} size={16} strokeWidth={1.5} />
         </Button>
         {onEdit && (
           <Button
@@ -82,7 +83,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
             title="Edit Bookmark"
             aria-label="Edit bookmark"
           >
-            <Pencil className="h-4 w-4" strokeWidth={1.5} />
+            <HugeiconsIcon icon={PencilEdit01Icon} size={16} strokeWidth={1.5} />
           </Button>
         )}
         {onDelete && (
@@ -94,7 +95,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
             title="Delete Bookmark"
             aria-label="Delete bookmark"
           >
-            <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+            <HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={1.5} />
           </Button>
         )}
       </div>
@@ -112,11 +113,12 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
       animate="visible"
       exit="hidden"
       whileHover="hover"
+      className='relative [counter-increment:bkmrk] before:content-[counter(bkmrk)] before:absolute before:font-mono before:text-sm before:top-1 before:left-1 before:text-primary/50'
     >
       <motion.div
         variants={hoverLift}
         initial="rest"
-        className="hover:shadow-2xl hover:shadow-primary/10"
+        className="hover:bg-primary/10"
       >
         {cardContent}
       </motion.div>

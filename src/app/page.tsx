@@ -247,9 +247,9 @@ export default function Home() {
           <Header onAddBookmark={handleAddBookmark} />
         </div>
 
-        <div className="flex w-full max-w-160 mx-auto h-full items-start gap-4 border-x border-x-foreground/20">
+        <div className="flex w-full max-w-160 mx-auto h-full items-start gap-4 border-x border-x-primary/20 bg-card">
           {/* Main Content */}
-          <main className="flex-1 min-w-0 w-full">
+          <main className="flex-1 min-w-0 w-full min-h-screen">
             <div className="max-w-full mx-auto">
               <BookmarkListErrorBoundary>
               <BookmarkList

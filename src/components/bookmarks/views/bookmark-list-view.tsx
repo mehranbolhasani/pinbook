@@ -7,16 +7,17 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface BookmarkListViewProps {
   bookmarks: Bookmark[];
+  counterStart: number;
   onEdit: (bookmark: Bookmark) => void;
   onDelete: (bookmark: Bookmark) => void;
 }
 
-export const BookmarkListView = memo(function BookmarkListView({ bookmarks, onEdit, onDelete }: BookmarkListViewProps) {
+export const BookmarkListView = memo(function BookmarkListView({ bookmarks, counterStart, onEdit, onDelete }: BookmarkListViewProps) {
   const prefersReducedMotion = useReducedMotion();
 
   if (prefersReducedMotion) {
     return (
-      <div className="flex flex-col py-4">
+      <div className="flex flex-col" style={{ counterReset: `bkmrk ${counterStart - 1}` }}>
         {bookmarks.map((bookmark) => (
           <BookmarkListItem
             key={bookmark.id}
@@ -30,7 +31,7 @@ export const BookmarkListView = memo(function BookmarkListView({ bookmarks, onEd
   }
 
   return (
-    <div className="flex flex-col py-4">
+    <div className="flex flex-col" style={{ counterReset: `bkmrk ${counterStart - 1}` }}>
       {bookmarks.map((bookmark, index) => (
         <BookmarkListItem
           key={bookmark.id}

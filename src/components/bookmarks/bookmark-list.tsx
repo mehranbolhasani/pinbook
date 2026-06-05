@@ -7,7 +7,8 @@ import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
-import { BookmarkX, BookmarkPlus } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { BookmarkRemove01Icon, BookmarkAdd01Icon } from '@hugeicons/core-free-icons';
 import { Pagination } from '@/components/ui/pagination';
 
 import { usePaginatedBookmarks } from '@/hooks/usePaginatedBookmarks';
@@ -48,7 +49,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
         <div className="text-muted-foreground mb-4">
           {searchQuery || selectedTags.length > 0 ? (
             <>
-              <BookmarkX className="h-10 w-10 mx-auto mb-3 opacity-50" />
+              <HugeiconsIcon icon={BookmarkRemove01Icon} size={40} className="mx-auto mb-3 opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No bookmarks found</h3>
               <p className="text-sm">
                 Try adjusting your search or filters
@@ -68,7 +69,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
             </>
           ) : (
             <>
-              <BookmarkPlus className="h-10 w-10 mx-auto mb-3 opacity-50" />
+              <HugeiconsIcon icon={BookmarkAdd01Icon} size={40} className="mx-auto mb-3 opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No bookmarks yet</h3>
               <p className="text-sm">
                 Start by adding your first bookmark
@@ -87,6 +88,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
       return (
         <VirtualizedBookmarkList
           bookmarks={paginatedBookmarks}
+          counterStart={startItem}
           onEditBookmark={onEditBookmark}
           onDeleteBookmark={onDeleteBookmark}
         />
@@ -96,6 +98,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
     return (
       <BookmarkListView
         bookmarks={paginatedBookmarks}
+        counterStart={startItem}
         onEdit={onEditBookmark!}
         onDelete={onDeleteBookmark!}
       />
@@ -110,7 +113,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
 
       {renderBookmarks()}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between p-6">
         <div className="text-sm text-muted-foreground">
           Showing {startItem}-{endItem} of {totalCount} bookmarks
           {searchQuery && ` for "${searchQuery}"`}

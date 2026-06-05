@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon, Add01Icon } from '@hugeicons/core-free-icons';
 import type { BookmarkFormData } from '@/hooks/useBookmarkForm';
 
 interface BookmarkFormFieldsProps {
@@ -99,8 +100,8 @@ export function BookmarkFormFields({
             placeholder="Add a tag"
             {...ac}
           />
-          <Button type="button" onClick={() => onAddTag()} size="sm">
-            <Plus className="h-4 w-4" />
+          <Button type="button" onClick={() => onAddTag()} size="default">
+            <HugeiconsIcon icon={Add01Icon} size={16} />
           </Button>
           {tagSuggestions.length > 0 && (
             <ul
@@ -134,7 +135,7 @@ export function BookmarkFormFields({
                 onClick={() => onRemoveTag(tag)}
                 className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
               >
-                <X className="h-3 w-3" />
+                <HugeiconsIcon icon={Cancel01Icon} size={12} />
               </Button>
             </Badge>
           ))}

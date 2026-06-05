@@ -7,6 +7,7 @@ import { BookmarkListItem } from './bookmark-list-item';
 
 interface VirtualizedBookmarkListProps {
   bookmarks: Bookmark[];
+  counterStart: number;
   onEditBookmark?: (bookmark: Bookmark) => void;
   onDeleteBookmark?: (bookmark: Bookmark) => void;
   className?: string;
@@ -14,6 +15,7 @@ interface VirtualizedBookmarkListProps {
 
 export function VirtualizedBookmarkList({
   bookmarks,
+  counterStart,
   onEditBookmark,
   onDeleteBookmark,
   className = ''
@@ -46,12 +48,13 @@ export function VirtualizedBookmarkList({
       }}
     >
       <div
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-          width: '100%',
-          position: 'relative',
-        }}
-      >
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+            counterReset: `bkmrk ${counterStart - 1}`,
+          }}
+        >
         {items.map((virtualItem) => (
           <div
             key={virtualItem.key}

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Search } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Search01Icon } from '@hugeicons/core-free-icons';
 import { Input } from '@/components/ui/input';
 import { debounce } from '@/lib/utils/debounce';
 import { cn } from '@/lib/utils';
@@ -45,7 +46,7 @@ export function SearchInput({
   return (
     <div className={`relative flex items-center ${className}`}>
       <label htmlFor={id} className="absolute left-3 text-muted-foreground">
-        <Search className="h-4 w-4" aria-hidden />
+        <HugeiconsIcon icon={Search01Icon} size={16} aria-hidden />
       </label>
       <Input
         id={id}

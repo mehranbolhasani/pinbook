@@ -16,7 +16,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon } from '@hugeicons/core-free-icons';
 import { useTags } from '@/hooks/usePinboard';
 
 interface EditBookmarkDialogProps {
@@ -213,7 +214,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                       onClick={() => removeTag(tag)}
                       className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
                     >
-                      <X className="h-3 w-3" />
+                      <HugeiconsIcon icon={Cancel01Icon} size={12} />
                     </Button>
                   </Badge>
                 ))}

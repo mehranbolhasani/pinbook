@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Alert01Icon, Refresh01Icon, Home01Icon, Bug01Icon } from '@hugeicons/core-free-icons';
 import Link from 'next/link';
 
 interface ErrorBoundaryState {
@@ -91,7 +92,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         <div className={containerClass}>
           <div className={`${isPageLevel ? 'max-w-md mx-auto' : 'max-w-sm'} text-center p-6`}>
             <div className="mb-4">
-              <AlertTriangle className={`${isPageLevel ? 'h-12 w-12' : 'h-8 w-8'} text-destructive mx-auto`} />
+              <HugeiconsIcon icon={Alert01Icon} size={isPageLevel ? 48 : 32} className="text-destructive mx-auto" />
             </div>
             <h2 className={`${isPageLevel ? 'text-xl' : 'text-lg'} font-semibold mb-2`}>
               {isPageLevel ? 'Something went wrong' : 'Component Error'}
@@ -122,7 +123,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             
             <div className="space-x-2">
               <Button onClick={this.resetError} variant="outline" size={isPageLevel ? 'default' : 'sm'}>
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2" />
                 Try Again
               </Button>
               
@@ -133,7 +134,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                   </Button>
                   <Link href="/">
                     <Button variant="outline">
-                      <Home className="h-4 w-4 mr-2" />
+                      <HugeiconsIcon icon={Home01Icon} size={16} className="mr-2" />
                       Go Home
                     </Button>
                   </Link>
@@ -192,13 +193,13 @@ export function BookmarkListErrorBoundary({ children }: { children: React.ReactN
       level="component"
       fallback={({ resetError }) => (
         <div className="flex flex-col items-center justify-center p-8 bg-muted/50 rounded-lg border border-destructive/20">
-          <Bug className="h-8 w-8 text-destructive mb-2" />
+          <HugeiconsIcon icon={Bug01Icon} size={32} className="text-destructive mb-2" />
           <h3 className="font-semibold mb-2">Bookmark List Error</h3>
           <p className="text-sm text-muted-foreground mb-4 text-center">
             Failed to load bookmarks. This might be a temporary issue.
           </p>
           <Button onClick={resetError} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2" />
             Retry
           </Button>
         </div>
@@ -215,13 +216,13 @@ export function SettingsErrorBoundary({ children }: { children: React.ReactNode 
       level="component"
       fallback={({ resetError }) => (
         <div className="flex flex-col items-center justify-center p-8 bg-muted/50 rounded-lg border border-destructive/20">
-          <AlertTriangle className="h-8 w-8 text-destructive mb-2" />
+          <HugeiconsIcon icon={Alert01Icon} size={32} className="text-destructive mb-2" />
           <h3 className="font-semibold mb-2">Settings Error</h3>
           <p className="text-sm text-muted-foreground mb-4 text-center">
             Failed to load settings. Please try again.
           </p>
           <Button onClick={resetError} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2" />
             Retry
           </Button>
         </div>

@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/lib/stores/auth';
 import { getPinboardAPI } from '@/lib/api/pinboard';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Bookmark } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Bookmark01Icon } from '@hugeicons/core-free-icons';
 import { fadeInUp } from '@/lib/animations';
 
 export function LoginForm() {
@@ -72,7 +73,7 @@ export function LoginForm() {
           variants={fadeInUp}
         >
           <div className="flex flex-col items-center justify-center gap-2">
-            <Bookmark className="h-6 w-6 text-primary" />
+            <HugeiconsIcon icon={Bookmark01Icon} size={24} className="text-primary" />
             <h2 className="text-2xl font-bold tracking-tighter">Pinbook</h2>
           </div>
           <p className="text-muted-foreground max-w-xs mx-auto mt-4 text-sm">

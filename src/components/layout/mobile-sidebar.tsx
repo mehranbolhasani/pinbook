@@ -1,10 +1,7 @@
 'use client';
 
-import { 
-  Tag,
-  SortAsc,
-  SortDesc
-} from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Tag01Icon, SortByUp01Icon, SortDescendingIcon } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -77,7 +74,7 @@ export function MobileSidebar() {
               onClick={() => setSortOrder('asc')}
               className="flex-1"
             >
-              <SortAsc className="h-4 w-4 mr-1" />
+              <HugeiconsIcon icon={SortByUp01Icon} size={16} className="mr-1" />
               Ascending
             </Button>
             <Button
@@ -86,7 +83,7 @@ export function MobileSidebar() {
               onClick={() => setSortOrder('desc')}
               className="flex-1"
             >
-              <SortDesc className="h-4 w-4 mr-1" />
+              <HugeiconsIcon icon={SortDescendingIcon} size={16} className="mr-1" />
               Descending
             </Button>
           </div>
@@ -99,7 +96,7 @@ export function MobileSidebar() {
           <h3 className="font-medium text-sm mb-3">Filter by Tags</h3>
           {tags.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <Tag className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <HugeiconsIcon icon={Tag01Icon} size={32} className="mx-auto mb-2 opacity-50" />
               <p className="text-sm">No tags available</p>
             </div>
           ) : (
@@ -114,7 +111,7 @@ export function MobileSidebar() {
                     className="w-full justify-start text-sm h-auto py-2"
                     onClick={() => handleTagClick(tag)}
                   >
-                    <Tag className="mr-2 h-3 w-3 shrink-0" />
+                    <HugeiconsIcon icon={Tag01Icon} size={12} className="mr-2 shrink-0" />
                     <span className="flex-1 text-left truncate">{tag}</span>
                     <Badge variant="outline" className="ml-2 text-xs">
                       {tagCount}

@@ -2,10 +2,8 @@
 
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-// import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { KeyboardIcon, Search01Icon, Add01Icon, Edit01Icon, Delete02Icon, ArrowUp01Icon, CornerDownLeftIcon, Cancel01Icon } from '@hugeicons/core-free-icons';
+import { Keyboard, Search, Add, Edit, Delete, ArrowUpward, KeyboardReturn, Close } from '@nine-thirty-five/material-symbols-react/rounded/300';
 
 interface KeyboardShortcut {
   keys: string[];
@@ -18,49 +16,49 @@ const shortcuts: KeyboardShortcut[] = [
   {
     keys: ['Cmd', 'K'],
     description: 'Focus search bar',
-    icon: <HugeiconsIcon icon={Search01Icon} size={16} />,
+    icon: <Search size={16} />,
     category: 'Navigation'
   },
   {
     keys: ['Cmd', 'N'],
     description: 'Open add bookmark dialog',
-    icon: <HugeiconsIcon icon={Add01Icon} size={16} />,
+    icon: <Add size={16} />,
     category: 'Actions'
   },
   {
     keys: ['Escape'],
     description: 'Close dialogs and modals',
-    icon: <HugeiconsIcon icon={Cancel01Icon} size={16} />,
+    icon: <Close size={16} />,
     category: 'Navigation'
   },
   {
     keys: ['Arrow Up', 'Arrow Down'],
     description: 'Navigate between bookmarks',
-    icon: <HugeiconsIcon icon={ArrowUp01Icon} size={16} />,
+    icon: <ArrowUpward size={16} />,
     category: 'Navigation'
   },
   {
     keys: ['Enter'],
     description: 'Open selected bookmark',
-    icon: <HugeiconsIcon icon={CornerDownLeftIcon} size={16} />,
+    icon: <KeyboardReturn size={16} />,
     category: 'Actions'
   },
   {
     keys: ['E'],
     description: 'Edit selected bookmark',
-    icon: <HugeiconsIcon icon={Edit01Icon} size={16} />,
+    icon: <Edit size={16} />,
     category: 'Actions'
   },
   {
     keys: ['Delete'],
     description: 'Delete selected bookmark',
-    icon: <HugeiconsIcon icon={Delete02Icon} size={16} />,
+    icon: <Delete size={16} />,
     category: 'Actions'
   },
   {
     keys: ['?'],
     description: 'Show this keyboard shortcuts modal',
-    icon: <HugeiconsIcon icon={KeyboardIcon} size={16} />,
+    icon: <Keyboard size={16} />,
     category: 'Help'
   }
 ];
@@ -100,7 +98,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <HugeiconsIcon icon={KeyboardIcon} size={20} />
+            <Keyboard size={20} />
             Keyboard Shortcuts
           </DialogTitle>
           <DialogDescription>
@@ -155,7 +153,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
           <div className="flex items-start gap-3">
             <div className="text-muted-foreground mt-0.5">
-              <HugeiconsIcon icon={KeyboardIcon} size={16} />
+              <Keyboard size={16} />
             </div>
             <div className="text-sm">
               <p className="font-medium mb-1">Pro Tips:</p>

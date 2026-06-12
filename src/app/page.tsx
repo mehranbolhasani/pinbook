@@ -237,7 +237,7 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-      <div className="max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] w-[calc(100vw-2rem)] mx-auto overflow-hidden border border-primary">
+      <div className="max-w-xl mx-auto">
 
         {/* Mobile Navigation */}
         <MobileNav />
@@ -247,7 +247,7 @@ export default function Home() {
           <Header onAddBookmark={handleAddBookmark} />
         </div>
 
-        <div className="flex w-full max-w-160 mx-auto h-full items-start gap-4 border-x border-x-primary/20 bg-card">
+        <div className="flex w-full mx-auto h-full items-start">
           {/* Main Content */}
           <main className="flex-1 min-w-0 w-full min-h-screen">
             <div className="max-w-full mx-auto">

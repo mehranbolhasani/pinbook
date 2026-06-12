@@ -9,8 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/lib/stores/auth";
 import { getPinboardAPI } from "@/lib/api/pinboard";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Bookmark01Icon } from "@hugeicons/core-free-icons";
+import { Bookmark } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { fadeInUp } from "@/lib/animations";
 
 export function LoginForm() {
@@ -69,7 +68,7 @@ export function LoginForm() {
         <div className="flex flex-col items-start justify-between p-8 min-h-[70vh] flex-1">
           <motion.div className="text-left" initial="hidden" animate="visible" variants={fadeInUp}>
             <div className="flex items-center justify-start gap-1">
-              <HugeiconsIcon icon={Bookmark01Icon} size={24} className="text-primary" />
+              <Bookmark size={24} className="text-primary" />
               <h2 className="text-xl text-primary font-medium tracking-tighter">Pinbook</h2>
             </div>
             <p className="text-muted-foreground max-w-xs mx-auto mt-2 text-sm tracking-tight">Enter your Pinboard API credentials to get started</p>

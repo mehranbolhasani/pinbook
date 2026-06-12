@@ -7,8 +7,7 @@ import { BookmarkListSkeleton } from './bookmark-skeleton';
 import { Bookmark } from '@/types/pinboard';
 import { useUIStore } from '@/lib/stores/ui';
 import { Button } from '@/components/ui/button';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { BookmarkRemove01Icon, BookmarkAdd01Icon } from '@hugeicons/core-free-icons';
+import { BookmarkRemove, BookmarkAdd } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Pagination } from '@/components/ui/pagination';
 
 import { usePaginatedBookmarks } from '@/hooks/usePaginatedBookmarks';
@@ -49,7 +48,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
         <div className="text-muted-foreground mb-4">
           {searchQuery || selectedTags.length > 0 ? (
             <>
-              <HugeiconsIcon icon={BookmarkRemove01Icon} size={40} className="mx-auto mb-3 opacity-50" />
+              <BookmarkRemove size={40} className="mx-auto mb-3 opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No bookmarks found</h3>
               <p className="text-sm">
                 Try adjusting your search or filters
@@ -69,7 +68,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
             </>
           ) : (
             <>
-              <HugeiconsIcon icon={BookmarkAdd01Icon} size={40} className="mx-auto mb-3 opacity-50" />
+              <BookmarkAdd size={40} className="mx-auto mb-3 opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No bookmarks yet</h3>
               <p className="text-sm">
                 Start by adding your first bookmark

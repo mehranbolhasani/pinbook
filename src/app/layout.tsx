@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { SN_Pro } from "next/font/google";
+import { Google_Sans_Flex } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
 import QueryProvider from "@/components/query-provider";
 
-const snPro = SN_Pro({
+const googleSansFlex = Google_Sans_Flex({
   subsets: ["latin"],
-  variable: "--font-sn-pro",
+  variable: "--font-google-sans-flex",
   display: "swap",
 });
 
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={snPro.variable}>
+    <html lang="en" suppressHydrationWarning className={googleSansFlex.variable}>
       <head>
         <link rel="preconnect" href="https://api.pinboard.in" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.pinboard.in" />

@@ -16,8 +16,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Cancel01Icon } from '@hugeicons/core-free-icons';
+import { Close } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { useTags } from '@/hooks/usePinboard';
 
 interface EditBookmarkDialogProps {
@@ -58,12 +57,12 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
 
   const handleSave = () => {
     if (!bookmark) return;
-    
+
     const updatedBookmark: Bookmark = {
       ...bookmark,
       ...formData
     };
-    
+
     onSave(updatedBookmark);
     onClose();
   };
@@ -100,7 +99,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px]">
-        <form 
+        <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSave();
@@ -112,7 +111,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
               Update the bookmark details below.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
@@ -124,7 +123,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                 autoComplete="off"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="url">URL</Label>
               <Input
@@ -137,7 +136,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                 autoComplete="off"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -149,7 +148,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                 autoComplete="off"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="extended">Extended Notes</Label>
               <Textarea
@@ -161,7 +160,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                 autoComplete="off"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="tags">Tags</Label>
               <div className="relative flex space-x-2">
@@ -214,13 +213,13 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
                       onClick={() => removeTag(tag)}
                       className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
                     >
-                      <HugeiconsIcon icon={Cancel01Icon} size={12} />
+                      <Close size={12} />
                     </Button>
                   </Badge>
                 ))}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Switch
@@ -232,7 +231,7 @@ export function EditBookmarkDialog({ bookmark, isOpen, onClose, onSave }: EditBo
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel

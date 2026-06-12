@@ -31,7 +31,7 @@ export const BookmarkListView = memo(function BookmarkListView({ bookmarks, coun
   }
 
   return (
-    <div className="flex flex-col" style={{ counterReset: `bkmrk ${counterStart - 1}` }}>
+    <div className="flex flex-col gap-8" style={{ counterReset: `bkmrk ${counterStart - 1}` }}>
       {bookmarks.map((bookmark, index) => (
         <BookmarkListItem
           key={bookmark.id}

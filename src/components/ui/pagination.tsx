@@ -1,6 +1,5 @@
 import { Button } from './button';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@hugeicons/core-free-icons';
+import { ChevronLeft, ChevronRight } from '@nine-thirty-five/material-symbols-react/rounded/300';
 
 interface PaginationProps {
   currentPage: number;
@@ -47,7 +46,7 @@ export function Pagination({ currentPage, pageCount, onPageChange }: PaginationP
         disabled={currentPage <= 1}
         className="h-9 w-9"
       >
-        <HugeiconsIcon icon={ChevronLeftIcon} size={16} />
+        <ChevronLeft size={16} />
       </Button>
 
       {getPageNumbers().map((page, index) =>
@@ -75,7 +74,7 @@ export function Pagination({ currentPage, pageCount, onPageChange }: PaginationP
         disabled={currentPage >= pageCount}
         className="h-9 w-9"
       >
-        <HugeiconsIcon icon={ChevronRightIcon} size={16} />
+        <ChevronRight size={16} />
       </Button>
     </div>
   );

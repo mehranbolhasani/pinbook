@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowLeft01Icon, UserIcon, Settings02Icon, Logout01Icon, SaveIcon, Refresh01Icon, SentIcon, Unlink01Icon } from '@hugeicons/core-free-icons';
+import { ArrowBack, Person, Settings, Logout, Save, Refresh, Send, LinkOff } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import Link from 'next/link';
 import { SettingsErrorBoundary } from '@/components/error-boundary';
 import { getPinboardAPI } from '@/lib/api/pinboard';
@@ -28,7 +27,6 @@ export default function SettingsPage() {
   const [newApiToken, setNewApiToken] = useState(apiToken || '');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Telegram link state
   const [telegramConnected, setTelegramConnected] = useState<boolean | null>(null);
   const [telegramLoading, setTelegramLoading] = useState(false);
   const [telegramCode, setTelegramCode] = useState<{ code: string; botUsername: string } | null>(null);
@@ -39,7 +37,6 @@ export default function SettingsPage() {
     setIsSaving(true);
     setSaveError('');
     try {
-      // Validate new API token before persisting
       if (newApiToken && newApiToken.includes(':')) {
         const api = getPinboardAPI(newApiToken);
         const isValid = await api.validateToken();
@@ -49,7 +46,6 @@ export default function SettingsPage() {
           return;
         }
       }
-      // Update auth store
       setUsername(newUsername);
       setApiToken(newApiToken);
       setIsEditing(false);
@@ -108,7 +104,6 @@ export default function SettingsPage() {
         setTelegramCode({ code: data.code, botUsername: data.botUsername });
       }
     } catch {
-      // Silent fail
     } finally {
       setTelegramLoading(false);
     }
@@ -127,7 +122,6 @@ export default function SettingsPage() {
       setTelegramCode(null);
       await fetchTelegramStatus();
     } catch {
-      // Silent fail
     } finally {
       setTelegramLoading(false);
     }
@@ -135,8 +129,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto max-w-160 min-h-screen border-x border-x-primary/20 bg-card">
-        {/* Header */}
+      <div className="container mx-auto min-h-screen border-x border-x-primary/20 bg-card">
         <motion.div
           className="flex items-start flex-col border-b border-primary/20 p-6"
           initial={{ opacity: 0, y: 12 }}
@@ -145,7 +138,7 @@ export default function SettingsPage() {
         >
           <Link href="/" className="mb-6">
             <Button variant="outline" size="sm">
-              <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
+              <ArrowBack size={16} />
               Back to Bookmarks
             </Button>
           </Link>
@@ -165,7 +158,7 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-1">
-                  <HugeiconsIcon icon={UserIcon} size={20} />
+                  <Person size={20} />
                   <span className="tracking-tight">Pinboard Account</span>
                 </CardTitle>
                 <CardDescription className="tracking-tight">
@@ -234,16 +227,16 @@ export default function SettingsPage() {
                     <div className="flex flex-col md:flex-row items-stretch md:items-center m-0">
                       {!isEditing ? (
                         <Button variant="secondary" onClick={() => setIsEditing(true)} className="w-full md:w-auto">
-                          <HugeiconsIcon icon={Settings02Icon} size={16} strokeWidth={1.5} />
+                          <Settings size={16} />
                           Edit Account
                         </Button>
                       ) : (
                         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                           <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto">
                             {isSaving ? (
-                              <HugeiconsIcon icon={Refresh01Icon} size={16} className="animate-spin" />
+                              <Refresh size={16} className="animate-spin" />
                             ) : (
-                              <HugeiconsIcon icon={SaveIcon} size={16} className="mr-2" />
+                              <Save size={16} className="mr-2" />
                             )}
                             {isSaving ? 'Saving...' : 'Save Changes'}
                           </Button>
@@ -255,7 +248,7 @@ export default function SettingsPage() {
                     </div>
 
                     <Button variant="destructive_secondary" onClick={handleLogout} className="w-full md:w-auto">
-                      <HugeiconsIcon icon={Logout01Icon} size={16} className="mr-2" />
+                      <Logout size={16} className="mr-2" />
                       Logout
                     </Button>
                   </div>
@@ -264,7 +257,6 @@ export default function SettingsPage() {
             </Card>
             </motion.div>
 
-            {/* Telegram */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -273,7 +265,7 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <HugeiconsIcon icon={SentIcon} size={20} />
+                  <Send size={20} />
                   <span>Telegram</span>
                 </CardTitle>
                 <CardDescription>
@@ -318,9 +310,9 @@ export default function SettingsPage() {
                         disabled={telegramLoading || !(apiToken ?? newApiToken)}
                       >
                         {telegramLoading ? (
-                          <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2 animate-spin" />
+                          <Refresh size={16} className="mr-2 animate-spin" />
                         ) : (
-                          <HugeiconsIcon icon={SentIcon} size={16} className="mr-2" />
+                          <Send size={16} className="mr-2" />
                         )}
                         Connect Telegram
                       </Button>
@@ -331,9 +323,9 @@ export default function SettingsPage() {
                         disabled={telegramLoading}
                       >
                         {telegramLoading ? (
-                          <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2 animate-spin" />
+                          <Refresh size={16} className="mr-2 animate-spin" />
                         ) : (
-                          <HugeiconsIcon icon={Unlink01Icon} size={16} className="mr-2" />
+                          <LinkOff size={16} className="mr-2" />
                         )}
                         Disconnect
                       </Button>
@@ -344,7 +336,6 @@ export default function SettingsPage() {
             </Card>
             </motion.div>
 
-            {/* App Info */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}

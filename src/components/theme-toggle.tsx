@@ -1,8 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Moon01Icon, Sun01Icon, ComputerIcon } from '@hugeicons/core-free-icons';
+import { DarkMode, LightMode, Computer } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
@@ -34,17 +33,17 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
             title="Theme"
           >
             {theme === 'dark' ? (
-              <HugeiconsIcon icon={Moon01Icon} size={16} strokeWidth={1.5} aria-hidden />
+              <DarkMode size={16} aria-hidden />
             ) : theme === 'light' ? (
-              <HugeiconsIcon icon={Sun01Icon} size={16} strokeWidth={1.5} aria-hidden />
+              <LightMode size={16} aria-hidden />
             ) : (
-              <HugeiconsIcon icon={ComputerIcon} size={16} strokeWidth={1.5} aria-hidden />
+              <Computer size={16} aria-hidden />
             )}
           </Button>
         ) : (
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <HugeiconsIcon icon={Sun01Icon} size={16} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <HugeiconsIcon icon={Moon01Icon} size={16} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <LightMode size={16} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <DarkMode size={16} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
         )}
@@ -53,17 +52,17 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
         <DropdownMenuLabel className="text-xs text-muted-foreground">Theme</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setTheme('light')}>
-          <HugeiconsIcon icon={Sun01Icon} size={16} className="mr-2" />
+          <LightMode size={16} className="mr-2" />
           <span>Light</span>
           {theme === 'light' && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
-          <HugeiconsIcon icon={Moon01Icon} size={16} className="mr-2" />
+          <DarkMode size={16} className="mr-2" />
           <span>Dark</span>
           {theme === 'dark' && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
-          <HugeiconsIcon icon={ComputerIcon} size={16} className="mr-2" />
+          <Computer size={16} className="mr-2" />
           <span>System</span>
           {(theme === 'system' || !theme) && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>

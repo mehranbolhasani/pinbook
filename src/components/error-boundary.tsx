@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Alert01Icon, Refresh01Icon, Home01Icon, Bug01Icon } from '@hugeicons/core-free-icons';
+import { Warning, Refresh, Home, BugReport } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import Link from 'next/link';
 
 interface ErrorBoundaryState {
@@ -31,20 +30,18 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
 
-    // Log error details for debugging
     type UAData = { brands?: { brand: string; version: string }[]; platform?: string };
-    const uaData = typeof navigator !== 'undefined' 
-      ? (navigator as unknown as { userAgentData?: UAData }).userAgentData 
+    const uaData = typeof navigator !== 'undefined'
+      ? (navigator as unknown as { userAgentData?: UAData }).userAgentData
       : undefined;
-    const userAgent = uaData && uaData.brands 
-      ? uaData.brands.map((b) => `${b.brand}/${b.version}`).join(' ') 
-      : typeof navigator !== 'undefined' 
-        ? navigator.userAgent 
+    const userAgent = uaData && uaData.brands
+      ? uaData.brands.map((b) => `${b.brand}/${b.version}`).join(' ')
+      : typeof navigator !== 'undefined'
+        ? navigator.userAgent
         : '';
     const errorDetails = {
       message: error.message,
@@ -56,18 +53,15 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       url: typeof window !== 'undefined' ? window.location.href : '',
     };
 
-    // Store error in localStorage for debugging (only in browser)
     if (typeof window !== 'undefined') {
       try {
         const errors = JSON.parse(localStorage.getItem('pinbook-errors') || '[]');
         errors.push(errorDetails);
-        // Keep only last 10 errors
         if (errors.length > 10) {
           errors.splice(0, errors.length - 10);
         }
         localStorage.setItem('pinbook-errors', JSON.stringify(errors));
       } catch {
-        // Silently fail
       }
     }
   }
@@ -84,7 +78,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       }
 
       const isPageLevel = this.props.level === 'page';
-      const containerClass = isPageLevel 
+      const containerClass = isPageLevel
         ? "min-h-screen flex items-center justify-center bg-background"
         : "flex items-center justify-center p-8 bg-muted/50 rounded-lg border border-destructive/20";
 
@@ -92,18 +86,18 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         <div className={containerClass}>
           <div className={`${isPageLevel ? 'max-w-md mx-auto' : 'max-w-sm'} text-center p-6`}>
             <div className="mb-4">
-              <HugeiconsIcon icon={Alert01Icon} size={isPageLevel ? 48 : 32} className="text-destructive mx-auto" />
+              <Warning size={isPageLevel ? 48 : 32} className="text-destructive mx-auto" />
             </div>
             <h2 className={`${isPageLevel ? 'text-xl' : 'text-lg'} font-semibold mb-2`}>
               {isPageLevel ? 'Something went wrong' : 'Component Error'}
             </h2>
             <p className="text-muted-foreground mb-4">
-              {isPageLevel 
+              {isPageLevel
                 ? 'An unexpected error occurred. Please try refreshing the page.'
                 : 'This component encountered an error and couldn\'t render properly.'
               }
             </p>
-            
+
             {this.state.error && (
               <details className="mb-4 text-left">
                 <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
@@ -120,13 +114,13 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 </pre>
               </details>
             )}
-            
+
             <div className="space-x-2">
               <Button onClick={this.resetError} variant="outline" size={isPageLevel ? 'default' : 'sm'}>
-                <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2" />
+                <Refresh size={16} className="mr-2" />
                 Try Again
               </Button>
-              
+
               {isPageLevel && (
                 <>
                   <Button onClick={() => window.location.reload()}>
@@ -134,7 +128,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                   </Button>
                   <Link href="/">
                     <Button variant="outline">
-                      <HugeiconsIcon icon={Home01Icon} size={16} className="mr-2" />
+                      <Home size={16} className="mr-2" />
                       Go Home
                     </Button>
                   </Link>
@@ -150,19 +144,17 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 }
 
-// Hook version for functional components
 export function useErrorHandler() {
   return (error: Error, errorInfo?: React.ErrorInfo) => {
-    // Store error for debugging
     try {
       type UAData = { brands?: { brand: string; version: string }[]; platform?: string };
-      const uaData = typeof navigator !== 'undefined' 
-        ? (navigator as unknown as { userAgentData?: UAData }).userAgentData 
+      const uaData = typeof navigator !== 'undefined'
+        ? (navigator as unknown as { userAgentData?: UAData }).userAgentData
         : undefined;
-      const userAgent = uaData && uaData.brands 
-        ? uaData.brands.map((b) => `${b.brand}/${b.version}`).join(' ') 
-        : typeof navigator !== 'undefined' 
-          ? navigator.userAgent 
+      const userAgent = uaData && uaData.brands
+        ? uaData.brands.map((b) => `${b.brand}/${b.version}`).join(' ')
+        : typeof navigator !== 'undefined'
+          ? navigator.userAgent
           : '';
       if (typeof window !== 'undefined') {
         const errors = JSON.parse(localStorage.getItem('pinbook-errors') || '[]');
@@ -174,32 +166,30 @@ export function useErrorHandler() {
           userAgent,
           url: window.location.href,
         });
-        
+
         if (errors.length > 10) {
           errors.splice(0, errors.length - 10);
         }
         localStorage.setItem('pinbook-errors', JSON.stringify(errors));
       }
     } catch {
-      // Silently fail
     }
   };
 }
 
-// Specialized error boundaries for different components
 export function BookmarkListErrorBoundary({ children }: { children: React.ReactNode }) {
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       level="component"
       fallback={({ resetError }) => (
         <div className="flex flex-col items-center justify-center p-8 bg-muted/50 rounded-lg border border-destructive/20">
-          <HugeiconsIcon icon={Bug01Icon} size={32} className="text-destructive mb-2" />
+          <BugReport size={32} className="text-destructive mb-2" />
           <h3 className="font-semibold mb-2">Bookmark List Error</h3>
           <p className="text-sm text-muted-foreground mb-4 text-center">
             Failed to load bookmarks. This might be a temporary issue.
           </p>
           <Button onClick={resetError} variant="outline" size="sm">
-            <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2" />
+            <Refresh size={16} className="mr-2" />
             Retry
           </Button>
         </div>
@@ -212,17 +202,17 @@ export function BookmarkListErrorBoundary({ children }: { children: React.ReactN
 
 export function SettingsErrorBoundary({ children }: { children: React.ReactNode }) {
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       level="component"
       fallback={({ resetError }) => (
         <div className="flex flex-col items-center justify-center p-8 bg-muted/50 rounded-lg border border-destructive/20">
-          <HugeiconsIcon icon={Alert01Icon} size={32} className="text-destructive mb-2" />
+          <Warning size={32} className="text-destructive mb-2" />
           <h3 className="font-semibold mb-2">Settings Error</h3>
           <p className="text-sm text-muted-foreground mb-4 text-center">
             Failed to load settings. Please try again.
           </p>
           <Button onClick={resetError} variant="outline" size="sm">
-            <HugeiconsIcon icon={Refresh01Icon} size={16} className="mr-2" />
+            <Refresh size={16} className="mr-2" />
             Retry
           </Button>
         </div>

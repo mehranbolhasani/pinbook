@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
 
   // Experimental features for performance
   experimental: {
-    optimizePackageImports: ['@radix-ui/react-icons'],
+    optimizePackageImports: ['@radix-ui/react-icons', '@nine-thirty-five/material-symbols-react'],
   },
 
   async headers() {

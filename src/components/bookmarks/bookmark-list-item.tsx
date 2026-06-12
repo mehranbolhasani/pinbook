@@ -4,8 +4,7 @@ import { memo } from 'react';
 import { motion } from 'motion/react';
 import { Bookmark } from '@/types/pinboard';
 import { formatDate } from '@/lib/utils';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ExternalLinkIcon, Delete02Icon, PencilEdit01Icon } from '@hugeicons/core-free-icons';
+import { OpenInNew, Delete, EditNote } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -26,44 +25,21 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
   };
 
   const cardContent = (
-    <div data-index={index} className="flex items-center justify-between bg-transparent group/item p-4 border-b border-primary/20 transition-colors">
+    <div data-index={index} className="flex items-center justify-between bg-transparent group/item transition-colors">
       <div className="flex-1 min-w-0">
-        <div className="flex items-center space-x-2 mb-1">
+        <div className="flex items-center space-x-2 mb-0">
           <h3 className="font-normal text-md truncate tracking-tight group-hover/item:text-primary">
             {bookmark.title}
           </h3>
-
-          {bookmark.isShared && (
-            <Badge variant="outline" className="text-xs">
-              Shared
-            </Badge>
-          )}
         </div>
-        <p className="text-xs text-muted-foreground truncate">
-          {bookmark.url}
-        </p>
-        <div className="flex items-center space-x-2 mt-1">
-          <span className="text-xs text-foreground/60">
+        <div className="flex items-center space-x-2 mt-0">
+          <span className="text-xs text-foreground/40">
             {formatDate(bookmark.createdAt)}
           </span>
-          {bookmark.tags.length > 0 && (
-            <div className="flex items-center space-x-1">
-              {bookmark.tags.slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="default" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-              {bookmark.tags.length > 3 && (
-                <span className="text-xs text-muted-foreground">
-                  +{bookmark.tags.length - 3} more
-                </span>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
-      <div className="flex items-center shrink-0 gap-4 lg:invisible lg:group-hover/item:visible">
+      <div className="flex items-center shrink-0 gap-2 lg:invisible lg:group-hover/item:visible border border-foreground rounded-full px-2 py-1">
         <Button
           variant="ghost"
           size="icon-sm"
@@ -72,7 +48,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
           title="Open Link"
           aria-label="Open link"
         >
-          <HugeiconsIcon icon={ExternalLinkIcon} size={16} strokeWidth={1.5} />
+          <OpenInNew size={16} />
         </Button>
         {onEdit && (
           <Button
@@ -83,7 +59,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
             title="Edit Bookmark"
             aria-label="Edit bookmark"
           >
-            <HugeiconsIcon icon={PencilEdit01Icon} size={16} strokeWidth={1.5} />
+            <EditNote size={16} />
           </Button>
         )}
         {onDelete && (
@@ -95,7 +71,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
             title="Delete Bookmark"
             aria-label="Delete bookmark"
           >
-            <HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={1.5} />
+            <Delete size={16} />
           </Button>
         )}
       </div>
@@ -113,12 +89,12 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
       animate="visible"
       exit="hidden"
       whileHover="hover"
-      className='relative [counter-increment:bkmrk] before:content-[counter(bkmrk)] before:absolute before:font-mono before:text-sm before:top-1 before:left-1 before:text-primary/50'
+      className='relative [counter-increment:bkmrk] before:content-[counter(bkmrk)] before:absolute before:font-mono before:text-sm before:top-1/2 before:-left-8 before:text-primary before:-translate-y-1/2'
     >
       <motion.div
         variants={hoverLift}
         initial="rest"
-        className="hover:bg-primary/10"
+        className=""
       >
         {cardContent}
       </motion.div>

@@ -3,8 +3,7 @@
 import { memo } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Settings02Icon, Logout01Icon, Bookmark01Icon, Add01Icon, Tag01Icon, FilterIcon, SortByUp01Icon, SortDescendingIcon, ChevronDownIcon } from '@hugeicons/core-free-icons';
+import { Settings, Logout, Bookmark, Add, Label, FilterList, ArrowUpward, ArrowDownward, KeyboardArrowDown } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/lib/stores/auth';
@@ -25,8 +24,6 @@ import { fadeInDown, buttonHover } from '@/lib/animations';
 import { StaggerContainer } from '@/components/ui/stagger-container';
 import { SearchInput } from '@/components/ui/search-input';
 
-// Subcomponents with minimal store subscriptions
-
 function HeaderLogo() {
   const clearFilters = useUIStore((s) => s.clearFilters);
   const prefersReducedMotion = useReducedMotion();
@@ -40,7 +37,7 @@ function HeaderLogo() {
         className="flex items-center space-x-1 cursor-pointer text-primary"
         aria-label="Pinbook – clear filters"
       >
-        <HugeiconsIcon icon={Bookmark01Icon} size={32} strokeWidth={1.5} />
+        <Bookmark size={32} />
         <div className="flex flex-col items-start">
           <h1 className="text-lg font-book tracking-tight leading-4">Pinbook</h1>
           <span className="text-xs text-primary/50 leading-3">{username}</span>
@@ -60,7 +57,7 @@ function HeaderLogo() {
       whileHover={{ scale: 1 }}
       whileTap={{ scale: 0.95 }}
     >
-      <HugeiconsIcon icon={Bookmark01Icon} size={32} strokeWidth={1.5} />
+      <Bookmark size={32} />
       <div className="flex flex-col items-start">
         <h1 className="text-lg font-book tracking-tight leading-4">Pinbook</h1>
         <span className="text-xs text-primary/50 leading-3">{username}</span>
@@ -77,7 +74,7 @@ function HeaderUserActions() {
       <ThemeToggle variant="icon" />
       <Button variant="icon" size="icon-sm" className="h-8 w-8 bg-transparent text-primary" asChild aria-label="Settings">
         <Link href="/settings">
-          <HugeiconsIcon icon={Settings02Icon} size={16} strokeWidth={1.5} aria-hidden />
+          <Settings size={16} aria-hidden />
         </Link>
       </Button>
       <Button
@@ -87,7 +84,7 @@ function HeaderUserActions() {
         onClick={logout}
         aria-label="Logout"
       >
-        <HugeiconsIcon icon={Logout01Icon} size={16} strokeWidth={1.5} aria-hidden />
+        <Logout size={16} aria-hidden />
       </Button>
     </div>
   );
@@ -98,12 +95,12 @@ const HeaderSearch = memo(function HeaderSearch() {
   const setSearchQuery = useUIStore((s) => s.setSearchQuery);
 
   return (
-    <div className="flex-1 max-w-full items-center justify-center w-full min-w-48">
+    <div className="flex-1 max-w-full items-center justify-center min-w-32">
       <SearchInput
         value={searchQuery}
         onChange={setSearchQuery}
         placeholder="Search"
-        className="justify-center border-x border-x-primary/20 rounded-none px-2 gap-2 focus-within:ring-4 focus-within:ring-primary/20 h-10"
+        className="justify-center rounded-sm px-2 gap-2 border border-primary/50 focus-within:ring-4 focus-within:ring-primary/20 h-10"
         inputClassName="h-10 w-full border-none focus-visible:ring-0 pl-8"
         id="header-search"
       />
@@ -131,8 +128,8 @@ function HeaderTagsFilter() {
       {tags.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="default" aria-label="Filter by tags" className="border-0 border-r border-primary/20">
-              <HugeiconsIcon icon={Tag01Icon} size={16} strokeWidth={1.5} aria-hidden />
+            <Button variant="outline" size="default" aria-label="Filter by tags" className="border border-primary/50 p-4">
+              <Label size={16} aria-hidden />
               <span>Tags</span>
               {selectedTags.length > 0 && (
                 <Badge variant="secondary" className="ml-1">
@@ -170,7 +167,7 @@ function HeaderTagsFilter() {
           className="rounded-none"
           aria-label="Clear filters"
         >
-          <HugeiconsIcon icon={FilterIcon} size={16} strokeWidth={1.5} aria-hidden />
+          <FilterList size={16} aria-hidden />
           Clear
         </Button>
       )}
@@ -190,10 +187,10 @@ function HeaderSortDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="default" aria-label="Sort bookmarks" className="gap-1 border-none">
-          {sortOrder === 'asc' ? <HugeiconsIcon icon={SortByUp01Icon} size={16} strokeWidth={1.5} aria-hidden /> : <HugeiconsIcon icon={SortDescendingIcon} size={16} strokeWidth={1.5} aria-hidden />}
+        <Button variant="outline" size="default" aria-label="Sort bookmarks" className="gap-1 border border-primary/50 p-1">
+          {sortOrder === 'asc' ? <ArrowUpward size={16} aria-hidden /> : <ArrowDownward size={16} aria-hidden />}
           <span className="capitalize">{sortBy}</span>
-          <HugeiconsIcon icon={ChevronDownIcon} size={12} className="opacity-50" />
+          <KeyboardArrowDown size={12} className="opacity-50" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="top" className="mb-2 w-48">
@@ -211,7 +208,7 @@ function HeaderSortDropdown() {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
-          {sortOrder === 'asc' ? <HugeiconsIcon icon={SortByUp01Icon} size={16} className="mr-2" /> : <HugeiconsIcon icon={SortDescendingIcon} size={16} className="mr-2" />}
+          {sortOrder === 'asc' ? <ArrowUpward size={16} className="mr-2" /> : <ArrowDownward size={16} className="mr-2" />}
           <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -230,7 +227,7 @@ function HeaderAddButton({ onAddBookmark }: { onAddBookmark: () => void }) {
       className="flex items-center px-4"
       aria-label="Add bookmark"
     >
-      <HugeiconsIcon icon={Add01Icon} size={16} strokeWidth={1.5} aria-hidden />
+      <Add size={16} aria-hidden />
       <span>Add</span>
     </Button>
   );
@@ -246,7 +243,7 @@ function HeaderAddButton({ onAddBookmark }: { onAddBookmark: () => void }) {
         className="flex items-center px-4"
         aria-label="Add bookmark"
       >
-        <HugeiconsIcon icon={Add01Icon} size={16} strokeWidth={1.5} aria-hidden />
+        <Add size={16} aria-hidden />
         <span>Add</span>
       </Button>
     </motion.div>
@@ -262,8 +259,8 @@ export function Header({ onAddBookmark }: HeaderProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const headerContent = (
-    <header className="relative w-full max-w-160 mx-auto z-50 gap-0 border-x border-x-primary/20 bg-card h-50">
-      <div className="container flex h-full flex-col items-center justify-center">
+    <header className="relative w-full mx-auto z-50 py-8">
+      <div className="container flex h-full flex-col items-center justify-center gap-8">
         <div className="flex items-center w-full justify-between border-b border-primary/40 p-4">
           <HeaderLogo />
           <HeaderUserActions />
@@ -286,21 +283,21 @@ export function Header({ onAddBookmark }: HeaderProps) {
 
   return (
     <motion.header
-      className="relative w-full mx-auto z-50 gap-0 h-fit flex flex-col"
+      className="relative w-full mx-auto z-50 py-8"
       initial="hidden"
       animate="visible"
       variants={fadeInDown}
     >
-      <StaggerContainer className="flex h-fit flex-col items-center justify-end" speed="fast">
-        <div className="flex items-center w-full justify-between border-b border-primary/50 p-4">
+      <StaggerContainer className="flex h-fit flex-col items-center justify-center gap-8" speed="fast">
+        <div className="flex items-center w-full justify-between">
           <HeaderLogo />
           <HeaderUserActions />
         </div>
 
-        <div className="flex items-center gap-0 w-full justify-between border-b border-primary/50">
+        <div className="header-actions flex items-center gap-12 w-full justify-between">
           {onAddBookmark && <HeaderAddButton onAddBookmark={onAddBookmark} />}
 
-          <div className="flex items-center justify-end gap-0 flex-1 w-full">
+          <div className="flex items-center justify-end gap-2 flex-1 w-full">
             {isAuthenticated && <HeaderSearch />}
             {isAuthenticated && <HeaderTagsFilter />}
             {isAuthenticated && <HeaderSortDropdown />}

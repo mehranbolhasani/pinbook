@@ -5,8 +5,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Bookmark01Icon, Add01Icon, FilterIcon, Settings02Icon } from '@hugeicons/core-free-icons';
+import { Bookmark, Add, FilterList, Settings } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { useUIStore } from '@/lib/stores/ui';
 import { useAuthStore } from '@/lib/stores/auth';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -42,7 +41,7 @@ export function MobileNav() {
         <div className="flex h-14 items-center justify-between px-4 gap-3">
           {/* Left: Logo */}
           <div className="flex items-center space-x-2 shrink-0">
-            <HugeiconsIcon icon={Bookmark01Icon} size={20} className="text-primary" />
+            <Bookmark size={20} className="text-primary" />
             <span className="font-semibold hidden min-[380px]:inline">Pinbook</span>
           </div>
 
@@ -60,7 +59,7 @@ export function MobileNav() {
           <div className="flex items-center space-x-1 shrink-0">
             <Link href="/settings">
               <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-                <HugeiconsIcon icon={Settings02Icon} size={16} />
+                <Settings size={16} />
               </Button>
             </Link>
             <ThemeToggle />
@@ -81,7 +80,7 @@ export function MobileNav() {
                 size="sm"
                 className="h-10 px-2"
               >
-                <HugeiconsIcon icon={FilterIcon} size={16} className="min-[380px]:mr-2" />
+                <FilterList size={16} className="min-[380px]:mr-2" />
                 <span className="text-md hidden min-[380px]:inline">Sort/Filter</span>
                 <span className="text-md inline min-[380px]:hidden">Filter</span>
               </Button>
@@ -98,7 +97,7 @@ export function MobileNav() {
             onClick={() => setIsAddBookmarkOpen(true)}
             className="h-10 px-3 min-[380px]:px-4!"
           >
-            <HugeiconsIcon icon={Add01Icon} size={16} className="min-[380px]:mr-1" />
+            <Add size={16} className="min-[380px]:mr-1" />
             <span className="text-md">Add</span>
           </Button>
         </div>

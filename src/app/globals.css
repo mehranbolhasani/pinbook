@@ -3,7 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-sn-pro), system-ui, sans-serif;
+  --font-sans: var(--font-google-sans-flex), system-ui, sans-serif;
 
   /* Blue Energy Palette */
   --color-blue-energy-50: oklch(94.94% 0.024 259.82);
@@ -61,7 +61,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: lch(from var(--color-blue-50) l 2% h);
+  --background: var(--color-neutral-50);
   --foreground: var(--color-blue-energy-900);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.2 0 0);

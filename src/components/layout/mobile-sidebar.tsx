@@ -1,7 +1,6 @@
 'use client';
 
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Tag01Icon, SortByUp01Icon, SortDescendingIcon } from '@hugeicons/core-free-icons';
+import { Label, ArrowUpward, ArrowDownward } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -10,9 +9,9 @@ import { useUIStore } from '@/lib/stores/ui';
 import { useTags } from '@/hooks/usePinboard';
 
 export function MobileSidebar() {
-  const { 
-    selectedTags, 
-    setSelectedTags, 
+  const {
+    selectedTags,
+    setSelectedTags,
     searchQuery,
     sortBy,
     setSortBy,
@@ -20,7 +19,7 @@ export function MobileSidebar() {
     setSortOrder,
     clearFilters
   } = useUIStore();
-  
+
   const { data: tagsData = {} } = useTags();
   const tags = Object.keys(tagsData).sort();
 
@@ -66,7 +65,7 @@ export function MobileSidebar() {
               </Button>
             ))}
           </div>
-          
+
           <div className="flex gap-2 mt-2">
             <Button
               variant={sortOrder === 'asc' ? 'default' : 'outline'}
@@ -74,7 +73,7 @@ export function MobileSidebar() {
               onClick={() => setSortOrder('asc')}
               className="flex-1"
             >
-              <HugeiconsIcon icon={SortByUp01Icon} size={16} className="mr-1" />
+              <ArrowUpward size={16} className="mr-1" />
               Ascending
             </Button>
             <Button
@@ -83,7 +82,7 @@ export function MobileSidebar() {
               onClick={() => setSortOrder('desc')}
               className="flex-1"
             >
-              <HugeiconsIcon icon={SortDescendingIcon} size={16} className="mr-1" />
+              <ArrowDownward size={16} className="mr-1" />
               Descending
             </Button>
           </div>
@@ -96,14 +95,14 @@ export function MobileSidebar() {
           <h3 className="font-medium text-sm mb-3">Filter by Tags</h3>
           {tags.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <HugeiconsIcon icon={Tag01Icon} size={32} className="mx-auto mb-2 opacity-50" />
+              <Label size={32} className="mx-auto mb-2 opacity-50" />
               <p className="text-sm">No tags available</p>
             </div>
           ) : (
             <div className="space-y-1">
               {tags.map((tag) => {
                 const tagCount = tagsData[tag] ?? 0;
-                
+
                 return (
                   <Button
                     key={tag}
@@ -111,7 +110,7 @@ export function MobileSidebar() {
                     className="w-full justify-start text-sm h-auto py-2"
                     onClick={() => handleTagClick(tag)}
                   >
-                    <HugeiconsIcon icon={Tag01Icon} size={12} className="mr-2 shrink-0" />
+                    <Label size={12} className="mr-2 shrink-0" />
                     <span className="flex-1 text-left truncate">{tag}</span>
                     <Badge variant="outline" className="ml-2 text-xs">
                       {tagCount}

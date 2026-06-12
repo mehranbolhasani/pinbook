@@ -2,8 +2,7 @@
 
 import * as React from "react"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { HugeiconsIcon } from '@hugeicons/react'
-import { Tick01Icon } from '@hugeicons/core-free-icons'
+import { Check } from '@nine-thirty-five/material-symbols-react/rounded/300'
 
 import { cn } from "@/lib/utils"
 
@@ -24,7 +23,7 @@ function Checkbox({
         data-slot="checkbox-indicator"
         className="grid place-content-center text-current transition-none"
       >
-        <HugeiconsIcon icon={Tick01Icon} size={14} />
+        <Check size={14} />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )

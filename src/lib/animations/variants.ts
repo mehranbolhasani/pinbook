@@ -115,8 +115,8 @@ export const buttonHover: Variants = {
     transition: gentleTransition,
   },
   hover: {
-    y: -1,
-    scale: 1.1,
+    y: 0,
+    scale: 1,
     transition: gentleTransition,
   },
   tap: {

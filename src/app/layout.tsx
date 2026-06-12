@@ -31,7 +31,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <div className="grid place-items-center w-screen h-screen">
+              {children}
+            </div>
             <ToastProvider />
           </ThemeProvider>
         </QueryProvider>

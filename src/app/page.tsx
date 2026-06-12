@@ -237,7 +237,7 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-      <div className="max-h-full">
+      <div className="max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] w-[calc(100vw-2rem)] mx-auto overflow-hidden border border-primary">
 
         {/* Mobile Navigation */}
         <MobileNav />

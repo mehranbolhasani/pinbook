@@ -286,13 +286,12 @@ export function Header({ onAddBookmark }: HeaderProps) {
 
   return (
     <motion.header
-      className="relative w-full max-w-160 mx-auto z-50 gap-0 border-x border-x-primary/20 bg-card h-50 flex flex-col"
+      className="relative w-full mx-auto z-50 gap-0 h-fit flex flex-col"
       initial="hidden"
       animate="visible"
       variants={fadeInDown}
     >
-      <div className="w-full h-full border-y border-y-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:var(--color-blue-energy-600)]/15 max-lg:hidden dark:[--pattern-fg:var(--color-white)]/10"></div>
-      <StaggerContainer className="container flex h-fit flex-col items-center justify-end" speed="fast">
+      <StaggerContainer className="flex h-fit flex-col items-center justify-end" speed="fast">
         <div className="flex items-center w-full justify-between border-b border-primary/50 p-4">
           <HeaderLogo />
           <HeaderUserActions />
@@ -300,8 +299,6 @@ export function Header({ onAddBookmark }: HeaderProps) {
 
         <div className="flex items-center gap-0 w-full justify-between border-b border-primary/50">
           {onAddBookmark && <HeaderAddButton onAddBookmark={onAddBookmark} />}
-
-          <div className="w-full h-full border-y-0 border-y-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:var(--color-blue-energy-600)]/15 max-lg:hidden dark:[--pattern-fg:var(--color-white)]/10"></div>
 
           <div className="flex items-center justify-end gap-0 flex-1 w-full">
             {isAuthenticated && <HeaderSearch />}

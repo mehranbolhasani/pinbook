@@ -50,7 +50,7 @@ import { usePaginatedBookmarks } from '@/hooks/usePaginatedBookmarks';
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
-  const { setSearchQuery, searchQuery, selectedTags, sortBy, sortOrder, page } = useUIStore();
+  const { setSearchQuery, searchQuery, selectedTags, page } = useUIStore();
 
   // React Query Hooks
   const { data: bookmarks = [], isLoading: isBookmarksLoading, error: bookmarksError } = useBookmarks();
@@ -83,7 +83,7 @@ export default function Home() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedBookmarkIndex(null);
-  }, [searchQuery, selectedTags, sortBy, sortOrder, page]);
+  }, [searchQuery, selectedTags, page]);
 
   // Scroll selected bookmark into view
   useEffect(() => {

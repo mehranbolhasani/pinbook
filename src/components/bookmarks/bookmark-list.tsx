@@ -112,7 +112,7 @@ export const BookmarkList = memo(function BookmarkList({ bookmarks, isLoading, o
 
       {renderBookmarks()}
 
-      <div className="flex items-center justify-between p-6">
+      <div className="flex items-center justify-between py-24">
         <div className="text-sm text-muted-foreground">
           Showing {startItem}-{endItem} of {totalCount} bookmarks
           {searchQuery && ` for "${searchQuery}"`}

@@ -3,7 +3,7 @@
 import { memo } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { Settings, Logout, Bookmark, Add, Label, FilterList, ArrowUpward, ArrowDownward, KeyboardArrowDown } from '@nine-thirty-five/material-symbols-react/rounded/300';
+import { Settings, Logout, Bookmark, Add, Label, FilterList } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/lib/stores/auth';
@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useUIStore } from '@/lib/stores/ui';
 import { useTags } from '@/hooks/usePinboard';
-import { cn } from '@/lib/utils';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fadeInDown, buttonHover } from '@/lib/animations';
 import { StaggerContainer } from '@/components/ui/stagger-container';
@@ -95,12 +94,12 @@ const HeaderSearch = memo(function HeaderSearch() {
   const setSearchQuery = useUIStore((s) => s.setSearchQuery);
 
   return (
-    <div className="flex-1 max-w-full items-center justify-center min-w-32">
+    <div className="flex-1 max-w-50 items-center justify-center w-full">
       <SearchInput
         value={searchQuery}
         onChange={setSearchQuery}
         placeholder="Search"
-        className="justify-center rounded-sm px-2 gap-2 border border-primary/50 focus-within:ring-4 focus-within:ring-primary/20 h-10"
+        className="justify-center rounded-sm border border-primary/50 px-1 gap-2 focus-within:ring-4 focus-within:ring-primary/20 h-10"
         inputClassName="h-10 w-full border-none focus-visible:ring-0 pl-8"
         id="header-search"
       />
@@ -128,11 +127,11 @@ function HeaderTagsFilter() {
       {tags.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="default" aria-label="Filter by tags" className="border border-primary/50 p-4">
+            <Button variant="outline" size="default" aria-label="Filter by tags" className="border border-primary/50 text-primary">
               <Label size={16} aria-hidden />
-              <span>Tags</span>
+              {/*<span>Tags</span>*/}
               {selectedTags.length > 0 && (
-                <Badge variant="secondary" className="ml-1">
+                <Badge variant="secondary" className="">
                   {selectedTags.length}
                 </Badge>
               )}
@@ -172,47 +171,6 @@ function HeaderTagsFilter() {
         </Button>
       )}
     </div>
-  );
-}
-
-function HeaderSortDropdown() {
-  const { sortBy, setSortBy, sortOrder, setSortOrder } = useUIStore();
-
-  const sortOptions = [
-    { value: 'date', label: 'Date' },
-    { value: 'title', label: 'Title' },
-    { value: 'url', label: 'URL' }
-  ];
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="default" aria-label="Sort bookmarks" className="gap-1 border border-primary/50 p-1">
-          {sortOrder === 'asc' ? <ArrowUpward size={16} aria-hidden /> : <ArrowDownward size={16} aria-hidden />}
-          <span className="capitalize">{sortBy}</span>
-          <KeyboardArrowDown size={12} className="opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" side="top" className="mb-2 w-48">
-        <DropdownMenuLabel>Sort By</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {sortOptions.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
-            className={cn(sortBy === option.value && 'bg-primary text-primary-foreground')}
-          >
-            <span className="flex-1">{option.label}</span>
-            {sortBy === option.value && <span className="ml-2">✓</span>}
-          </DropdownMenuItem>
-        ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
-          {sortOrder === 'asc' ? <ArrowUpward size={16} className="mr-2" /> : <ArrowDownward size={16} className="mr-2" />}
-          <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 
@@ -259,20 +217,19 @@ export function Header({ onAddBookmark }: HeaderProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const headerContent = (
-    <header className="relative w-full mx-auto z-50 py-8">
+    <header className="relative w-full max-w-160 mx-auto z-50 gap-0">
       <div className="container flex h-full flex-col items-center justify-center gap-8">
-        <div className="flex items-center w-full justify-between border-b border-primary/40 p-4">
+        <div className="flex items-center w-full justify-between">
           <HeaderLogo />
           <HeaderUserActions />
         </div>
 
-        <div className="flex items-center gap-0 w-full justify-between border-b border-primary/20">
+        <div className="flex items-center gap-12 w-full justify-between">
           {onAddBookmark && <HeaderAddButton onAddBookmark={onAddBookmark} />}
 
           <div className="flex items-center justify-end gap-0">
             {isAuthenticated && <HeaderSearch />}
             {isAuthenticated && <HeaderTagsFilter />}
-            {isAuthenticated && <HeaderSortDropdown />}
           </div>
         </div>
       </div>
@@ -283,7 +240,7 @@ export function Header({ onAddBookmark }: HeaderProps) {
 
   return (
     <motion.header
-      className="relative w-full mx-auto z-50 py-8"
+      className="relative w-full mx-auto z-50 gap-0 h-fit flex flex-col py-8"
       initial="hidden"
       animate="visible"
       variants={fadeInDown}
@@ -294,13 +251,12 @@ export function Header({ onAddBookmark }: HeaderProps) {
           <HeaderUserActions />
         </div>
 
-        <div className="header-actions flex items-center gap-12 w-full justify-between">
+        <div className="flex items-center gap-12 w-full justify-between">
           {onAddBookmark && <HeaderAddButton onAddBookmark={onAddBookmark} />}
 
           <div className="flex items-center justify-end gap-2 flex-1 w-full">
             {isAuthenticated && <HeaderSearch />}
             {isAuthenticated && <HeaderTagsFilter />}
-            {isAuthenticated && <HeaderSortDropdown />}
           </div>
         </div>
       </StaggerContainer>

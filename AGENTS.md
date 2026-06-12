@@ -17,11 +17,11 @@
 
 ## State & data fetching
 - **`useAuthStore`** (`@/lib/stores/auth.ts`) — auth state (username, apiToken, login/logout). Persisted to localStorage.
-- **`useUIStore`** (`@/lib/stores/ui.ts`) — all UI state (search query, selected tags, sort). Persisted via Zustand `partialize` — only `sortBy`/`sortOrder` survive reload; search + tag filters reset.
+- **`useUIStore`** (`@/lib/stores/ui.ts`) — all UI state (search query, selected tags, page). Nothing persisted across reloads; search + tag filters reset on reload.
 - **`useBookmarkStore`** — legacy, removed from codebase. Do NOT reintroduce.
 - **Data fetching**: always use React Query hooks from `@/hooks/usePinboard` (`useBookmarks`, `useTags`, `useAddBookmark`, `useUpdateBookmark`, `useDeleteBookmark`). Never call the Pinboard API directly from components.
 - All React Query mutations use **optimistic updates** with rollback on error.
-- **`useFilteredBookmarks`** (`@/hooks/useFilteredBookmarks.ts`) — centralizes client-side filtering (by tags + search) and sorting. Used by the main page.
+- **`useFilteredBookmarks`** (`@/hooks/useFilteredBookmarks.ts`) — centralizes client-side filtering (by tags + search). Used by the main page.
 - Pinboard API wrapper at `@/lib/api/pinboard.ts`.
 - **Pinboard API field quirk:** `description` maps to bookmark *title*, `extended` maps to bookmark *description*.
 
@@ -31,10 +31,11 @@
 - Make Public/Private toggle (shared status is display-only)
 - Hamburger menu on mobile
 - Separate sort and filter buttons on mobile (combined into one `MobileSidebar` sheet)
+- Sort (by date/title/url, ascending/descending) — bookmarks display in API default order
 
 ## Mobile conventions
 - Breakpoint: `lg` (1024px). Mobile `< 1024px`, Desktop `≥ 1024px`.
-- Mobile nav: `MobileNav` (header + bottom bar), `MobileSidebar` (sort/filter sheet), `MobileAddBookmark` (bottom sheet).
+- Mobile nav: `MobileNav` (header + bottom bar), `MobileSidebar` (filter sheet), `MobileAddBookmark` (bottom sheet).
 - Use `side="bottom"` sheets (80vh for filter, 90vh for add) with `SheetHeader`/`SheetTitle`.
 - Mobile-only: `lg:hidden`. Desktop-only: `hidden lg:block`/`hidden lg:flex`.
 - Touch targets: minimum `h-10 w-10` (40×40px), preferably 44×44px.

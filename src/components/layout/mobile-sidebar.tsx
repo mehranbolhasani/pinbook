@@ -1,10 +1,9 @@
 'use client';
 
-import { Label, ArrowUpward, ArrowDownward } from '@nine-thirty-five/material-symbols-react/rounded/300';
+import { Label } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Separator } from '@/components/ui/separator';
 import { useUIStore } from '@/lib/stores/ui';
 import { useTags } from '@/hooks/usePinboard';
 
@@ -13,10 +12,6 @@ export function MobileSidebar() {
     selectedTags,
     setSelectedTags,
     searchQuery,
-    sortBy,
-    setSortBy,
-    sortOrder,
-    setSortOrder,
     clearFilters
   } = useUIStore();
 
@@ -35,62 +30,13 @@ export function MobileSidebar() {
     clearFilters();
   };
 
-  const sortOptions = [
-    { value: 'date', label: 'Date' },
-    { value: 'title', label: 'Title' },
-    { value: 'url', label: 'URL' }
-  ];
-
   return (
     <div className="flex h-full flex-col bg-background">
-      {/* Header */}
       <SheetHeader>
-        <SheetTitle>Sort & Filter</SheetTitle>
+        <SheetTitle>Filter</SheetTitle>
       </SheetHeader>
 
       <div className="flex-1 overflow-y-auto">
-        {/* Sort Section */}
-        <div className="p-4 space-y-3">
-          <h3 className="font-medium text-sm">Sort By</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {sortOptions.map((option) => (
-              <Button
-                key={option.value}
-                variant={sortBy === option.value ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSortBy(option.value as 'date' | 'title' | 'url')}
-                className="h-9"
-              >
-                {option.label}
-              </Button>
-            ))}
-          </div>
-
-          <div className="flex gap-2 mt-2">
-            <Button
-              variant={sortOrder === 'asc' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSortOrder('asc')}
-              className="flex-1"
-            >
-              <ArrowUpward size={16} className="mr-1" />
-              Ascending
-            </Button>
-            <Button
-              variant={sortOrder === 'desc' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSortOrder('desc')}
-              className="flex-1"
-            >
-              <ArrowDownward size={16} className="mr-1" />
-              Descending
-            </Button>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Filter Section */}
         <div className="p-4">
           <h3 className="font-medium text-sm mb-3">Filter by Tags</h3>
           {tags.length === 0 ? (
@@ -123,7 +69,6 @@ export function MobileSidebar() {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="border-t p-4">
         {(selectedTags.length > 0 || searchQuery) && (
           <Button

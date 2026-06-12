@@ -73,7 +73,5 @@ export interface AppState {
   error: string | null;
   searchQuery: string;
   selectedTags: string[];
-  sortBy: 'date' | 'title' | 'url';
-  sortOrder: 'asc' | 'desc';
   isInitialized: boolean;
 }

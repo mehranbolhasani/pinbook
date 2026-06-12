@@ -39,7 +39,7 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
         </div>
       </div>
 
-      <div className="flex items-center shrink-0 gap-2 lg:invisible lg:group-hover/item:visible border border-foreground rounded-full px-2 py-1">
+      <div className="flex items-center shrink-0 gap-2 lg:invisible lg:group-hover/item:visible border border-foreground/50 rounded-sm px-2 py-1">
         <Button
           variant="ghost"
           size="icon-sm"

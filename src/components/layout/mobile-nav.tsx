@@ -72,7 +72,7 @@ export function MobileNav() {
         <div className="flex h-14 items-center justify-between px-2">
           <div className="flex-1" />
 
-          {/* Sort/Filter Combined - Center */}
+          {/* Filter */}
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button
@@ -81,8 +81,7 @@ export function MobileNav() {
                 className="h-10 px-2"
               >
                 <FilterList size={16} className="min-[380px]:mr-2" />
-                <span className="text-md hidden min-[380px]:inline">Sort/Filter</span>
-                <span className="text-md inline min-[380px]:hidden">Filter</span>
+                <span className="text-md">Filter</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[80vh] p-0">

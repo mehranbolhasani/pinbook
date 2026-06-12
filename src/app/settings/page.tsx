@@ -129,15 +129,15 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto min-h-screen border-x border-x-primary/20 bg-card">
+      <div className="mx-auto min-h-screen">
         <motion.div
-          className="flex items-start flex-col border-b border-primary/20 p-6"
+          className="flex items-start flex-col py-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
           <Link href="/" className="mb-6">
-            <Button variant="outline" size="sm">
+            <Button variant="ghost" size="sm" className="px-0">
               <ArrowBack size={16} />
               Back to Bookmarks
             </Button>
@@ -149,13 +149,13 @@ export default function SettingsPage() {
         </motion.div>
 
         <SettingsErrorBoundary>
-          <div className="space-y-0 *:not-last:border-b *:not-last:border-primary/20">
+          <div className="space-y-0">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05, type: 'spring', stiffness: 300, damping: 25 }}
             >
-            <Card>
+            <Card className="bg-transparent px-0 border-b border-primary/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-1">
                   <Person size={20} />
@@ -262,7 +262,7 @@ export default function SettingsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 25 }}
             >
-            <Card>
+            <Card className="bg-transparent px-0 border-b border-primary/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Send size={20} />
@@ -341,7 +341,7 @@ export default function SettingsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, type: 'spring', stiffness: 300, damping: 25 }}
             >
-            <Card>
+            <Card className="bg-transparent px-0">
               <CardHeader>
                 <CardTitle>About Pinbook</CardTitle>
                 <CardDescription>

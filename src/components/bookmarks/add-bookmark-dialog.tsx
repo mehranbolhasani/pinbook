@@ -35,7 +35,7 @@ export function AddBookmarkDialog({ isOpen, onClose }: AddBookmarkDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-150">
         <DialogHeader>
           <DialogTitle>Add New Bookmark</DialogTitle>
           <DialogDescription>

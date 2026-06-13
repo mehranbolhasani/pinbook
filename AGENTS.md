@@ -1,42 +1,43 @@
 # Pinbook — Agent Guide
 
 ## Commands
-- `npm run dev` — starts dev server with Turbopack
+- `npm run dev` — Next.js 16 dev server with Turbopack
 - `npm run build` — production build with Turbopack
-- `npm run lint` — ESLint only (no prettier)
-- `npm run typecheck` — TypeScript type-check (`tsc --noEmit`)
-- `npm start` — runs production server
+- `npm run start` — production server
+- `npm run lint` — ESLint only (no Prettier in this repo)
+- `npm run typecheck` — `tsc --noEmit`
 - No test framework; no test scripts or dependencies
 
-## Project structure
-- Next.js 15 App Router, React 19, Tailwind CSS v4, shadcn/ui (New York style)
-- Path alias `@/*` → `./src/*`
-- `@/components/ui/*` for shadcn components
-- `@/lib/utils.ts` — `cn()`, `formatDate()` helpers; also `@/lib/utils/debounce.ts`, `@/lib/utils/retry.ts`
-- `@/types/pinboard.ts` — shared TypeScript types (`Bookmark`, `AddBookmarkParams`, `AuthState`, etc.)
+## Stack & config
+- Next.js 16 App Router, React 19, TypeScript 6, Tailwind CSS v4, shadcn/ui **New York**
+- Tailwind theme lives in `src/app/globals.css` (`@theme inline`); there is **no `tailwind.config.ts`**
+- Icons are **`@nine-thirty-five/material-symbols-react/rounded/300`**, not `lucide-react`
+  - `components.json` still says `"iconLibrary": "lucide"`; when adding shadcn components, replace any `lucide-react` imports with material-symbols
+- Animation library is **`motion`** (the Motion One React package), not `framer-motion`
+- Path alias `@/*` → `./src/*`; shadcn components live under `@/components/ui/*`
 
 ## State & data fetching
-- **`useAuthStore`** (`@/lib/stores/auth.ts`) — auth state (username, apiToken, login/logout). Persisted to localStorage.
-- **`useUIStore`** (`@/lib/stores/ui.ts`) — all UI state (search query, selected tags, page). Nothing persisted across reloads; search + tag filters reset on reload.
-- **`useBookmarkStore`** — legacy, removed from codebase. Do NOT reintroduce.
-- **Data fetching**: always use React Query hooks from `@/hooks/usePinboard` (`useBookmarks`, `useTags`, `useAddBookmark`, `useUpdateBookmark`, `useDeleteBookmark`). Never call the Pinboard API directly from components.
-- All React Query mutations use **optimistic updates** with rollback on error.
-- **`useFilteredBookmarks`** (`@/hooks/useFilteredBookmarks.ts`) — centralizes client-side filtering (by tags + search). Used by the main page.
-- Pinboard API wrapper at `@/lib/api/pinboard.ts`.
-- **Pinboard API field quirk:** `description` maps to bookmark *title*, `extended` maps to bookmark *description*.
+- **`useAuthStore`** (`@/lib/stores/auth.ts`) — username, apiToken, login/logout. Persisted to localStorage.
+- **`useUIStore`** (`@/lib/stores/ui.ts`) — search query, selected tags, page. Uses Zustand persist but with an empty partializer, so search + tag filters reset on reload.
+- **`useBookmarkStore`** — legacy and removed. Do NOT reintroduce.
+- Always use React Query hooks from `@/hooks/usePinboard` (`useBookmarks`, `useTags`, `useAddBookmark`, `useUpdateBookmark`, `useDeleteBookmark`). Never call the Pinboard API directly from components.
+- All mutations use optimistic updates with rollback on error.
+- Pinboard API wrapper is `@/lib/api/pinboard.ts`; it calls the local `/api/pinboard` proxy, which is allow-listed (`/posts/all`, `/posts/recent`, `/posts/add`, `/posts/delete`, `/tags/get`, `/posts/search`) and rate-limited to 60 req/min.
+- **Pinboard API quirk:** `description` = bookmark *title*, `extended` = bookmark *description*.
+- `next.config.ts` sets a strict CSP; `connect-src` is limited to `'self'` and `https://api.pinboard.in`.
 
 ## Removed features (do not re-implement)
 - Read/Unread toggles, badges, filters
 - Recent filter
 - Make Public/Private toggle (shared status is display-only)
 - Hamburger menu on mobile
-- Separate sort and filter buttons on mobile (combined into one `MobileSidebar` sheet)
+- Separate sort and filter buttons on mobile (combined into `MobileSidebar`)
 - Sort (by date/title/url, ascending/descending) — bookmarks display in API default order
 
 ## Mobile conventions
-- Breakpoint: `lg` (1024px). Mobile `< 1024px`, Desktop `≥ 1024px`.
-- Mobile nav: `MobileNav` (header + bottom bar), `MobileSidebar` (filter sheet), `MobileAddBookmark` (bottom sheet).
-- Use `side="bottom"` sheets (80vh for filter, 90vh for add) with `SheetHeader`/`SheetTitle`.
+- Breakpoint is `lg` (1024px). Mobile `< 1024px`, Desktop `≥ 1024px`.
+- Mobile nav: `MobileNav` (header + bottom bar), `MobileSidebar` (filter sheet), `MobileAddBookmark` (add sheet).
+- Sheets use `side="bottom"` at `80vh` (filter) or `90vh` (add) with `SheetHeader`/`SheetTitle`.
 - Mobile-only: `lg:hidden`. Desktop-only: `hidden lg:block`/`hidden lg:flex`.
 - Touch targets: minimum `h-10 w-10` (40×40px), preferably 44×44px.
 
@@ -44,14 +45,14 @@
 Search (`Cmd/Ctrl+K`), Add (`Cmd/Ctrl+N`), Close (`Esc`), Arrow up/down navigation, Open (`Enter`), Edit (`E`), Help (`?`). See `useKeyboardShortcuts` hook.
 
 ## Telegram bot
-- API routes at `/api/telegram/*`. Script: `scripts/set-telegram-webhook.mjs`.
-- Optional Upstash Redis for production. Falls back to in-memory (resets on restart, dev only).
+- API routes at `/api/telegram/*`. Setup script: `scripts/set-telegram-webhook.mjs`.
+- Optional Upstash Redis for production; falls back to in-memory (resets on restart, dev only).
 - Full setup guide: `docs/TELEGRAM_SETUP.md`.
 
 ## Performance
-- `@tanstack/react-virtual` (`useVirtualizer`) available for list virtualization (100+ items).
+- Virtualization kicks in above 75 bookmarks (`useVirtualizationThreshold`).
 - No `ScrollArea` component — use `overflow-y-auto` for scrolling.
-- Debounced search via `@/lib/utils/debounce.ts`.
+- Search is debounced via `@/lib/utils/debounce.ts`.
 
 ## Documentation
 - `changelog.md` — update for user-facing changes

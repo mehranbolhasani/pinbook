@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { motion } from 'motion/react';
 import { Bookmark } from '@/types/pinboard';
 import { formatDate } from '@/lib/utils';
-import { OpenInNew, Delete, EditNote } from '@nine-thirty-five/material-symbols-react/rounded/300';
+import { Delete, EditNote } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -21,16 +21,19 @@ interface BookmarkListItemProps {
 export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index = 0, onEdit, onDelete, animated = true }: BookmarkListItemProps) {
   const prefersReducedMotion = useReducedMotion();
 
-  const handleOpenUrl = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
   const cardContent = (
     <div data-index={index} className="flex items-center justify-between bg-transparent group/item transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2 mb-0">
-          <h3 className="font-normal text-md truncate tracking-tight group-hover/item:text-primary">
-            {bookmark.title}
+          <h3 className="font-normal text-md truncate tracking-tight">
+            <a
+              href={bookmark.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group-hover/item:text-primary hover:underline"
+            >
+              {bookmark.title}
+            </a>
           </h3>
         </div>
         <div className="flex items-center space-x-2 mt-0">
@@ -41,16 +44,6 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
       </div>
 
       <div className="flex items-center shrink-0 gap-1 sm:gap-2 sm:invisible sm:opacity-0 sm:group-hover/item:visible sm:group-hover/item:opacity-100">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleOpenUrl(bookmark.url)}
-          className='lg:hover:text-primary lg:hover:bg-transparent!'
-          title="Open Link"
-          aria-label="Open link"
-        >
-          <OpenInNew size={16} />
-        </Button>
         {onEdit && (
           <Button
             variant="ghost"

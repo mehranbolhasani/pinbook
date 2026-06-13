@@ -240,7 +240,7 @@ export default function Home() {
       <div className="w-full max-w-screen sm:max-w-xl mx-auto px-4 lg:px-0">
 
         {/* Mobile Navigation */}
-        <MobileNav />
+        <MobileNav onAddBookmark={handleAddBookmark} />
 
         {/* Desktop Header */}
         <div className="hidden lg:block">
@@ -265,6 +265,7 @@ export default function Home() {
 
         {/* Edit Bookmark Dialog */}
         <EditBookmarkDialog
+          key={editingBookmark?.id}
           bookmark={editingBookmark}
           isOpen={isEditDialogOpen}
           onClose={handleCloseEditDialog}

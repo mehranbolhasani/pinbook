@@ -3,7 +3,6 @@
 import { Label } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useUIStore } from '@/lib/stores/ui';
 import { useTags } from '@/hooks/usePinboard';
 
@@ -32,10 +31,6 @@ export function MobileSidebar() {
 
   return (
     <div className="flex h-full flex-col bg-background">
-      <SheetHeader>
-        <SheetTitle>Filter</SheetTitle>
-      </SheetHeader>
-
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
           <h3 className="font-medium text-sm mb-3">Filter by Tags</h3>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Bookmark, Add, FilterList, Settings } from '@nine-thirty-five/material-symbols-react/rounded/300';
 import { useUIStore } from '@/lib/stores/ui';
 import { useAuthStore } from '@/lib/stores/auth';
@@ -17,12 +17,11 @@ const MobileSidebar = dynamic(
   { ssr: false }
 );
 
-const MobileAddBookmark = dynamic(
-  () => import('@/components/bookmarks/mobile-add-bookmark').then(m => ({ default: m.MobileAddBookmark })),
-  { ssr: false }
-);
+interface MobileNavProps {
+  onAddBookmark?: () => void;
+}
 
-export function MobileNav() {
+export function MobileNav({ onAddBookmark }: MobileNavProps) {
   const { isAuthenticated } = useAuthStore();
   const {
     searchQuery,
@@ -30,7 +29,6 @@ export function MobileNav() {
   } = useUIStore();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isAddBookmarkOpen, setIsAddBookmarkOpen] = useState(false);
 
   if (!isAuthenticated) return null;
 
@@ -38,7 +36,7 @@ export function MobileNav() {
     <div className="lg:hidden">
       {/* Top Navigation Bar */}
       <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 pt-[env(safe-area-inset-top)]">
-        <div className="flex h-14 items-center justify-between px-4 gap-3">
+        <div className="flex h-14 items-center justify-between gap-3">
           {/* Left: Logo */}
           <div className="flex items-center space-x-2 shrink-0">
             <Bookmark size={20} className="text-primary" />
@@ -85,6 +83,12 @@ export function MobileNav() {
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[80vh] p-0">
+              <SheetHeader className="p-4 pb-0">
+                <SheetTitle>Filter</SheetTitle>
+                <SheetDescription className="sr-only">
+                  Filter bookmarks by tags
+                </SheetDescription>
+              </SheetHeader>
               <MobileSidebar />
             </SheetContent>
           </Sheet>
@@ -93,7 +97,7 @@ export function MobileNav() {
           <Button
             variant="default"
             size="default"
-            onClick={() => setIsAddBookmarkOpen(true)}
+            onClick={onAddBookmark}
             className="h-10 px-3 min-[380px]:px-4!"
           >
             <Add size={16} className="min-[380px]:mr-1" />
@@ -101,13 +105,6 @@ export function MobileNav() {
           </Button>
         </div>
       </div>
-
-      {/* Add Bookmark Sheet */}
-      <Sheet open={isAddBookmarkOpen} onOpenChange={setIsAddBookmarkOpen}>
-        <SheetContent side="bottom" className="h-[90vh] p-0">
-          <MobileAddBookmark onClose={() => setIsAddBookmarkOpen(false)} />
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }

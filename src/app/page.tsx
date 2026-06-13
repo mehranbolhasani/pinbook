@@ -237,7 +237,7 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-      <div className="max-w-xl mx-auto">
+      <div className="w-full max-w-screen sm:max-w-xl mx-auto px-4 lg:px-0">
 
         {/* Mobile Navigation */}
         <MobileNav />

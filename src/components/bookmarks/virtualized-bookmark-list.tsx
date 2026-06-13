@@ -73,6 +73,7 @@ export function VirtualizedBookmarkList({
               index={virtualItem.index}
               onEdit={onEditBookmark}
               onDelete={onDeleteBookmark}
+              animated={false}
             />
           </div>
         ))}

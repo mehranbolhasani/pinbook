@@ -37,7 +37,7 @@ export function MobileNav() {
   return (
     <div className="lg:hidden">
       {/* Top Navigation Bar */}
-      <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 pt-[env(safe-area-inset-top)]">
         <div className="flex h-14 items-center justify-between px-4 gap-3">
           {/* Left: Logo */}
           <div className="flex items-center space-x-2 shrink-0">
@@ -68,7 +68,7 @@ export function MobileNav() {
       </div>
 
       {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 pb-[env(safe-area-inset-bottom)]">
         <div className="flex h-14 items-center justify-between px-2">
           <div className="flex-1" />
 

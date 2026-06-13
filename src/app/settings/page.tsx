@@ -129,7 +129,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto min-h-screen">
+      <div className="max-w-xl mx-auto min-h-screen px-4 lg:px-0">
         <motion.div
           className="flex items-start flex-col py-4"
           initial={{ opacity: 0, y: 12 }}
@@ -180,7 +180,7 @@ export default function SettingsPage() {
 
                 <div className="space-y-4">
 
-                  <div className={`flex items-start gap-4 ${isEditing ? 'opacity-100' : 'opacity-50'}`}>
+                  <div className={`flex flex-col sm:flex-row items-start gap-4 ${isEditing ? 'opacity-100' : 'opacity-50'}`}>
                     <div className="space-y-2 flex-1">
                       <Label htmlFor="username">Username</Label>
                       <Input

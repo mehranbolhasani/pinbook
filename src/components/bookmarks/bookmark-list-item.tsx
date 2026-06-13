@@ -8,16 +8,17 @@ import { OpenInNew, Delete, EditNote } from '@nine-thirty-five/material-symbols-
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { listItem, hoverLift } from '@/lib/animations';
+import { bookmarkItem } from '@/lib/animations';
 
 interface BookmarkListItemProps {
   bookmark: Bookmark;
   index?: number;
   onEdit?: (bookmark: Bookmark) => void;
   onDelete?: (bookmark: Bookmark) => void;
+  animated?: boolean;
 }
 
-export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index = 0, onEdit, onDelete }: BookmarkListItemProps) {
+export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index = 0, onEdit, onDelete, animated = true }: BookmarkListItemProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const handleOpenUrl = (url: string) => {
@@ -39,12 +40,12 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
         </div>
       </div>
 
-      <div className="flex items-center shrink-0 gap-2 lg:invisible lg:group-hover/item:visible border border-foreground/50 rounded-sm px-2 py-1">
+      <div className="flex items-center shrink-0 gap-1 sm:gap-2 sm:invisible sm:opacity-0 sm:group-hover/item:visible sm:group-hover/item:opacity-100">
         <Button
           variant="ghost"
-          size="icon-sm"
+          size="icon"
           onClick={() => handleOpenUrl(bookmark.url)}
-          className='hover:text-primary hover:bg-transparent!'
+          className='lg:hover:text-primary lg:hover:bg-transparent!'
           title="Open Link"
           aria-label="Open link"
         >
@@ -53,9 +54,9 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
         {onEdit && (
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon"
             onClick={() => onEdit(bookmark)}
-            className='hover:text-primary hover:bg-transparent!'
+            className='lg:hover:text-primary lg:hover:bg-transparent!'
             title="Edit Bookmark"
             aria-label="Edit bookmark"
           >
@@ -65,9 +66,9 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
         {onDelete && (
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon"
             onClick={() => onDelete(bookmark)}
-            className='hover:text-destructive hover:bg-transparent!'
+            className='lg:hover:text-destructive lg:hover:bg-transparent!'
             title="Delete Bookmark"
             aria-label="Delete bookmark"
           >
@@ -78,26 +79,17 @@ export const BookmarkListItem = memo(function BookmarkListItem({ bookmark, index
     </div>
   );
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || !animated) {
     return cardContent;
   }
 
   return (
     <motion.div
-      variants={listItem(index)}
-      initial="hidden"
-      animate="visible"
-      exit="hidden"
-      whileHover="hover"
-      className='relative [counter-increment:bkmrk] before:content-[counter(bkmrk)] before:absolute before:font-mono before:text-sm before:top-1/2 before:-left-8 before:text-primary before:-translate-y-1/2'
+      variants={bookmarkItem}
+      whileHover={{ y: -2, transition: { duration: 0.15 } }}
+      className='relative [counter-increment:bkmrk] before:hidden lg:before:block before:content-[counter(bkmrk)] before:absolute before:font-mono before:text-sm before:top-1/2 before:-left-8 before:text-primary before:-translate-y-1/2'
     >
-      <motion.div
-        variants={hoverLift}
-        initial="rest"
-        className=""
-      >
-        {cardContent}
-      </motion.div>
+      {cardContent}
     </motion.div>
   );
 });

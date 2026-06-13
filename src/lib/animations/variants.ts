@@ -60,7 +60,7 @@ export const fadeInDown: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: gentleTransition,
+    transition: defaultTransition,
   },
 };
 
@@ -72,21 +72,6 @@ export const fadeIn: Variants = {
   },
 };
 
-export const listItem = (index: number): Variants => ({
-  hidden: {
-    opacity: 0,
-    y: 8,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      ...gentleTransition,
-      delay: index * 0.04,
-    },
-  },
-});
-
 export const fadeInUpStaggered: Variants = {
   hidden: {
     opacity: 0,
@@ -95,33 +80,49 @@ export const fadeInUpStaggered: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-  },
-};
-
-export const hoverLift: Variants = {
-  rest: {
-    y: 0,
-    transition: gentleTransition,
-  },
-  hover: {
-    y: -2,
     transition: gentleTransition,
   },
 };
 
-export const buttonHover: Variants = {
-  rest: {
-    y: 0,
-    transition: gentleTransition,
+export const fadeInUpFast: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 8,
   },
-  hover: {
+  visible: {
+    opacity: 1,
     y: 0,
-    scale: 1,
-    transition: gentleTransition,
+    transition: {
+      type: 'tween',
+      duration: 0.2,
+      ease: 'easeOut',
+    },
   },
-  tap: {
+};
+
+export const bookmarkList: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.03,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+export const bookmarkItem: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 6,
+  },
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: fastTransition,
+    transition: {
+      type: 'tween',
+      duration: 0.2,
+      ease: 'easeOut',
+    },
   },
 };
 

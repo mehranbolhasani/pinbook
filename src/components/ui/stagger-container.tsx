@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion, MotionProps, Transition } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { staggerNormal, staggerFast, staggerSlow } from '@/lib/animations';
@@ -26,6 +27,16 @@ export function StaggerContainer({
 }: StaggerContainerProps) {
   const prefersReducedMotion = useReducedMotion();
 
+  const variants = useMemo(
+    () => ({
+      hidden: {},
+      visible: {
+        transition: staggerMap[speed] as Transition,
+      },
+    }),
+    [speed]
+  );
+
   if (prefersReducedMotion) {
     const Tag = Component;
     return <Tag className={className}>{children}</Tag>;
@@ -38,12 +49,7 @@ export function StaggerContainer({
       className={className}
       initial="hidden"
       animate="visible"
-      variants={{
-        hidden: {},
-        visible: {
-          transition: staggerMap[speed] as Transition,
-        },
-      }}
+      variants={variants}
       {...props}
     >
       {children}

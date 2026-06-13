@@ -23,7 +23,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.pinboard.in" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.pinboard.in" />
       </head>
-      <body className="font-sans antialiased bg-background selection:bg-primary selection:text-primary-foreground">
+      <body className="font-sans antialiased bg-background selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
         <QueryProvider>
           <ThemeProvider
             attribute="class"
@@ -31,7 +31,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="grid place-items-center w-screen min-h-screen">
+            <div className="grid place-items-center w-full min-h-screen">
               {children}
             </div>
             <ToastProvider />
@@ -51,4 +51,5 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: 'cover',
 };

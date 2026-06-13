@@ -9,19 +9,15 @@ export function BookmarkSkeleton() {
   const prefersReducedMotion = useReducedMotion();
 
   const skeletonContent = (
-    <div className="flex items-center space-x-4 p-4 border-b border-border bg-card rounded-xl mb-3">
-      <Skeleton className="h-12 w-12 rounded" />
-      <div className="flex-1 space-y-2">
-        <Skeleton className="h-5 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
-        <div className="flex space-x-2">
-          <Skeleton className="h-6 w-16" />
-          <Skeleton className="h-6 w-20" />
-        </div>
+    <div className="flex items-center justify-between py-3">
+      <div className="flex-1 min-w-0 space-y-1.5">
+        <Skeleton className="h-4 w-3/4 rounded-sm" />
+        <Skeleton className="h-3 w-1/4 rounded-sm" />
       </div>
-      <div className="flex space-x-2">
-        <Skeleton className="h-8 w-8" />
-        <Skeleton className="h-8 w-8" />
+      <div className="flex items-center shrink-0 gap-1">
+        <Skeleton className="h-6 w-6 rounded-sm" />
+        <Skeleton className="h-6 w-6 rounded-sm" />
+        <Skeleton className="h-6 w-6 rounded-sm" />
       </div>
     </div>
   );
@@ -40,7 +36,7 @@ export function BookmarkSkeleton() {
 
 export function BookmarkListSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-8">
       {Array.from({ length: count }).map((_, i) => (
         <BookmarkSkeleton key={i} />
       ))}

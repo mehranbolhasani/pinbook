@@ -19,8 +19,7 @@ import {
 import { useUIStore } from '@/lib/stores/ui';
 import { useTags } from '@/hooks/usePinboard';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { fadeInDown, buttonHover } from '@/lib/animations';
-import { StaggerContainer } from '@/components/ui/stagger-container';
+import { fadeInDown } from '@/lib/animations';
 import { SearchInput } from '@/components/ui/search-input';
 
 function HeaderLogo() {
@@ -48,12 +47,11 @@ function HeaderLogo() {
   if (prefersReducedMotion) return content;
 
   return (
-      <motion.button
+    <motion.button
       type="button"
       onClick={clearFilters}
       className="flex items-center space-x-1 cursor-pointer text-primary"
       aria-label="Pinbook – clear filters"
-      whileHover={{ scale: 1 }}
       whileTap={{ scale: 0.95 }}
     >
       <Bookmark size={32} />
@@ -127,7 +125,7 @@ function HeaderTagsFilter() {
       {tags.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="default" aria-label="Filter by tags" className="border border-primary/50 text-primary">
+            <Button variant="outline" size="default" aria-label="Filter by tags" className="border border-primary/50 text-primary w-14">
               <Label size={16} aria-hidden />
               {/*<span>Tags</span>*/}
               {selectedTags.length > 0 && (
@@ -175,12 +173,10 @@ function HeaderTagsFilter() {
 }
 
 function HeaderAddButton({ onAddBookmark }: { onAddBookmark: () => void }) {
-  const prefersReducedMotion = useReducedMotion();
-
-  const content = (
+  return (
     <Button
       variant="default"
-      size="sm"
+      size="default"
       onClick={onAddBookmark}
       className="flex items-center px-4"
       aria-label="Add bookmark"
@@ -188,23 +184,6 @@ function HeaderAddButton({ onAddBookmark }: { onAddBookmark: () => void }) {
       <Add size={16} aria-hidden />
       <span>Add</span>
     </Button>
-  );
-
-  if (prefersReducedMotion) return content;
-
-  return (
-    <motion.div whileHover="hover" whileTap="tap" variants={buttonHover}>
-      <Button
-        variant="default"
-        size="default"
-        onClick={onAddBookmark}
-        className="flex items-center px-4"
-        aria-label="Add bookmark"
-      >
-        <Add size={16} aria-hidden />
-        <span>Add</span>
-      </Button>
-    </motion.div>
   );
 }
 
@@ -217,7 +196,7 @@ export function Header({ onAddBookmark }: HeaderProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const headerContent = (
-    <header className="relative w-full max-w-160 mx-auto z-50 gap-0">
+    <header className="relative w-full max-w-160 mx-auto z-50 gap-0 min-h-42">
       <div className="container flex h-full flex-col items-center justify-center gap-8">
         <div className="flex items-center w-full justify-between">
           <HeaderLogo />
@@ -240,12 +219,12 @@ export function Header({ onAddBookmark }: HeaderProps) {
 
   return (
     <motion.header
-      className="relative w-full mx-auto z-50 gap-0 h-fit flex flex-col py-8"
+      className="relative w-full mx-auto z-50 gap-0 h-fit flex flex-col py-8 min-h-42"
       initial="hidden"
       animate="visible"
       variants={fadeInDown}
     >
-      <StaggerContainer className="flex h-fit flex-col items-center justify-center gap-8" speed="fast">
+      <div className="flex h-fit flex-col items-center justify-center gap-8">
         <div className="flex items-center w-full justify-between">
           <HeaderLogo />
           <HeaderUserActions />
@@ -259,7 +238,7 @@ export function Header({ onAddBookmark }: HeaderProps) {
             {isAuthenticated && <HeaderTagsFilter />}
           </div>
         </div>
-      </StaggerContainer>
+      </div>
     </motion.header>
   );
 }

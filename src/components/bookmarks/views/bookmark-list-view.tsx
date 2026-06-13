@@ -1,9 +1,11 @@
 'use client';
 
 import { memo } from 'react';
+import { motion } from 'motion/react';
 import { Bookmark } from '@/types/pinboard';
 import { BookmarkListItem } from '../bookmark-list-item';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { bookmarkList } from '@/lib/animations';
 
 interface BookmarkListViewProps {
   bookmarks: Bookmark[];
@@ -31,7 +33,13 @@ export const BookmarkListView = memo(function BookmarkListView({ bookmarks, coun
   }
 
   return (
-    <div className="flex flex-col gap-8" style={{ counterReset: `bkmrk ${counterStart - 1}` }}>
+    <motion.div
+      className="flex flex-col gap-8"
+      style={{ counterReset: `bkmrk ${counterStart - 1}` }}
+      initial="hidden"
+      animate="visible"
+      variants={bookmarkList}
+    >
       {bookmarks.map((bookmark, index) => (
         <BookmarkListItem
           key={bookmark.id}
@@ -41,6 +49,6 @@ export const BookmarkListView = memo(function BookmarkListView({ bookmarks, coun
           onDelete={onDelete}
         />
       ))}
-    </div>
+    </motion.div>
   );
 });
